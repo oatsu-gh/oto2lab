@@ -105,7 +105,7 @@ def main():
     全体の処理を実行
     """
     # oto.iniファイルを指定
-    print('otoiniファイルを指定してください。')
+    print('oto.iniファイルを指定してください。')
     path = input('>>>').strip('""')
 
     print('oto.ini を読み取ります。')
