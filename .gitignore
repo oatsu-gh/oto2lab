@@ -1,6 +1,6 @@
 *.txt
 *.lab
-*.ini
+//*.ini
 *.xlsx
 *.csv
 *.exe

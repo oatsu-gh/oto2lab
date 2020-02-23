@@ -5,10 +5,11 @@ oto.ini → oto.lab の変換ツール
 """
 import re
 from pprint import pprint
+from datetime import datetime
 
 import pyperclip
 
-TEST_MODE = True
+TEST_MODE = False
 
 
 def read_otoini(path):
@@ -38,24 +39,33 @@ def format_otoini(otoini):
 
     ブレスは「B」で休符では「R」にする？
     """
-    # 母音のみor子音のみ の判定に使用
-    onesign = ['あ', 'い', 'う', 'え', 'お', 'ん', 'っ']
+    # 「母音のみor子音のみorブレスor休符」の判定に使用
+    onesign = ['あ', 'い', 'う', 'え', 'お', 'ん', 'っ', 'R', 'B']
 
-    result = []
+    l = []
     for v in otoini:
         # 連続音を単独音化
-        kana = v['エイリアス'].split()[1]
+        kana = v['エイリアス'].split()[-1]
 
         if kana in onesign:
             roma = kana2roma(kana)
             # [オーバーラップ, 発音文字]
-            result.append([v['ファイル名'], v['オーバーラップ'], roma[0]])
+            l.append([v['ファイル名'], v['オーバーラップ'], roma[0]])
+
         else:
             roma = kana2roma(kana)
             # [オーバーラップ, 子音文字]
-            result.append([v['ファイル名'], v['オーバーラップ'], roma[0]])
+            l.append([v['ファイル名'], v['オーバーラップ'], roma[0]])
             # [先行発声, 母音文字]
-            result.append([v['ファイル名'], v['先行発声'], roma[1]])
+            l.append([v['ファイル名'], v['先行発声'], roma[1]])
+
+    result = []
+    for i, v in enumerate(l):
+        try:
+            tmp = [v[0], v[1], l[i+1][1], v[2]]
+        except IndexError:
+            tmp = [v[0], v[1], 'ここに終端時刻を入力', v[2]]
+        result.append(tmp)
 
     return result
 
@@ -75,12 +85,28 @@ def kana2roma(kana):
     return d[kana]
 
 
+def write_otolab(dataset):
+    """
+    整形済みデータから oto.lab ファイルを書き出します。
+    """
+    s = ''
+    now = datetime.now()
+    path = './output/oto_' + now.strftime('%Y%m%d_%H%M%S') + '.lab'
+    with open(path, 'w') as f:
+        for l in dataset:
+            tmp = '{} {} {} {}\n'.format(l[0], l[1], l[2], l[3])
+            s += tmp
+        f.write(s)
+    return path, s
+
+
 def main():
     """
     全体の処理を実行
     """
     # oto.iniファイルを指定
-    path = input().strip('""')
+    print('otoiniファイルを指定してください。')
+    path = input('>>>').strip('""')
 
     print('oto.ini を読み取ります。')
     otoini = read_otoini(path)
@@ -88,17 +114,20 @@ def main():
     #     pprint(otoini)
     print('oto.ini を読み取りました。')
 
-    print('データを整形します。')
-    temp = format_otoini(otoini)
+    print('\nデータを整形します。')
+    dataset = format_otoini(otoini)
     if TEST_MODE:
-        pprint(temp)
+        pprint(dataset)
     print('データを整形しました。')
 
-    print('oto.lab を書き出します。')
-    print('oto.lab を書きだしました。')
-    print('ファイル名は {} です。')
-    pyperclip.copy(str(temp))
-    print('--鋭意開発中です！')
+    print('\noto.lab を書き出します。')
+    labname, result = write_otolab(dataset)
+    pyperclip.copy(str(result))
+    print('oto.lab を書き出しました。')
+    print('\nファイル名は {} です。'.format(labname))
+    print('ファイル内容をクリップボードにコピーしました。')
+    print('ファイルを開いて終端時刻を書き込んでください。')
+    print('----鋭意開発中です！----')
 
 
 if __name__ == '__main__':
