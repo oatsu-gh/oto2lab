@@ -1,6 +1,7 @@
 # oto2lab
 
 SetParamで作った oto.ini をきりたん歌唱DB式ラベル oto.lab に変換するツール。
+'japanese.table' のファイルをきりたん歌唱DBからお借りしています。
 
 ## 目的
 
