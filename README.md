@@ -29,5 +29,12 @@ UTAUにおける既存インフラとノウハウの流用で、歌唱DBの充�
 
 ### ファイル変換作業
 
+<!---実装目標
 1. oto.ini を oto2lab.py にドラッグ&ドロップ。（ini, txt, lab対応）
-2. oto.ini と同じフォルダに oto_yyyyMMdd_hhmmss.lab ファイルが生成されます。
+2.  oto.iniをフルパス指定してEnter
+3.  oto.ini と同じフォルダに oto_yyyyMMdd_hhmmss.lab ファイルが生成されます。
+-->
+
+1.  コマンドラインからoto2labを実行
+2.  oto.iniをフルパス指定してEnter
+3.  標準出力で結果が見られます。また、出力結果はクリップボードにコピーされます。
