@@ -4,8 +4,8 @@
 oto.ini → oto.lab の変換ツール
 """
 import re
-from pprint import pprint
 from datetime import datetime
+from pprint import pprint
 
 import pyperclip
 
@@ -40,7 +40,8 @@ def format_otoini(otoini):
     ブレスは「B」で休符では「R」にする？
     """
     # 「母音のみor子音のみorブレスor休符」の判定に使用
-    onesign = ['あ', 'い', 'う', 'え', 'お', 'ん', 'っ', 'R', 'B']
+    onesign = ['あ', 'い', 'う', 'え', 'お', 'ん', 'っ', 'R', 'B', 'pau', 'cl']
+    special = ['R', 'B', 'pau', 'cl']
 
     l = []
     for v in otoini:
@@ -50,19 +51,22 @@ def format_otoini(otoini):
         if kana in onesign:
             roma = kana2roma(kana)
             # [オーバーラップ, 発音文字]
-            l.append([v['ファイル名'], v['オーバーラップ'], roma[0]])
-
+            l.append([v['ファイル名'] * 1000, v['オーバーラップ'] * 1000, roma[0]])
+        elif kana in special:
+            roma = kana
+            # [オーバーラップ, 特殊記号]
+            l.append([v['ファイル名'] * 1000, v['オーバーラップ'] * 1000, roma[0]])
         else:
             roma = kana2roma(kana)
             # [オーバーラップ, 子音文字]
-            l.append([v['ファイル名'], v['オーバーラップ'], roma[0]])
+            l.append([v['ファイル名'] * 1000, v['オーバーラップ'] * 1000, roma[0]])
             # [先行発声, 母音文字]
-            l.append([v['ファイル名'], v['先行発声'], roma[1]])
+            l.append([v['ファイル名'] * 1000, v['先行発声'] * 1000, roma[1]])
 
     result = []
     for i, v in enumerate(l):
         try:
-            tmp = [v[0], v[1], l[i+1][1], v[2]]
+            tmp = [v[0], v[1], l[i + 1][1], v[2]]
         except IndexError:
             tmp = [v[0], v[1], 'ここに終端時刻を入力', v[2]]
         result.append(tmp)
