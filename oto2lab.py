@@ -41,7 +41,7 @@ def format_otoini(otoini):
     """
     # 「母音のみor子音のみorブレスor休符」の判定に使用
     onesign = ['あ', 'い', 'う', 'え', 'お', 'ん', 'っ', 'R', 'B', 'pau', 'cl']
-    special = ['R', 'B', 'pau', 'cl']
+    # special = ['R', 'B', 'pau', 'cl']
 
     l = []
     for v in otoini:
@@ -52,10 +52,10 @@ def format_otoini(otoini):
             roma = kana2roma(kana)
             # [オーバーラップ, 発音文字]
             l.append([float(v['オーバーラップ']) / 1000, roma[0]])
-        elif kana in special:
-            roma = kana
-            # [オーバーラップ, 特殊記号]
-            l.append([float(v['オーバーラップ']) / 1000, roma[0]])
+        # elif kana in special:
+        #     roma = kana
+        #     # [オーバーラップ, 特殊記号]
+        #     l.append([float(v['オーバーラップ']) / 1000, roma[0]])
         else:
             roma = kana2roma(kana)
             # [オーバーラップ, 子音文字]
