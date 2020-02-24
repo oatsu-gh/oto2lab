@@ -51,24 +51,24 @@ def format_otoini(otoini):
         if kana in onesign:
             roma = kana2roma(kana)
             # [オーバーラップ, 発音文字]
-            l.append([v['ファイル名'] * 1000, v['オーバーラップ'] * 1000, roma[0]])
+            l.append([float(v['オーバーラップ']) / 1000, roma[0]])
         elif kana in special:
             roma = kana
             # [オーバーラップ, 特殊記号]
-            l.append([v['ファイル名'] * 1000, v['オーバーラップ'] * 1000, roma[0]])
+            l.append([float(v['オーバーラップ']) / 1000, roma[0]])
         else:
             roma = kana2roma(kana)
             # [オーバーラップ, 子音文字]
-            l.append([v['ファイル名'] * 1000, v['オーバーラップ'] * 1000, roma[0]])
+            l.append([float(v['オーバーラップ']) / 1000, roma[0]])
             # [先行発声, 母音文字]
-            l.append([v['ファイル名'] * 1000, v['先行発声'] * 1000, roma[1]])
+            l.append([float(v['先行発声']) / 1000, roma[1]])
 
     result = []
     for i, v in enumerate(l):
         try:
-            tmp = [v[0], v[1], l[i + 1][1], v[2]]
+            tmp = [v[0], l[i + 1][0], v[1]]
         except IndexError:
-            tmp = [v[0], v[1], 'ここに終端時刻を入力', v[2]]
+            tmp = [v[0], 'ここに終端時刻を入力', v[1]]
         result.append(tmp)
 
     return result
@@ -98,7 +98,7 @@ def write_otolab(dataset):
     path = './output/oto_' + now.strftime('%Y%m%d_%H%M%S') + '.lab'
     with open(path, 'w') as f:
         for l in dataset:
-            tmp = '{} {} {} {}\n'.format(l[0], l[1], l[2], l[3])
+            tmp = '{} {} {}\n'.format(l[0], l[1], l[2])
             s += tmp
         f.write(s)
     return path, s
