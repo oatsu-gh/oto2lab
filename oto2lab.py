@@ -3,20 +3,21 @@
 """
 oto.ini → oto.lab の変換ツール
 """
+import os
 import re
+import sys
 from datetime import datetime
 from pprint import pprint
-
-import pyperclip
+from subprocess import Popen
 
 TEST_MODE = False
 
 
-def read_otoini(path):
+def read_otoini(path_otoini):
     """
     otoiniを読み取って辞書を返す
     """
-    with open(path, 'r') as f:
+    with open(path_otoini, 'r') as f:
         l = [re.split('[=,]', s.strip()) for s in f.readlines()]
 
     # 入力ファイル末尾の空白行を除去
@@ -24,84 +25,89 @@ def read_otoini(path):
         del l[-1]
 
     # 配列を辞書に変換(覚えられないので)
-    keys = ['ファイル名', 'エイリアス', '左ブランク', '固定範囲', '右ブランク', '先行発声', 'オーバーラップ']
+    keys = ('ファイル名', 'エイリアス', '左ブランク', '固定範囲', '右ブランク', '先行発声', 'オーバーラップ')
     l = [dict(zip(keys, v)) for v in l]
 
     return l
 
 
-def format_otoini(otoini):
+def read_japanesetable(path_table):
     """
-    otoiniを元にした配列をotolab用に整形する
-    必要: 左ブランク, 先行発声
-    不要: ファイル名, エイリアス, 固定範囲, 右ブランク, オーバーラップ
-    変換: エイリアス→発音
-
-    ブレスは「B」で休符では「R」にする？
-    """
-    # 「母音のみor子音のみorブレスor休符」の判定に使用
-    onesign = ['あ', 'い', 'う', 'え', 'お', 'ん', 'っ', 'R', 'B', 'pau', 'cl']
-    # special = ['R', 'B', 'pau', 'cl']
-
-    l = []
-    for v in otoini:
-        # 連続音を単独音化
-        kana = v['エイリアス'].split()[-1]
-
-        if kana in onesign:
-            roma = kana2roma(kana)
-            # [オーバーラップ, 発音文字]
-            l.append([float(v['オーバーラップ']) / 1000, roma[0]])
-        # elif kana in special:
-        #     roma = kana
-        #     # [オーバーラップ, 特殊記号]
-        #     l.append([float(v['オーバーラップ']) / 1000, roma[0]])
-        else:
-            roma = kana2roma(kana)
-            # [オーバーラップ, 子音文字]
-            l.append([float(v['オーバーラップ']) / 1000, roma[0]])
-            # [先行発声, 母音文字]
-            l.append([float(v['先行発声']) / 1000, roma[1]])
-
-    result = []
-    for i, v in enumerate(l):
-        try:
-            tmp = [v[0], l[i + 1][0], v[1]]
-        except IndexError:
-            tmp = [v[0], 'ここに終端時刻を入力', v[1]]
-        result.append(tmp)
-
-    return result
-
-
-def kana2roma(kana):
-    """
-    平仮名をローマ字に変換する。
+    平仮名-ローマ字変換表を読み取って辞書を返す。
     子音と母音に分けて、リストを返す。
     """
     # 平仮名とローマ字の対応表を辞書にする
-    with open('japanese_sjis.table', 'r') as f:
+    with open(path_table, 'r') as f:
         l = [v.split() for v in f.readlines()]
     d = {}
     for v in l:
         d[v[0]] = v[1:]
+    return d
 
-    return d[kana]
 
-
-def write_otolab(dataset):
+def monorize_oto(otolist):
     """
-    整形済みデータから oto.lab ファイルを書き出します。
+    ・入力otoiniは辞書のリスト[{}]
+    ・otoiniのエイリアスをモノフォン化
+    ・ラベルに不要なデータを破棄
+    必要: オーバーラップ, 先行発声
+    変換: エイリアス(→モノフォン)
+    不要: 左ブランク, ファイル名, 固定範囲, 右ブランク
+    """
+    table = read_japanesetable('./table/japanese_sjis.table')  # {平仮名: [母音, 子音]} の辞書
+    mono_kana = ['あ', 'い', 'う', 'え', 'お', 'ん', 'っ']  # モノフォン平仮名
+    special = ['br', 'pau', 'cl', 'k', 's']  # 休符と無声子音
+    # NOTE:「す」の無声化は「sU」と表現するらしい。
+
+    l = []
+    for v in otolist:
+        # 連続音を単独音化
+        kana = v['エイリアス'].split()[-1]
+
+        # [発音開始時刻, 発音記号] の形式にする
+        try:
+            # モノフォン平仮名歌詞
+            if kana in mono_kana:
+                l.append([float(v['オーバーラップ']) / 1000, table[kana][0]])
+            # 想定内アルファベット歌詞
+            elif kana in special:
+                l.append([float(v['オーバーラップ']) / 1000, kana])
+            # ダイフォン平仮名歌(子音と母音に分割)
+            else:
+                l.append([float(v['オーバーラップ']) / 1000, table[kana][0]])
+                l.append([float(v['先行発声']) / 1000, table[kana][1]])
+
+        except KeyError as e:
+            print('\n--[KeyError]--------------------')
+            print('エイリアスをモノフォン化する過程でエラーが発生しました。')
+            print('ノートの歌詞が想定外です。otoiniを編集してください。')
+            print('使用可能な歌詞は japanese_sjis.table に記載されている平仮名と、br、pau、cl です。')
+            print('\nエラー項目:', e)
+            print('--------------------------------\n')
+            print('プログラムを終了します。ファイル破損の心配は無いはずです。')
+            sys.exit()
+
+    return l
+
+
+def write_otolab(mono_otoini):
+    """
+    format_otoini でフォーマットした二次元リスト [[発音開始時刻, 発音記号], ...] から、
+    きりたんDB式音声ラベルで oto_日付.lab に出力する
     """
     s = ''
-    now = datetime.now()
-    path = './output/oto_' + now.strftime('%Y%m%d_%H%M%S') + '.lab'
-    with open(path, 'w') as f:
-        for l in dataset:
-            tmp = '{} {} {}\n'.format(l[0], l[1], l[2])
-            s += tmp
+    for i, v in enumerate(mono_otoini):
+        try:
+            s += '{:.6f} {:.6f} {}\n'.format(v[0], mono_otoini[i + 1][0], v[1])
+        except IndexError:
+            s += '{:.6f} {} {}\n'.format(v[0], '[ここに終端時刻を手入力]', v[1])
+
+    # ファイル作成とデータ書き込み
+    path_otolab = './output/oto_' + datetime.now().strftime('%Y%m%d_%H%M%S') + '.lab'
+    with open(path_otolab, 'w') as f:
         f.write(s)
-    return path, s
+
+    return path_otolab
 
 
 def main():
@@ -110,30 +116,35 @@ def main():
     """
     # oto.iniファイルを指定
     print('oto.iniファイルを指定してください。')
-    path = input('>>>').strip('""')
+    path_otoini = input('>>>').strip('"')
 
     print('oto.ini を読み取ります。')
-    otoini = read_otoini(path)
-    # if TEST_MODE:
-    #     pprint(otoini)
+    otolist = read_otoini(path_otoini)
+    if TEST_MODE:
+        pprint(otolist)
     print('oto.ini を読み取りました。')
 
-    print('\nデータを整形します。')
-    dataset = format_otoini(otoini)
+    print('\n読み取ったデータを整形します。')
+    mono_oto = monorize_oto(otolist)
     if TEST_MODE:
-        pprint(dataset)
-    print('データを整形しました。')
+        pprint(mono_oto)
+    print('読み取ったデータを整形しました。')
 
     print('\noto.lab を書き出します。')
-    labname, result = write_otolab(dataset)
-    pyperclip.copy(str(result))
+    path_otolab = write_otolab(mono_oto)
     print('oto.lab を書き出しました。')
-    print('\nファイル名は {} です。'.format(labname))
-    print('ファイル内容をクリップボードにコピーしました。')
+
+    print('\n出力ファイルのPATHは {} です。'.format(path_otolab))
     print('ファイルを開いて終端時刻を書き込んでください。')
-    print('----鋭意開発中です！----')
+    # Windows, WSLで実行された場合に限り、出力結果をメモ帳で開く。
+    if os.name in ('nt', 'posix'):
+        print('メモ帳で開きます。')
+        Popen([r'notepad.exe', path_otolab])
+
+    print('\n----鋭意開発中です！----')
 
 
 if __name__ == '__main__':
     main()
-    input('Press Enter to exit.')
+    while input('Press Enter to exit.') == 'r':
+        main()
