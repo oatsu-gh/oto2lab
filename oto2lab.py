@@ -68,14 +68,19 @@ def monorize_oto(otolist):
         try:
             # モノフォン平仮名歌詞
             if kana in mono_kana:
-                l.append([float(v['オーバーラップ']) / 1000, table[kana][0]])
+                t_start = float(v['左ブランク']) + (float(v['オーバーラップ']) / 1000)
+                l.append([t_start, table[kana][0]])
             # 想定内アルファベット歌詞
             elif kana in special:
-                l.append([float(v['オーバーラップ']) / 1000, kana])
+                t_start = float(v['左ブランク']) + (float(v['オーバーラップ']) / 1000)
+                l.append([t_start, kana])
             # ダイフォン平仮名歌(子音と母音に分割)
             else:
-                l.append([float(v['オーバーラップ']) / 1000, table[kana][0]])
-                l.append([float(v['先行発声']) / 1000, table[kana][1]])
+                t_start = float(v['左ブランク']) + (float(v['オーバーラップ']) / 1000)
+                l.append([t_start, table[kana][0]])
+
+                t_start = float(v['先行発声']) + (float(v['オーバーラップ']) / 1000)
+                l.append([t_start, table[kana][1]])
 
         except KeyError as e:
             print('\n--[KeyError]--------------------')
@@ -110,14 +115,10 @@ def write_otolab(mono_otoini):
     return path_otolab
 
 
-def main():
+def oto2lab(path_otoini):
     """
-    全体の処理を実行
+    otoini→otolab 変換本体
     """
-    # oto.iniファイルを指定
-    print('oto.iniファイルを指定してください。')
-    path_otoini = input('>>>').strip('"')
-
     print('oto.ini を読み取ります。')
     otolist = read_otoini(path_otoini)
     if TEST_MODE:
@@ -135,6 +136,16 @@ def main():
     print('oto.lab を書き出しました。')
 
     print('\n出力ファイルのPATHは {} です。'.format(path_otolab))
+    return path_otolab
+
+def main():
+    """
+    全体の処理を実行
+    """
+    # oto.iniファイルを指定
+    print('oto.iniファイルを指定してください。')
+    path_otoini = input('>>>').strip('"')
+    path_otolab = oto2lab(path_otoini)
     print('ファイルを開いて終端時刻を書き込んでください。')
     # Windows, WSLで実行された場合に限り、出力結果をメモ帳で開く。
     if os.name in ('nt', 'posix'):
