@@ -37,9 +37,16 @@ UTAUにおける既存インフラとノウハウの流用で、歌唱DBの充�
 3.  oto.ini と同じフォルダに oto_yyyyMMdd_hhmmss.lab ファイルが生成されます。
 -->
 
+#### oto2labの使い方
+
 1.  コマンドラインから `python oto2lab.py` を実行
 2.  oto.ini をフルパス指定してEnter
 3.  oto\_日付\_時刻.lab ファイルが生成されて、自動的にメモ帳で開きます。この時点で保存済みです。
 
-### ust2labについて
-ちていこさんの「歌声DBラベリング用ust→oto変換ツール」を自動実行する機能を追加した試験版ツールです。開発初期なためフォルダ構成まわりの仕様が雑です。
+#### ust2labの使い方
+1. 初めて ust2lab を実行する場合は コマンドラインで `pip install pywin32` を実行。
+1.  ust2lab フォルダに ちていこさんのUST→OTO変換ツールを置く。
+2.  ust2lab 内の ust フォルダに変換元の UST ファイルを置く。（複数可）
+3.  コマンドラインから `python ust2lab.py` を実行。
+4.  ust2lab 内の oto フォルダに INI ファイルが仮生成される。
+5.  ust2lab 内の labフォルダにLABファイルが生成される。
