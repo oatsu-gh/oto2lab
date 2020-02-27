@@ -96,22 +96,27 @@ def monophonize_oto(otolist):
         try:
             # モノフォン平仮名歌詞
             if kana in mono_kana:
-                l.append([float(v['オーバーラップ']) / 1000, table[kana][0]])
+                t_start = float(v['左ブランク']) + (float(v['オーバーラップ']) / 1000)
+                l.append([t_start, table[kana][0]])
             # 想定内アルファベット歌詞
             elif kana in special:
-                l.append([float(v['オーバーラップ']) / 1000, kana])
+                t_start = float(v['左ブランク']) + (float(v['オーバーラップ']) / 1000)
+                l.append([t_start, kana])
             # ダイフォン平仮名歌(子音と母音に分割)
             else:
-                l.append([float(v['オーバーラップ']) / 1000, table[kana][0]])
-                l.append([float(v['先行発声']) / 1000, table[kana][1]])
+                t_start = float(v['左ブランク']) + (float(v['オーバーラップ']) / 1000)
+                l.append([t_start, table[kana][0]])
+
+                t_start = float(v['先行発声']) + (float(v['オーバーラップ']) / 1000)
+                l.append([t_start, table[kana][1]])
 
         except KeyError as e:
-            print('\n--[KeyError in monophonize_oto]--------')
+            print('\n--[KeyError]--------------------')
             print('エイリアスをモノフォン化する過程でエラーが発生しました。')
             print('ノートの歌詞が想定外です。otoiniを編集してください。')
             print('使用可能な歌詞は japanese_sjis.table に記載されている平仮名と、br、pau、cl です。')
             print('\nエラー項目:', e)
-            print('---------------------------------------\n')
+            print('--------------------------------\n')
             print('プログラムを終了します。ファイル破損の心配は無いはずです。')
             sys.exit()
 

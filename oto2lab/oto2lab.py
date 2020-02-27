@@ -39,13 +39,12 @@ def read_japanesetable(path_table):
     # 平仮名とローマ字の対応表を辞書にする
     with open(path_table, 'r') as f:
         l = [v.split() for v in f.readlines()]
-    d = {}
+    d = {'R': 'pau', 'B': 'br', '息': 'br'}
     for v in l:
         d[v[0]] = v[1:]
     return d
 
-
-def monorize_oto(otolist):
+def monophonize_oto(otolist):
     """
     ・入力otoiniは辞書のリスト[{}]
     ・otoiniのエイリアスをモノフォン化
@@ -126,7 +125,7 @@ def oto2lab(path_otoini):
     print('oto.ini を読み取りました。')
 
     print('\n読み取ったデータを整形します。')
-    mono_oto = monorize_oto(otolist)
+    mono_oto = monophonize_oto(otolist)
     if TEST_MODE:
         pprint(mono_oto)
     print('読み取ったデータを整形しました。')
