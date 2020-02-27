@@ -7,6 +7,11 @@ SetParamで作った oto.ini をきりたん歌唱DB式ラベル oto.lab に変�
 
 UTAUにおける既存インフラとノウハウの流用で、歌唱DBの充実を図る。
 
+## 開発環境
+
+-   Windows 10 Education 1909
+-   Python 3.8.2
+
 ## 手順（全体）
 
 1.  音声ファイルを休符で切断する
@@ -44,9 +49,10 @@ UTAUにおける既存インフラとノウハウの流用で、歌唱DBの充�
 3.  oto\_日付\_時刻.lab ファイルが生成されて、自動的にメモ帳で開きます。この時点で保存済みです。
 
 #### ust2labの使い方
-1. 初めて ust2lab を実行する場合は コマンドラインで `pip install pywin32` を実行。
-1.  ust2lab フォルダに ちていこさんのUST→OTO変換ツールを置く。
-2.  ust2lab 内の ust フォルダに変換元の UST ファイルを置く。（複数可）
-3.  コマンドラインから `python ust2lab.py` を実行。
-4.  ust2lab 内の oto フォルダに INI ファイルが仮生成される。
-5.  ust2lab 内の labフォルダにLABファイルが生成される。
+
+1.  初めて ust2lab を実行する場合は コマンドラインで `pip install pywin32` を実行。
+2.  ust2lab フォルダに ちていこさんのUST→OTO変換ツールを置く。
+3.  ust2lab 内の ust フォルダに変換元の UST ファイルを置く。（複数可）
+4.  コマンドラインから `python ust2lab.py` を実行。
+5.  ust2lab 内の oto フォルダに INI ファイルが仮生成される。
+6.  ust2lab 内の labフォルダにLABファイルが生成される。
