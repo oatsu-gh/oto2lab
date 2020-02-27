@@ -169,6 +169,11 @@ def main():
 
     print('ust→ini 変換します。数秒かかります。')
     ust_files = glob('ust/*.ust')
+    if ust_files == []:
+        print('[ERROR] ustファイルを設置してください。')
+        input('Press Enter to exit.')
+        sys.exit()
+
     print('対象UST一覧-------------------')
     pprint(ust_files)
     print('------------------------------')
