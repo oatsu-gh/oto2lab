@@ -103,7 +103,7 @@ def write_otolab(mono_otoini):
             s += '{:.6f} {} {}\n'.format(v[0], '[ここに終端時刻を手入力]', v[1])
 
     # ファイル作成とデータ書き込み
-    path_otolab = './output/oto_' + datetime.now().strftime('%Y%m%d_%H%M%S') + '.lab'
+    path_otolab = './lab/oto_' + datetime.now().strftime('%Y%m%d_%H%M%S') + '.lab'
     with open(path_otolab, 'w') as f:
         f.write(s)
 
