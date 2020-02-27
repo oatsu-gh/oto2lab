@@ -6,14 +6,19 @@ oto.ini → oto.lab の変換ツール
 oto2lab v002 をもとに
 ちていこさんの ust→oto.ini 変換ツールの自動実行機能追加
 """
-import os
+# import os
 import re
 import sys
 from datetime import datetime
-from pprint import pprint
-from subprocess import Popen
+from glob import glob
 from pathlib import Path
-import win32com.client # Excel操作に使用
+from pprint import pprint
+# from time import sleep
+
+import win32com.client  # Excel操作に使用
+
+# from subprocess import Popen
+
 
 TEST_MODE = False
 
@@ -22,16 +27,17 @@ def run_ExecuteUstToOto(path_xlsm):
     """
     ust→otoini 用のExcelVBAを実行する
     """
-    abspath = str(Path(path_xlsm).resolve()) # 絶対パスに変換
+    abspath = str(Path(path_xlsm).resolve())  # 絶対パスに変換
     excel = win32com.client.Dispatch('Excel.Application')
-    excel.Visible = 0 # Excelの表示設定（0:非表示, 1:表示）
-    excel.Workbooks.Open(abspath, UpdateLinks=0, ReadOnly=True) # 読み取り専用で開く
+    excel.Visible = 0  # Excelの表示設定（0:非表示, 1:表示）
+    excel.Workbooks.Open(abspath, UpdateLinks=0, ReadOnly=True)  # 読み取り専用で開く
 
-    excel.Application.Run('ExecuteUstToOto') # マクロを実行
-    excel.Workbooks(1).Close(SaveChanges=1) # ブックを保存せずに閉じる
+    excel.Application.Run('ExecuteUstToOto')  # マクロを実行
+    excel.Workbooks(1).Close(SaveChanges=0)  # ブックを保存せずに閉じる
+    # sleep(0.1)
     excel.Application.Quit()
+    # sleep(0.1)
 
-def glob()
 
 def read_otoini(path_otoini):
     """
@@ -59,13 +65,13 @@ def read_japanesetable(path_table):
     # 平仮名とローマ字の対応表を辞書にする
     with open(path_table, 'r') as f:
         l = [v.split() for v in f.readlines()]
-    d = {}
+    d = {'R': 'pau', 'B': 'br', '息': 'br'}
     for v in l:
         d[v[0]] = v[1:]
     return d
 
 
-def monorize_oto(otolist):
+def monophonize_oto(otolist):
     """
     ・入力otoiniは辞書のリスト[{}]
     ・otoiniのエイリアスをモノフォン化
@@ -98,12 +104,12 @@ def monorize_oto(otolist):
                 l.append([float(v['先行発声']) / 1000, table[kana][1]])
 
         except KeyError as e:
-            print('\n--[KeyError]--------------------')
+            print('\n--[KeyError in monophonize_oto]--------')
             print('エイリアスをモノフォン化する過程でエラーが発生しました。')
             print('ノートの歌詞が想定外です。otoiniを編集してください。')
             print('使用可能な歌詞は japanese_sjis.table に記載されている平仮名と、br、pau、cl です。')
             print('\nエラー項目:', e)
-            print('--------------------------------\n')
+            print('---------------------------------------\n')
             print('プログラムを終了します。ファイル破損の心配は無いはずです。')
             sys.exit()
 
@@ -130,38 +136,54 @@ def write_otolab(mono_otoini):
     return path_otolab
 
 
-def main():
+def oto2lab(path_otoini):
     """
-    全体の処理を実行
+    otoini→otolab 変換本体
     """
-    # oto.iniファイルを指定
-    print('oto.iniファイルを指定してください。')
-    path_otoini = input('>>>').strip('"')
-
     print('oto.ini を読み取ります。')
     otolist = read_otoini(path_otoini)
     if TEST_MODE:
         pprint(otolist)
     print('oto.ini を読み取りました。')
 
-    print('\n読み取ったデータを整形します。')
-    mono_oto = monorize_oto(otolist)
+    print('読み取ったデータを整形します。')
+    mono_oto = monophonize_oto(otolist)
     if TEST_MODE:
         pprint(mono_oto)
     print('読み取ったデータを整形しました。')
 
-    print('\noto.lab を書き出します。')
+    print('oto.lab を書き出します。')
     path_otolab = write_otolab(mono_oto)
     print('oto.lab を書き出しました。')
 
-    print('\n出力ファイルのPATHは {} です。'.format(path_otolab))
-    print('ファイルを開いて終端時刻を書き込んでください。')
-    # Windows, WSLで実行された場合に限り、出力結果をメモ帳で開く。
-    if os.name in ('nt', 'posix'):
-        print('メモ帳で開きます。')
-        Popen([r'notepad.exe', path_otolab])
+    print('出力ファイルのPATHは {} です。'.format(path_otolab))
+    return path_otolab
 
-    print('\n----鋭意開発中です！----')
+
+def main():
+    """
+    全体の処理を実行
+    """
+    ust_files = glob('ust/*.ust')
+    print('入力UST一覧-------------------')
+    pprint(ust_files)
+    print('------------------------------\n')
+
+    print('ust→ini 変換します。')
+    run_ExecuteUstToOto('歌声DBラベリング用ust→oto変換ツール.xlsm')
+    print('ust→ini 変換しました。')
+
+    ini_files = glob('oto/*.ini')
+    print('\n入力INI一覧-------------------')
+    pprint(ini_files)
+    print('------------------------------\n')
+    lab_files = []
+    for ini in ini_files:
+        lab = oto2lab(ini)
+        lab_files.append(lab)
+    print('\n出力LAB一覧-------------------')
+    pprint(lab_files)
+    print('------------------------------\n')
 
 
 if __name__ == '__main__':

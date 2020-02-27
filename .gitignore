@@ -10,4 +10,4 @@
 *.xlsm
 *.xlsx
 *歌声DBラベリング用ust*
-**oto/sample.ini
+**/oto/*.ini
