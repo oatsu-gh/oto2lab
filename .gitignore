@@ -7,8 +7,10 @@
 *.flac
 *.exe
 **chiteico**
-*.xlsm
 *.xlsx
 *歌声DBラベリング用ust*
-**/oto/*.ini
+*/ini/*.ini
 *python-*
+*backup*
+*secret*
+*.lnk*
