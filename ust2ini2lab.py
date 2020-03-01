@@ -91,18 +91,18 @@ def monophonize_oto(otolist):
         try:
             # モノフォン平仮名歌詞
             if kana in mono_kana:
-                t_start = float(v['左ブランク']) + (float(v['オーバーラップ']) / 1000)
+                t_start = float(v['左ブランク']) / 1000 + float(v['オーバーラップ']) / 1000
                 l.append([t_start, table[kana][0]])
             # 想定内アルファベット歌詞
             elif kana in special:
-                t_start = float(v['左ブランク']) + (float(v['オーバーラップ']) / 1000)
+                t_start = float(v['左ブランク']) / 1000 + float(v['オーバーラップ']) / 1000
                 l.append([t_start, kana])
             # ダイフォン平仮名歌(子音と母音に分割)
             else:
-                t_start = float(v['左ブランク']) + (float(v['オーバーラップ']) / 1000)
+                t_start = float(v['左ブランク']) / 1000 + float(v['オーバーラップ']) / 1000
                 l.append([t_start, table[kana][0]])
 
-                t_start = float(v['先行発声']) + (float(v['オーバーラップ']) / 1000)
+                t_start = float(v['先行発声']) / 1000 + float(v['オーバーラップ']) / 1000
                 l.append([t_start, table[kana][1]])
 
         except KeyError as e:
@@ -115,7 +115,7 @@ def monophonize_oto(otolist):
             print('プログラムを終了します。ファイル破損の心配は無いはずです。')
             sys.exit()
 
-    return l # mono_otoに相当
+    return l  # mono_otoに相当
 
 
 def write_lab(mono_oto, name_ini):
