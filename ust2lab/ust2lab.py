@@ -16,12 +16,6 @@ from pprint import pprint
 
 import win32com.client  # Excel操作に使用
 
-# from time import sleep
-
-
-# from subprocess import Popen
-
-
 TEST_MODE = False
 
 
@@ -81,6 +75,7 @@ def monophonize_oto(otolist):
     必要: オーバーラップ, 先行発声
     変換: エイリアス(→モノフォン)
     不要: 左ブランク, ファイル名, 固定範囲, 右ブランク
+    ・リストを返す [[発音開始時刻, 発音記号], ...]
     """
     table = read_japanesetable('./table/japanese_sjis.table')  # {平仮名: [母音, 子音]} の辞書
     mono_kana = ['あ', 'い', 'う', 'え', 'お', 'ん', 'っ']  # モノフォン平仮名
@@ -123,7 +118,7 @@ def monophonize_oto(otolist):
     return l
 
 
-def write_otolab(mono_otoini, name_otoini):
+def write_lab(mono_otoini, name_otoini):
     """
     format_otoini でフォーマットした二次元リスト [[発音開始時刻, 発音記号], ...] から、
     きりたんDB式音声ラベルで oto_日付.lab に出力する
@@ -143,37 +138,12 @@ def write_otolab(mono_otoini, name_otoini):
     return path_otolab
 
 
-def oto2lab(path_otoini):
+def ust2oto(path):
     """
-    otoini→otolab 変換本体
+    Excelのツールを使用してUST→INI変換
     """
-    # oto.ini を読み取り
-    otolist = read_otoini(path_otoini)
-    if TEST_MODE:
-        pprint(otolist)
-
-    # 読み取ったデータを整形
-    mono_oto = monophonize_oto(otolist)
-    if TEST_MODE:
-        print('mono_oto------------')
-        pprint(mono_oto)
-        print('--------------------')
-
-    # oto.lab を書き出し
-    filename = path_otoini.split('\\')[-1].rstrip('.ini')
-    path_otolab = write_otolab(mono_oto, filename)
-
-    # print('出力ファイルのPATHは {} です。'.format(path_otolab))
-    return path_otolab
-
-
-def main():
-    """
-    全体の処理を実行
-    """
-
-    print('ust→ini 変換します。数秒かかります。')
-    ust_files = glob('ust/*.ust')
+    print('\nust -> ini 変換します。数秒かかります。')
+    ust_files = glob('{}/*.ust'.format(path))
     if ust_files == []:
         print('[ERROR] ustファイルを設置してください。')
         input('Press Enter to exit.')
@@ -183,27 +153,66 @@ def main():
     pprint(ust_files)
     print('------------------------------')
     run_ExecuteUstToOto('歌声DBラベリング用ust→oto変換ツール.xlsm')
-    print('ust→ini 変換しました。')
+    print('ust -> ini 変換しました。')
 
-    print()
 
-    ini_files = glob('oto/*.ini')
-    print('ini→lab 変換します。')
+def oto2lab_solo(path_otoini):
+    """
+    oto->lab 変換を1ファイルに実行
+    """
+    # oto.ini を読み取り
+    otodic = read_otoini(path_otoini)
+    if TEST_MODE:
+        pprint(otodic)
+        # 読み取ったデータを整形
+    mono_otoini = monophonize_oto(otodic)
+    if TEST_MODE:
+        print('mono_oto------------')
+        pprint(mono_otoini)
+        print('--------------------')
+    # oto.lab を書き出し
+    outpath = path_otoini.split('\\')[-1].rstrip('.ini')
+    write_lab(mono_otoini, outpath)
+    return outpath
+
+
+def oto2lab_multi(path):
+    """
+    otoini -> lab 変換を複数ファイルに実行
+    """
+    ini_files = glob('{}/*.ini'.format(path))
+    print('\nini -> lab 変換します。')
     print('対象INI一覧-------------------')
     pprint(ini_files)
     print('------------------------------')
-    print('ini→lab 変換しました。')
-
-    print()
-
     lab_files = []
-    for ini in ini_files:
-        lab = oto2lab(ini)
-        lab_files.append(lab)
-    print('出力LAB一覧-------------------')
+    for path_otoini in ini_files:
+        lab_files.append(oto2lab_solo(path_otoini))
+    print('ini -> lab 変換しました。')
+
+    print('\n出力LAB一覧-------------------')
     pprint(lab_files)
     print('------------------------------')
 
+
+def main():
+    """
+    全体の処理を実行
+    """
+    print('実行内容を数字で選択してください。')
+    print('1 ... UST -> INI の変換')
+    print('2 ... INI -> LAB の変換')
+    mode = input('>>> ')
+
+    if mode == '1':
+        # 'ust'フォルダ内にあるustファイルを変換
+        ust2oto('ust')
+    elif mode == '2':
+        # 'oto'フォルダ内にあるiniファイルを変換
+        oto2lab_multi('oto')
+    else:
+        print('1 か 2 で選んでください。\n')
+        main()
 
 
 if __name__ == '__main__':
