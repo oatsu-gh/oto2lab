@@ -1,4 +1,3 @@
-*.txt
 *.lab
 *.xlsx
 *.csv
@@ -6,10 +5,9 @@
 *.wav
 *.flac
 *.exe
-**chiteico**
 *.xlsx
 *歌声DBラベリング用ust*
-*/ini/*.ini
+*.ini
 *python-*
 *backup*
 *secret*
