@@ -132,7 +132,7 @@ def write_lab(mono_oto, name_ini):
 
     # ファイル作成とデータ書き込み
     path_otolab = './lab/' + name_ini + '_' + datetime.now().strftime('%Y%m%d_%H%M%S') + '.lab'
-    with open(path_otolab, 'w') as f:
+    with open(path_otolab, 'w', encoding='utf-8', newline='\n') as f:
         f.write(s)
 
     return path_otolab
