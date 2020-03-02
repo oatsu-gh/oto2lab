@@ -13,4 +13,5 @@
 *secret*
 *.lnk*
 *.setParam-Scache
+*setParam-backup*
 __pycache__*
