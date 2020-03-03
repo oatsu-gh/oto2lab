@@ -8,7 +8,7 @@ SetParamで作った oto.ini をきりたん歌唱DB式ラベル oto.lab に変�
 UTAUにおける既存インフラとノウハウの流用で、歌唱DBの充実を図る。
 
 ## 注意事項
-- 「japanese.table」 を[きりたん歌唱DB](https://github.com/mmorise/kiritan_singing)からお借りしています。
+- 「japanese.table」 を[きりたん歌唱DB](https://zunko.jp/kiridev/login.php)からお借りしています。
 - 「歌声DBラベリング用ust→oto変換ツール」については作者が異なるため、[別個の注意書き](歌声DBラベリング用ust→oto変換ツールについて.txt)を読んでください。
 - バージョンアップでスクリプト名が変わることがあるのでご注意ください。
 
