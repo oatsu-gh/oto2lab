@@ -8,11 +8,13 @@
 # from subprocess import Popen
 from pprint import pprint
 
+# from pysnooper import snoop
+
 import lab2ini as l2i
 
 TEST_MODE = True
 
-
+# @snoop()
 def main():
     """
     全体の処理を実行
@@ -22,19 +24,24 @@ def main():
     path_lab = input('>>>').strip('"')
 
     print('\nLAB -> INI 変換します。')
+    print('read_lab()')
     mono_oto = l2i.read_lab(path_lab)
-    pprint(mono_oto)
-    # # path_ini = u2l.lab2ini_solo(path_ini)
-    # print('\nINI -> LAB 変換しました。')
-    # print('\n出力ファイルのPATHは {} です。'.format(path_ini))
-    # print('ファイルを開いて終端時刻を書き込んでください。')
 
-    # Windows, WSLで実行された場合に限り、出力結果をメモ帳で開く。
-    # if os.name in ('nt', 'posix'):
-    #     print('メモ帳で開きます。')
-    #     Popen([r'notepad.exe', path_lab])
-    #
-    # print('\n----鋭意開発中です！----')
+    print('\nmono_oto---')
+    pprint(mono_oto)
+
+    name_wav = '大きなのっぽの古時計.wav'
+    otolist = l2i.mono_oto2otolist(mono_oto, name_wav)
+    print('\notolist---')
+    pprint(otolist)
+
+    filename = path_lab.split('\\')[-1].rstrip('.lab')
+    print(filename)
+    path_ini = l2i.write_ini(otolist, filename)
+
+    print('ini---')
+    pprint(path_ini)
+
 
 
 if __name__ == '__main__':

@@ -12,6 +12,7 @@
 *backup*
 *secret*
 *.lnk*
+*.ccd
 *.setParam-Scache
 *setParam-backup*
 exe*

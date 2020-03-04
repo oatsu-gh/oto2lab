@@ -170,9 +170,9 @@ def ini2lab_solo(path_ini):
         pprint(mono_oto)
         print('--------------------')
     # lab を書き出し
-    outpath = path_ini.split('\\')[-1].rstrip('.ini')
-    filename = write_lab(mono_oto, outpath)
-    return filename
+    filename = path_ini.split('\\')[-1].rstrip('.ini')
+    path_lab = write_lab(mono_oto, filename)
+    return path_lab
 
 
 def ini2lab_multi(dir_ini):
