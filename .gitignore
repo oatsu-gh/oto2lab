@@ -6,7 +6,7 @@
 *.flac
 *.exe
 desktop.ini
-*歌声DBラベリング用ust*
+歌声DBラベリング用ust
 *.ini
 *python-*
 *backup*
