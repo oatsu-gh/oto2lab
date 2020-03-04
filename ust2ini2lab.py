@@ -18,7 +18,6 @@ import win32com.client  # Excel操作に使用
 
 TEST_MODE = False
 
-
 def run_ExecuteUstToOto(path_xlsm):
     """
     ust→ini 用のExcelVBAを実行する
@@ -128,14 +127,14 @@ def write_lab(mono_oto, name_ini):
         try:
             s += '{:.6f} {:.6f} {}\n'.format(v[0], mono_oto[i + 1][0], v[1])
         except IndexError:
-            s += '{:.6f} {} {}\n'.format(v[0], '[ここに終端時刻を手入力]', v[1])
+            s += '{:.6f} {} {}\n'.format(v[0], v[0] + 1.0, v[1])
 
     # ファイル作成とデータ書き込み
-    path_otolab = './lab/' + name_ini + '_' + datetime.now().strftime('%Y%m%d_%H%M%S') + '.lab'
-    with open(path_otolab, 'w', encoding='utf-8', newline='\n') as f:
+    path_lab = './lab/' + name_ini + '_' + datetime.now().strftime('%Y%m%d_%H%M%S') + '.lab'
+    with open(path_lab, 'w', encoding='utf-8', newline='\n') as f:
         f.write(s)
 
-    return path_otolab
+    return path_lab
 
 
 def ust2ini(dir_ust):
@@ -202,6 +201,7 @@ def main():
     print('実行内容を数字で選択してください。')
     print('1 ... UST -> INI の変換')
     print('2 ... INI -> LAB の変換')
+    print('3 ... INI <- LAB の変換')
     mode = input('>>> ')
 
     if mode in ['1', '１']:
@@ -210,8 +210,10 @@ def main():
     elif mode in ['2', '２']:
         # 'ini'フォルダ内にあるiniファイルを変換
         ini2lab_multi('ini')
+    # elif mode in ['3', '3']:
+    #     lab2ini_solo('lab')
     else:
-        print('1 か 2 で選んでください。\n')
+        print('1 か 2 か 3 で選んでください。\n')
         main()
 
 
