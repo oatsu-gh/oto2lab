@@ -19,3 +19,4 @@ exe*
 oto*.ini
 oto*.lab
 __pycache__*
+~$*

@@ -30,9 +30,7 @@ def run_ExecuteUstToOto(path_xlsm):
 
     excel.Application.Run('ExecuteUstToOto')  # マクロを実行
     excel.Workbooks(1).Close(SaveChanges=0)  # ブックを保存せずに閉じる
-    # sleep(0.1)
     excel.Application.Quit()
-    # sleep(0.1)
 
 
 def read_ini(path_ini):
@@ -61,7 +59,8 @@ def read_japanesetable(path_table):
     # 平仮名とローマ字の対応表を辞書にする
     with open(path_table, 'r') as f:
         l = [v.split() for v in f.readlines()]
-    d = {'R': 'pau', 'B': 'br', '息': 'br'}
+    d = {}
+    # d = {'R': 'pau', 'B': 'br', '息': 'br'}
     for v in l:
         d[v[0]] = v[1:]
     return d
@@ -206,18 +205,22 @@ def main():
     # print('3 ... INI <- LAB の変換')
     mode = input('>>> ')
 
+    # 'ust'フォルダ内にあるustファイルを変換
     if mode in ['1', '１']:
-        # 'ust'フォルダ内にあるustファイルを変換
         ust2ini('ust')
+
+    # 'ini'フォルダ内にあるiniファイルを変換
     elif mode in ['2', '２']:
-        # 'ini'フォルダ内にあるiniファイルを変換
         ini2lab_multi('ini')
+
+    # 'ust' フォルダにあるustファイルを一気にLABまで変換
     elif mode in ['3', '３']:
-        # 'ust' フォルダにあるustファイルを一気にLABまで変換
         ust2ini('ust')
         ini2lab_multi('ini')
-        # elif mode in ['4', '４']:
-        #     lab2ini_solo('lab')
+
+    # elif mode in ['4', '４']:
+    #     lab2ini_solo('lab')
+
     else:
         print('1 か 2 か 3 で選んでください。\n')
         main()
