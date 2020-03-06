@@ -8,10 +8,11 @@
 # import re
 # import sys
 from datetime import datetime
+
 # import os
 # from glob import glob
 # from pathlib import Path
-from pprint import pprint
+# from pprint import pprint
 
 
 def read_lab(path_lab):
@@ -91,37 +92,48 @@ def mono_oto2cv_oto(mono_oto, path_vowel_consonant_special):
 
     # 平仮名に変換する前に、子音と母音のデータを結合する。
     # NOTE: 各値が右ブランクを超えないように気を付ける
-    for i, v in enumerate(mono_oto):
-        s = v[2] # mono_oto[i][2] と同一, 発音記号
+    for v in mono_oto:
+        s = v[2]  # 発音記号
         t = (v[1] - v[0]) * 1000  # ノート長
 
         # 一時ファイルを初期化
-        # [子音開始時刻(=オーバーラップ), 母音開始時刻(=先行発声), 終了時刻=右ブランク, 発音(CV)]
-        tmp = [0, 0, 0, ]
-        tmp[5] = 50  # 先行発声のデフォルト値
+        # [子音開始時刻, 終了時刻, 発音(CV), 子音母音境界時刻]
+        l = []
 
+        if s in d['Special']:
+            # 特殊文字はそのまま入れる
+            l.append(round(v[0] * 1000, 3))
+            l.append(round(v[1] * 1000, 3))
+            l.append(s)
+            l.append(l[0])
 
-        if s in d['Special']:  # 特殊文字はそのまま入れる
-            tmp[1] = [s]  # エイリアス
-            tmp[7] = round(v[0] * 1000 - tmp[5], 3)  # 左ブランク
-            tmp[4] = - round(t + tmp[5], 3)  # 右ブランク
-
-        elif s in d['Consonant']:  # 子音はスキップ
+        elif s in d['Consonant']:
+            # 子音はスキップ
             s_prev = s  # 直前の発音記号に引き継ぎ
             t_prev = t  # 直前のノート長に引き継ぎ
             continue
 
-        elif s_prev in d['Consonant'] and s in d['Vowel']:  # 子音+母音の組み合わせ
-            tmp[5] = round(t_prev, 3)  # 先行発声
-            tmp[1] = [s_prev, s]  # エイリアス[子音, 母音]
-            tmp[2] = round(mono_oto[i - 1][0] * 1000, 3)  # 左ブランク
-            tmp[3] = tmp[5] + 100  # 固定範囲
-            tmp[4] = - round(t_prev + t, 3)  # 右ブランク
+        elif s in d['Vowel'] and s_prev in d['Consonant']:
+            # 子音+母音の組み合わせ
+            cv = s_prev + s
+            l.append(round(v[0] * 1000 - t_prev, 3))
+            l.append(round(v[1] * 1000 + t_prev, 3))
+            l.append(cv)
+            l.append(round(v[1] * 1000, 3))
 
-        elif s_prev not in d['Consonant'] and s in d['Vowel']:  # 母音+母音 または 特殊+母音の組み合わせ
-            tmp[1] = [s]  # エイリアス
-            tmp[2] = round(v[0] * 1000 - tmp[5], 3)  # 左ブランク
-            tmp[4] = - round(t + tmp[5], 3)  # 右ブランク
+        elif s in d['Vowel'] and s_prev in d['Vowel']:
+            # 母音→母音はそのまま入れる
+            l.append(round(v[0] * 1000, 3))
+            l.append(round(v[1] * 1000, 3))
+            l.append(s)
+            l.append(l[0])
+
+        elif s in d['Vowel'] and s_prev in d['Special']:
+            # 特殊→母音はそのまま入れる
+            l.append(round(v[0] * 1000, 3))
+            l.append(round(v[1] * 1000, 3))
+            l.append(s)
+            l.append(l[0])
 
         else:
             print('\n[ERROR]------------------------------------------------')
@@ -130,16 +142,17 @@ def mono_oto2cv_oto(mono_oto, path_vowel_consonant_special):
             print('対象の文字列: {}'.format(s))
             print('特殊文字として処理し、続行します。')
             print('-------------------------------------------------------\n')
-            tmp[1] = [s]  # エイリアス
-            tmp[2] = round(v[0] * 1000 - tmp[5], 3)  # 左ブランク
+            l.append(round(v[0] * 1000, 3))
+            l.append(round(t, 3))
+            l.append(s)
+            l.append(l[0])
 
-        tmp[1] = ''.join(tmp[1])
-        l.append(tmp)
+        s_prev = s  # 直前の発音記号に引き継ぎ
+        t_prev = t  # 直前のノート長に引き継ぎ
+        cv_oto.append(l)
 
     print('\nl--------------------')
-    pprint(l)
     return cv_oto
-
 
 
 def write_ini(otolist, name_lab):

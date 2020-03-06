@@ -37,6 +37,7 @@ def main():
     path_vcs = './table/vowel_consonant_special.txt'
     # path_japanesetable = './table/japanese_sjis.table'
     cv_oto = l2i.mono_oto2cv_oto(mono_oto, path_vcs)
+    pprint(cv_oto)
     # print('\notolist---')
     # pprint(otolist)
     #
