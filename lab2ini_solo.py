@@ -33,20 +33,26 @@ def main():
     print('\nmono_oto---')
     pprint(mono_oto)
 
-    # name_wav = '01.wav'
-    path_vcs = './table/vowel_consonant_special.txt'
-    # path_japanesetable = './table/japanese_sjis.table'
+    path_vcs = './table/vowel_consonant_sinsy.txt'
+    # path_japanesetable = './table/japanese_sinsy_sjis.table'
     cv_oto = l2i.mono_oto2cv_oto(mono_oto, path_vcs)
     pprint(cv_oto)
-    # print('\notolist---')
-    # pprint(otolist)
-    #
-    # filename = path_lab.split('\\')[-1].rstrip('.lab')
-    # print(filename)
-    # path_ini = l2i.write_ini(otolist, filename)
-    #
-    # print('ini---')
-    # pprint(path_ini)
+
+    name_wav = '01.wav'
+    otolist = l2i.cv_oto2otolist(cv_oto, name_wav)
+    print('\notolist---')
+    pprint(otolist)
+
+    otolist_utau = l2i.otolist_for_utau(otolist)
+    print('\notolist_utau---')
+    pprint(otolist_utau)
+
+    filename = path_lab.split('\\')[-1].rstrip('.lab')
+    print(filename)
+    path_ini = l2i.write_ini(otolist_utau, filename)
+
+    print('ini---')
+    pprint(path_ini)
 
 
 if __name__ == '__main__':

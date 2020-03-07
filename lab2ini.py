@@ -67,24 +67,24 @@ def read_japanesetable(path_japanesetable):
     return d
 
 
-def read_vowel_consonant_special(path_vowel_consonant_special):
+def read_vowel_consonant(path_vowel_consonant):
     """
     母音, 子音, 特殊文字列 の判定用ファイルを読み取って辞書を返す。
     """
-    with open(path_vowel_consonant_special, 'r') as f:
+    with open(path_vowel_consonant, 'r') as f:
         l = [v.split() for v in f.readlines()]
     d = {'Vowel': l[0], 'Consonant': l[1], 'Special': l[2]}
 
     return d
 
 
-def mono_oto2cv_oto(mono_oto, path_vowel_consonant_special):
+def mono_oto2cv_oto(mono_oto, path_vowel_consonant):
     """
     モノフォンの LAB 用リストを
     単独音(ローマ字CV)の リストに変換
     [[子音開始時刻(=オーバーラップ), 母音開始時刻(=先行発声), 終了時刻=右ブランク], [], ...]
     """
-    d = read_vowel_consonant_special(path_vowel_consonant_special)
+    d = read_vowel_consonant(path_vowel_consonant)
     l = []
     cv_oto = []
     s_prev = 's_prev'  # 直前の発音記号
@@ -95,46 +95,41 @@ def mono_oto2cv_oto(mono_oto, path_vowel_consonant_special):
     for v in mono_oto:
         s = v[2]  # 発音記号
         t = (v[1] - v[0]) * 1000  # ノート長
+        onset = 50  # 先行発声のデフォルト値(ms)
 
-        # 一時ファイルを初期化
-        # [子音開始時刻, 終了時刻, 発音(CV), 子音母音境界時刻]
+        # 一時ファイルを初期化 [子音開始時刻, 終了時刻, 発音(CV), 子音母音境界時刻]
         l = []
 
         if s in d['Special']:
             # 特殊文字はそのまま入れる
-            l.append(round(v[0] * 1000, 3))
-            l.append(round(v[1] * 1000, 3))
+            l.append(round(v[0] * 1000, 4))
+            l.append(round(v[1] * 1000, 4))
             l.append(s)
-            l.append(l[0])
-
+            l.append(min(v[0] * 1000 + t + onset, l[0]))
         elif s in d['Consonant']:
             # 子音はスキップ
-            s_prev = s  # 直前の発音記号に引き継ぎ
-            t_prev = t  # 直前のノート長に引き継ぎ
+            s_prev = s  # 発音記号を引き継ぎ
+            t_prev = t  # ノート長を引き継ぎ
             continue
-
         elif s in d['Vowel'] and s_prev in d['Consonant']:
             # 子音+母音の組み合わせ
             cv = s_prev + s
-            l.append(round(v[0] * 1000 - t_prev, 3))
-            l.append(round(v[1] * 1000 + t_prev, 3))
+            l.append(round(v[0] * 1000 - t_prev, 4))
+            l.append(round(v[1] * 1000, 4))
             l.append(cv)
-            l.append(round(v[1] * 1000, 3))
-
+            l.append(round(v[0] * 1000, 4))
         elif s in d['Vowel'] and s_prev in d['Vowel']:
             # 母音→母音はそのまま入れる
-            l.append(round(v[0] * 1000, 3))
-            l.append(round(v[1] * 1000, 3))
+            l.append(round(v[0] * 1000, 4))
+            l.append(round(v[1] * 1000, 4))
             l.append(s)
-            l.append(l[0])
-
+            l.append(min(v[0] * 1000 + t + onset, l[0]))
         elif s in d['Vowel'] and s_prev in d['Special']:
             # 特殊→母音はそのまま入れる
-            l.append(round(v[0] * 1000, 3))
-            l.append(round(v[1] * 1000, 3))
+            l.append(round(v[0] * 1000, 4))
+            l.append(round(v[1] * 1000, 4))
             l.append(s)
-            l.append(l[0])
-
+            l.append(min(v[0] * 1000 + t + onset, l[0]))
         else:
             print('\n[ERROR]------------------------------------------------')
             print('子音の連続 あるいは 想定外の発音文字 が含まれています。')
@@ -142,10 +137,10 @@ def mono_oto2cv_oto(mono_oto, path_vowel_consonant_special):
             print('対象の文字列: {}'.format(s))
             print('特殊文字として処理し、続行します。')
             print('-------------------------------------------------------\n')
-            l.append(round(v[0] * 1000, 3))
-            l.append(round(t, 3))
+            l.append(round(v[0] * 1000, 4))
+            l.append(round(t, 4))
             l.append(s)
-            l.append(l[0])
+            l.append(min(v[0] * 1000 + t + onset, l[0]))
 
         s_prev = s  # 直前の発音記号に引き継ぎ
         t_prev = t  # 直前のノート長に引き継ぎ
@@ -153,6 +148,69 @@ def mono_oto2cv_oto(mono_oto, path_vowel_consonant_special):
 
     print('\nl--------------------')
     return cv_oto
+
+
+def cv_oto2otolist(cv_oto, name_wav, fix=50):
+    """
+    ローマ字CV形式のデータをINI用に変換する。
+    utauモードではUTAU音源として使えるように 左右ブランクを補正する。
+    fix: 子音部の後の固定範囲の長さ
+    # NOTE: 発音記号は平仮名の方が良いよね。
+    """
+    l = []
+    keys = ('ファイル名', 'エイリアス', '左ブランク', '固定範囲', '右ブランク', '先行発声', 'オーバーラップ')
+
+    for v in cv_oto:
+        t = round(v[1] - v[0])  # ノート長
+        onset = round(v[3] - v[0], 4)  # 先行発声の相対時刻
+        tmp = []
+        tmp.append(name_wav)  # ファイル名
+        tmp.append(v[2])  # エイリアス
+        tmp.append(round(v[0], 4))  # 左ブランク
+        if v[2] == 'br':
+            tmp.append(t)  # ブレスの時は全体を子音部固定範囲にする
+        else:
+            tmp.append(min(t, round(onset + fix, 4)))  # 固定範囲 = s先行発声 + 100ms
+        tmp.append(- t)  # 右ブランク
+        tmp.append(onset)  # 先行発声
+        tmp.append(0)  # オーバーラップ
+        l.append(tmp)
+
+    # 二次元リストを辞書のリストに変換
+    otolist = [dict(zip(keys, v)) for v in l]
+    return otolist
+
+
+def otolist_for_utau(otolist, overlap=10):
+    """
+    UTAU音源にするために
+    ・オーバーラップ領域を作る（dt[ms]）
+    ・右ブランクを削る
+    """
+    dt = overlap
+
+    otolist_utau = []
+    for d in otolist:
+        # 数値以外は引き継ぎ
+        d_new = {'ファイル名': d['ファイル名'], 'エイリアス': d['エイリアス']}
+        # 左ブランクは左に移動、それ以外は移動しないように補正
+        d_new['左ブランク'] = round(d['左ブランク'] - dt, 4)
+        d_new['オーバーラップ'] = round(d['オーバーラップ'] + dt, 4)
+        d_new['先行発声'] = round(d['先行発声'] + dt, 4)
+        if d['エイリアス'] == 'br':
+            d_new['エイリアス'] = '息'
+            d_new['固定範囲'] = d['固定範囲']
+            d_new['右ブランク'] = d['右ブランク']
+        elif d['エイリアス'] == 'pau':
+            d_new['エイリアス'] = 'R'
+            d_new['固定範囲'] = d['固定範囲']
+            d_new['右ブランク'] = d['右ブランク']
+        else:
+            d_new['固定範囲'] = round(d['固定範囲'] + dt, 4)
+            d_new['右ブランク'] = max(- round(200 + dt, 4), d['右ブランク'] + 20)
+        otolist_utau.append(d_new)
+
+    return otolist_utau
 
 
 def write_ini(otolist, name_lab):
