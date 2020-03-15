@@ -1,1 +1,1 @@
-this is dummy file to commit 'output' directory
+this is dummy file

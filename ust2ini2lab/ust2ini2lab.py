@@ -59,8 +59,8 @@ def read_japanesetable(path_table):
     # 平仮名とローマ字の対応表を辞書にする
     with open(path_table, 'r') as f:
         l = [v.split() for v in f.readlines()]
-    d = {}
-    # d = {'R': 'pau', 'B': 'br', '息': 'br'}
+    # d = {}
+    d = {'R': 'pau', 'B': 'br', '息': 'br'}
     for v in l:
         d[v[0]] = v[1:]
     return d
@@ -130,7 +130,7 @@ def write_lab(mono_oto, name_ini):
             s += '{:.6f} {} {}\n'.format(v[0], v[0] + 1.0, v[1])
 
     # ファイル作成とデータ書き込み
-    path_lab = './lab/' + name_ini + '_' + datetime.now().strftime('%Y%m%d_%H%M%S') + '.lab'
+    path_lab = './lab/{}__{}.lab'.format(name_ini, datetime.now().strftime('%Y%m%d_%H%M%S'))
     with open(path_lab, 'w', encoding='utf-8', newline='\n') as f:
         f.write(s)
 
@@ -157,7 +157,7 @@ def ust2ini(dir_ust):
 
 def ini2lab_solo(path_ini):
     """
-    oto->lab 変換を1ファイルに実行
+    oto->lab 変換を単独ファイルに実行
     """
     # oto.ini を読み取り
     otolist = read_ini(path_ini)
@@ -187,9 +187,9 @@ def ini2lab_multi(dir_ini):
     lab_files = []
     for path_ini in ini_files:
         lab_files.append(ini2lab_solo(path_ini))
-    print('ini -> lab 変換しました。')
+    print('\nini -> lab 変換しました。')
 
-    print('\n出力LAB一覧-------------------')
+    print('出力LAB一覧-------------------')
     pprint(lab_files)
     print('------------------------------')
 

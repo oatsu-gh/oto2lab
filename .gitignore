@@ -6,7 +6,6 @@
 *.flac
 *.exe
 desktop.ini
-歌声DBラベリング用ust
 *.ini
 *python-*
 *backup*
@@ -16,7 +15,5 @@ desktop.ini
 *.setParam-Scache
 *setParam-backup*
 exe*
-oto*.ini
-oto*.lab
 __pycache__*
 ~$*
