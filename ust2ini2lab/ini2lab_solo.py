@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
+# Copyright 2020 oatsu
 """
 v0.0.1 ~ v0.1.1 の仕様に併せたツールです。
 単独ファイルについて ini → lab 変換をします。

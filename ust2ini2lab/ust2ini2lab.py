@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
+# Copyright 2020 oatsu
 """
 setParam での音声ラベリング支援ツールです。
 ファイル形式を変換できます。
