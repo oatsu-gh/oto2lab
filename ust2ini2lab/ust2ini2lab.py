@@ -7,8 +7,9 @@ setParam での音声ラベリング支援ツールです。
 ・ust → ini （ExcelVBA を使用）
 ・ini → lab （Python 標準ライブラリのみで実行可能）
 """
-# import os
+import os
 import re
+import shutil
 import sys
 from datetime import datetime
 from glob import glob
@@ -16,6 +17,8 @@ from pathlib import Path
 from pprint import pprint
 
 import win32com.client  # Excel操作に使用
+
+import UtauPy as up
 
 TEST_MODE = False
 
@@ -32,6 +35,40 @@ def run_ExecuteUstToOto(path_xlsm):
     excel.Application.Run('ExecuteUstToOto')  # マクロを実行
     excel.Workbooks(1).Close(SaveChanges=0)  # ブックを保存せずに閉じる
     excel.Application.Quit()
+
+
+def evacuate_files(path_dir, ext):
+    """
+    指定したフォルダにある指定した拡張子のファイルを退避させる。
+    上書きによるファイル消滅回避が目的。
+    """
+    ext = ext.replace('.', '')
+    old_files = glob('{}/*.{}'.format(path_dir, ext))
+    # 退避先のフォルダを作成
+    now = datetime.now().strftime('%Y%m%d_%H%M%S')
+    new_dir = '{}/old__{}'.format(path_dir, now)
+    os.mkdir(new_dir)
+    # 移動
+    for p in old_files:
+        shutil.move(p, new_dir)
+
+
+def ust2ini_solo(path_ust):
+    """
+    USTを読み取ってINI向けリスト(otolist)に変換する
+    """
+    otolist = []
+    t = 0
+    ust = up.Ust()
+    ust.read_ust(path_ust)
+    bpm = ust.get_tempo()
+    for note in ust.values()[2:]:
+        tmp = [t]
+        t = note.length()
+        tmp.append(t)
+        tmp.append(note.lyric().replace('R', 'pau'))
+        otolist.append(tmp)
+    return otolist
 
 
 def read_ini(path_ini):
@@ -138,7 +175,7 @@ def write_lab(mono_oto, name_ini):
     return path_lab
 
 
-def ust2ini(dir_ust):
+def ust2ini_Excel(dir_ust):
     """
     Excelのツールを使用してUST→INI変換
     """
@@ -208,15 +245,19 @@ def main():
 
     # 'ust'フォルダ内にあるustファイルを変換
     if mode in ['1', '１']:
-        ust2ini('ust')
+        evacuate_files('ini', 'ini')
+        ust2ini_Excel('ust')
 
     # 'ini'フォルダ内にあるiniファイルを変換
     elif mode in ['2', '２']:
+        evacuate_files('lab', 'lab')
         ini2lab_multi('ini')
 
     # 'ust' フォルダにあるustファイルを一気にLABまで変換
     elif mode in ['3', '３']:
-        ust2ini('ust')
+        evacuate_files('ini', 'ini')
+        ust2ini_Excel('ust')
+        evacuate_files('lab', 'lab')
         ini2lab_multi('ini')
 
     # elif mode in ['4', '４']:

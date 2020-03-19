@@ -8,11 +8,28 @@
 
 import os
 import re
+import shutil
 # import sys
 from datetime import datetime
 from glob import glob
 # from pathlib import Path
 from pprint import pprint
+
+
+def evacuate_files(path_dir, ext):
+    """
+    指定したフォルダにある指定した拡張子のファイルを退避させる。
+    上書きによるファイル消滅回避が目的。
+    """
+    ext = ext.replace('.', '')
+    old_files = glob('{}/*.{}'.format(path_dir, ext))
+    # 退避先のフォルダを作成
+    now = datetime.now().strftime('%Y%m%d_%H%M%S')
+    new_dir = '{}/old__{}'.format(path_dir, now)
+    os.mkdir(new_dir)
+    # 移動
+    for p in old_files:
+        shutil.move(p, new_dir)
 
 
 def read_lab(path_lab):
@@ -235,7 +252,8 @@ def write_ini(otolist, name_lab):
         s += '{}={},{},{},{},{},{}\n'.format(*l)  # l[0]=l[1],l[2],...
 
     # ファイル作成とデータ書き込み
-    path_ini = './ini/{}__{}.ini'.format(name_lab.rstrip('.lab'), datetime.now().strftime('%Y%m%d_%H%M%S'))
+    now = datetime.now().strftime('%Y%m%d_%H%M%S')
+    path_ini = './ini/{}__{}.ini'.format(name_lab.rstrip('.lab'), now)
     with open(path_ini, 'w', encoding='shift-jis') as f:
         f.write(s)
 
@@ -343,6 +361,7 @@ def main():
 
     # 'lab'フォルダ内にあるlabファイルを変換
     elif mode in ['2', '２']:
+        evacuate_files('ini', 'ini')
         lab2ini_multi('lab', alies='mono', utau=False)
 
     else:
