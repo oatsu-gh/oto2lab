@@ -69,11 +69,12 @@ class Ust:
     def get_tempo(self):
         """全体のBPMを見る"""
         try:
-            first_note_tempo = self.notes[2].tempo()
-            return first_note_tempo
-        except KeyError:
             project_tempo = self.notes[1].tempo()
             return project_tempo
+        except KeyError:
+            first_note_tempo = self.notes[2].tempo()
+            return first_note_tempo
+
 
         print('\n[ERROR]--------------------------------------------------')
         print('USTのテンポが設定されていません。とりあえず120にします。')

@@ -18,7 +18,7 @@ from pprint import pprint
 
 import win32com.client  # Excel操作に使用
 
-from UtauPy import UtauPy as up
+from utaupy import utaupy as up
 
 TEST_MODE = False
 
@@ -147,11 +147,10 @@ def monophonize_oto(otolist):
 
     l = []
     for v in otolist:
-        # 連続音を単独音化
-        kana = v['エイリアス'].split()[-1]
-
-        # [発音開始時刻, 発音記号] の形式にする
         try:
+            # 連続音を単独音化
+            kana = v['エイリアス'].split()[-1]
+            # [発音開始時刻, 発音記号] の形式にする
             # モノフォン平仮名歌詞
             if kana in mono_kana:
                 t_start = float(v['左ブランク']) + float(v['オーバーラップ'])
@@ -176,7 +175,16 @@ def monophonize_oto(otolist):
             print('\nエラー項目:', e)
             print('--------------------------------\n')
             print('プログラムを終了します。ファイル破損の心配は無いはずです。')
+            input('Press enter to exit.')
             sys.exit()
+        except IndexError as e:
+            print('\n--[KeyError]--------------------')
+            print('エイリアスをモノフォン化する過程でエラーが発生しました。')
+            print('ノートの歌詞が空欄な可能性が高いです。')
+            print('該当ノートをスキップして続行します。')
+            print('\nエラー項目:', e)
+            print('--------------------------------\n')
+            continue
 
     return l  # mono_otoに相当
 
@@ -265,7 +273,7 @@ def main():
     print('実行内容を数字で選択してください。')
     print('1 ... UST -> INI の変換')
     print('2 ... INI -> LAB の変換')
-    print('3 ... UST -> LAB の変換（INIも生成されます）')
+    print('3 ... UST -> INI -> LAB の変換')
     # print('3 ... INI <- LAB の変換')
     mode = input('>>> ')
 
