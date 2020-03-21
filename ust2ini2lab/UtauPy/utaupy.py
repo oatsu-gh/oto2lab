@@ -5,6 +5,7 @@ UTAUのデータ整理用モジュール
 クラスを使ってがんばる
 """
 import re
+
 # from datetime import datetime
 # from pprint import pprint
 
@@ -19,7 +20,7 @@ class Ust:
         # ノート(クラスオブジェクト)からなるリスト
         self.notes = []
 
-    def read_ust(self, path, mode='r'):
+    def new_from_ustfile(self, path, mode='r'):
         """USTを読み取り"""
         # USTを文字列として取得
         try:
@@ -43,13 +44,17 @@ class Ust:
             note.from_ust(lines)
             self.notes.append(note)
         # 旧形式の場合にタグの数を合わせる
-        if self.notes[0].tag == r'[#VERSION]':
-            version_info = self.notes[0].version()
+        if self.notes[0].tag != r'[#VERSION]':
+            version_info = self.notes[0].find_by_key('UstVersion')
             self.notes.insert(0, 'UST Version {}'.format(version_info))
 
-    def values(self):
+    def get_values(self):
         """中身を見る"""
         return self.notes
+
+    def set_values(self, l):
+        """中身を上書きする"""
+        self.notes = l
 
     # def write_file(self, path, mode='w'):
     def write_ust(self, path, mode='w'):
@@ -75,7 +80,6 @@ class Ust:
             first_note_tempo = self.notes[2].tempo()
             return first_note_tempo
 
-
         print('\n[ERROR]--------------------------------------------------')
         print('USTのテンポが設定されていません。とりあえず120にします。')
         print('---------------------------------------------------------\n')
@@ -98,7 +102,7 @@ class Note:
 
         # タグ以外の行の処理
         if tag == '[#VERSION]':
-            self.d['VersionInfo'] = lines[1]
+            self.d['UstVersion'] = lines[1]
         elif tag == '[#TRACKEND]':
             pass
         else:
@@ -110,35 +114,72 @@ class Note:
     # ここまでデータ入力系-----------------------------------------------------
 
     # ここからデータ参照系-----------------------------------------------------
-    def values(self):
+    def get_values(self):
         """ノートの中身を見る"""
         return self.d
 
-    def find_by_key(self, key):
+    def get_by_key(self, key):
         """ノートの特定の情報を確認"""
         return self.d[key]
 
-    def tag(self):
+    def get_tag(self):
         """タグを確認"""
         return self.d['Tag']
 
-    def length(self):
+    def get_length(self):
         """ノート長を確認[samples]"""
         return self.d['Length']
 
-    def lyric(self):
+    def get_length_ms(self, tempo):
+        """ノート長を確認[ms]"""
+        return 125 * float(self.d['Length']) / tempo
+
+    def get_lyric(self):
         """歌詞を確認"""
         return self.d['Lyric']
 
-    def notenum(self):
+    def get_notenum(self):
         """音階番号を確認"""
         return self.d['NoteNum']
 
-    def tempo(self):
+    def get_tempo(self):
         """BPMを確認"""
         return self.d['Tempo']
-
     # ここまでデータ参照系-----------------------------------------------------
+
+    # ここからデータ上書き系-----------------------------------------------------
+    def set_values(self, d):
+        """ノートの中身を見る"""
+        self.d = d
+
+    def set_by_key(self, key, x):
+        """ノートの特定の情報を確認"""
+        self.d[key] = x
+
+    def set_tag(self, x):
+        """タグを確認"""
+        self.d['Tag'] = x
+
+    def set_length(self, x):
+        """ノート長を確認[samples]"""
+        self.d['Length'] = x
+
+    def set_length_ms(self, x, tempo):
+        """ノート長を確認[ms]"""
+        self.d['Length'] = x * tempo // 125
+
+    def set_lyric(self, x):
+        """歌詞を確認"""
+        self.d['Lyric'] = x
+
+    def set_notenum(self, x):
+        """音階番号を確認"""
+        self.d['NoteNum'] = x
+
+    def set_tempo(self, x):
+        """BPMを確認"""
+        self.d['Tempo'] = x
+    # ここまでデータ上書き系-----------------------------------------------------
 
     # ここからデータ操作系-----------------------------------------------------
     def add_property(self, key, value):
@@ -187,7 +228,7 @@ class OtoIni:
     def __init__(self):
         self.otolist = []
 
-    def read_otoini(self, path, mode='r'):
+    def new_from_inifile(self, path, mode='r'):
         """otoiniを読み取ってオブジェクト生成"""
         with open(path, mode=mode) as f:
             l = [re.split('[=,]', s.strip()) for s in f.readlines()]
@@ -201,16 +242,25 @@ class OtoIni:
             self.otolist.append(oto)
         return self
 
-    def values(self):
+    def new_from_ustobj(self, ust):
+        """クラスUstのオブジェクトからクラスOtoIniオブジェクトを作る"""
+
+    def get_values(self):
         """中身を確認する"""
         return self.otolist
+
+    def set_values(self, l):
+        """中身を上書きする"""
+        self.otolist = l
 
 
 class Oto:
     """oto.ini中の1モーラ"""
 
     def __init__(self):
-        self.d = {}
+        keys = ('FileName', 'Alies', 'LBlank', 'Fixed', 'RBlank', 'Onset', 'Overlap')
+        l = [None] * 7
+        self.d = dict(zip(keys, l))
 
     def from_otoini(self, l):
         """リストをもらってクラスオブジェクトにする"""
@@ -218,15 +268,18 @@ class Oto:
         self.d = dict(zip(keys, l))
         return self
 
-    def values(self):
+    # ここからノートの全値の処理----------------------
+    def get_values(self):
         """中身を確認する"""
         return self.d
 
-    def get_filename(self):
-        """wavファイル名を確認する"""
-        return self.d['FileName']
+    def set_values(self, d):
+        """中身を上書きする"""
+        self.d = d
+    # ここまでノートの全値の処理----------------------
 
-    def get_ファイル名(self):
+    # ここからノートの各値の参照----------------------
+    def get_filename(self):
         """wavファイル名を確認する"""
         return self.d['FileName']
 
@@ -234,15 +287,7 @@ class Oto:
         """エイリアスを確認する"""
         return self.d['Alies']
 
-    def get_エイリアス(self):
-        """エイリアスを確認する"""
-        return self.d['Alies']
-
     def get_lblank(self):
-        """左ブランクを確認する"""
-        return self.d['LBlank']
-
-    def get_左ブランク(self):
         """左ブランクを確認する"""
         return self.d['LBlank']
 
@@ -250,39 +295,21 @@ class Oto:
         """固定範囲を確認する"""
         return self.d['Fixed']
 
-    def get_固定範囲(self):
-        """固定範囲を確認する"""
-        return self.d['Fixed']
-
-    def get_固定範囲rblank(self):
+    def get_rblank(self):
         """右ブランクを確認する"""
-        return self.d['RBlank']
-
-    def get_右ブランク(self):
-        """左ブランクを確認する"""
         return self.d['RBlank']
 
     def get_onset(self):
         """先行発声を確認する"""
         return self.d['Onset']
 
-    def get_先行発声(self):
-        """先行発声を確認する"""
-        return self.d['Onset']
-
     def get_overlap(self):
         """右ブランクを確認する"""
         return self.d['Overlap']
+    # ここまでノートの各値の参照----------------------
 
-    def get_オーバーラップ(self):
-        """左ブランクを確認する"""
-        return self.d['Overlap']
-
+    # ここからの各値の上書き----------------------
     def set_filename(self, x):
-        """wavファイル名を上書きする"""
-        self.d['FileName'] = x
-
-    def set_ファイル名(self, x):
         """wavファイル名を上書きする"""
         self.d['FileName'] = x
 
@@ -290,15 +317,7 @@ class Oto:
         """エイリアスを上書きする"""
         self.d['Alies'] = x
 
-    def set_エイリアス(self, x):
-        """エイリアスを上書きする"""
-        self.d['Alies'] = x
-
     def set_lblank(self, x):
-        """左ブランクを上書きする"""
-        self.d['LBlank'] = x
-
-    def set_左ブランク(self, x):
         """左ブランクを上書きする"""
         self.d['LBlank'] = x
 
@@ -306,33 +325,19 @@ class Oto:
         """固定範囲を上書きする"""
         self.d['Fixed'] = x
 
-    def set_固定範囲(self, x):
-        """固定範囲を上書きする"""
-        self.d['Fixed'] = x
-
-    def set_固定範囲rblank(self, x):
+    def set_rblank(self, x):
         """右ブランクを上書きする"""
-        self.d['RBlank'] = x
-
-    def set_右ブランク(self, x):
-        """左ブランクを上書きする"""
         self.d['RBlank'] = x
 
     def set_onset(self, x):
         """先行発声を上書きする"""
         self.d['Onset'] = x
 
-    def set_先行発声(self, x):
-        """先行発声を上書きする"""
-        self.d['Onset'] = x
-
     def set_overlap(self, x):
         """右ブランクを上書きする"""
         self.d['Overlap'] = x
+    # ここまでノートの各値の上書き----------------------
 
-    def set_オーバーラップ(self, x):
-        """左ブランクを上書きする"""
-        self.d['Overlap'] = x
 
 def main():
     """デバッグ用実装"""

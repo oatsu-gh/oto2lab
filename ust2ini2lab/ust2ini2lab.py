@@ -57,18 +57,18 @@ def ust2otolist(path_ust):
     """
     USTを読み取ってINI向けリスト(otolist)に変換する
     【パラメータ設定図】
-    # t-dt         t-50           t               length+dt  length+dt    length+dt
-    # | 左ブランク |オーバーラップ|   先行発声    | 固定範囲 | 右ブランク |
-    # | (dt-50)ms  |     50ms     | (length-10)ms |   0ms    |    0ms     |
+    # t-dt         t-100          t            length+dt  length+dt    length+dt
+    # | 左ブランク |オーバーラップ|  先行発声  | 固定範囲 | 右ブランク |
+    # | (dt-50)ms  |    100ms     | (length)ms |   0ms    |    0ms     |
     """
     otolist = []
     t = 0  # ノート開始位置
-    dt = 150  # 左ブランクと先行発声の距離[ms]
+    dt = 200  # 左ブランクと先行発声の距離[ms]
     ust = up.Ust()
-    ust.read_ust(path_ust)
+    ust.new_from_ustfile(path_ust)
     tempo = ust.get_tempo()
 
-    for note in ust.values()[2:]:
+    for note in ust.get_values()[2:]:
         d = {}
         basename = os.path.basename(path_ust)
         basename_without_ext = os.path.splitext(basename)[0]
@@ -83,10 +83,11 @@ def ust2otolist(path_ust):
         d['右ブランク'] = -(length + dt)  # 負で左ブランク相対時刻, 正で絶対時刻
         t += length  # 今のノート終了位置が次のノート開始位置
         otolist.append(d)
-
     return otolist
 
-# TEMP: ここ書いてる途中
+
+
+# NOTE: ここ書いてる途中
 def write_ini(otolist, path_ini):
     """
     otolistをINIファイルに出力
