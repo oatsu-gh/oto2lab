@@ -20,7 +20,7 @@ def main():
     """
     # oto.iniファイルを指定
     print('INI ファイルを指定してください。')
-    path_ini = input('>>>').strip('"')
+    path_ini = input('>>> ').strip('"')
 
     print('\nINI -> LAB 変換します。')
     path_lab = u2l.ini2lab_solo(path_ini)

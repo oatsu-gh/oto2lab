@@ -168,21 +168,23 @@ def monophonize_oto(otolist):
                 l.append([t_start / 1000, table[kana][1]])
 
         except KeyError as e:
-            print('\n--[KeyError]--------------------')
+            print('\n[KeyError]----------------------')
             print('エイリアスをモノフォン化する過程でエラーが発生しました。')
             print('ノートの歌詞が想定外です。iniを編集してください。')
             print('使用可能な歌詞は japanese_sjis.table に記載されている平仮名と、br、pau、cl です。')
-            print('\nエラー項目:', e)
+            print('\nエラー項目    :', e)
+            print('該当エイリアス:', v['エイリアス'])
             print('--------------------------------\n')
             print('プログラムを終了します。ファイル破損の心配は無いはずです。')
             input('Press enter to exit.')
             sys.exit()
         except IndexError as e:
-            print('\n--[KeyError]--------------------')
+            print('\n[IndexError]----------------------')
             print('エイリアスをモノフォン化する過程でエラーが発生しました。')
             print('ノートの歌詞が空欄な可能性が高いです。')
             print('該当ノートをスキップして続行します。')
-            print('\nエラー項目:', e)
+            print('\nエラー内容    :', e)
+            print('該当エイリアス:', v['エイリアス'])
             print('--------------------------------\n')
             continue
 
