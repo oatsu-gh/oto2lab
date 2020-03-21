@@ -4,6 +4,7 @@
 UTAUのデータ整理用モジュール
 クラスを使ってがんばる
 """
+import os
 import re
 
 # from datetime import datetime
@@ -11,6 +12,65 @@ import re
 
 # from tqdm import tqdm
 
+
+def new_otoiniobj_from_ustobj(ust, name_wav, dt=200, overlap=100):
+    """
+    UstクラスオブジェクトからOtoIniクラスオブジェクトを生成
+    dt     : 左ブランクと先行発声の時間距離
+    overlap: オーバーラップと先行発声の距離
+    【パラメータ設定図】
+    # t-dt           t-overlap      t            length+dt  length+dt    length+dt
+    # |  左ブランク  |オーバーラップ|  先行発声  | 固定範囲 | 右ブランク |
+    # |(dt-overlap)ms| (overlap)ms  | (length)ms |   0ms    |    0ms     |
+    """
+    notes = ust.get_values()
+    tempo = ust.get_tempo()
+    otoini = OtoIni()
+    otolist = []
+    t = 0
+    for note in notes[2:-1]:
+        length = note.get_length_ms(tempo)
+        oto = Oto()
+        oto.set_filename(name_wav)
+        oto.set_alies(note.get_lyric())
+        oto.set_lblank(max(t - dt, 0))
+        oto.set_overlap(min(length - 20, dt - overlap))
+        oto.set_onset(min(length - 10, dt))
+        oto.set_fixed(length + dt)
+        oto.set_rblank(-(length + dt))  # 負で左ブランク相対時刻, 正で絶対時刻
+        otolist.append(oto)
+        t += length  # 今のノート終了位置が次のノート開始位置
+    otoini.set_values(otolist)
+    return otoini
+
+
+def write_inifile(otoini, outpath):
+    """OtoIniクラスオブジェクトをiniファイルとして出力"""
+    s = ''
+    for oto in otoini.get_values():
+        l = []
+        l.append(oto.get_filename())
+        l.append(oto.get_alies())
+        l.append(oto.get_lblank())
+        l.append(oto.get_fixed())
+        l.append(oto.get_rblank())
+        l.append(oto.get_onset())
+        l.append(oto.get_overlap())
+        s += '{}={},{},{},{},{},{}\n'.format(*l)  # 'l[0]=l[1],l[2],...'
+    with open(outpath, 'w', encoding='shift-jis') as f:
+        f.write(s)
+    return s
+
+
+def ust2ini_solo(path_ust, outdir):
+    """USTファイルをINIファイルに変換する"""
+    basename = os.path.basename(path_ust)
+    ust = Ust()
+    ust.new_from_ustfile(path_ust)
+    otoini = new_otoiniobj_from_ustobj(ust, basename)
+    outpath = outdir + basename.replace('.wav', '.ini')
+    write_inifile(otoini, outpath)
+    return outpath
 
 class Ust:
     """UST"""
@@ -20,14 +80,14 @@ class Ust:
         # ノート(クラスオブジェクト)からなるリスト
         self.notes = []
 
-    def new_from_ustfile(self, path, mode='r'):
+    def new_from_ustfile(self, path_ust, mode='r'):
         """USTを読み取り"""
         # USTを文字列として取得
         try:
-            with open(path, mode=mode) as f:
+            with open(path_ust, mode=mode) as f:
                 s = f.read()
         except UnicodeDecodeError:
-            with open(path, mode=mode, encoding='utf-8_sig') as f:
+            with open(path_ust, mode=mode, encoding='utf-8_sig') as f:
                 s = f.read()
         # USTをノート単位に分割
         l = [r'[#' + v.strip() for v in s.split(r'[#')]
@@ -44,9 +104,13 @@ class Ust:
             note.from_ust(lines)
             self.notes.append(note)
         # 旧形式の場合にタグの数を合わせる
-        if self.notes[0].tag != r'[#VERSION]':
-            version_info = self.notes[0].find_by_key('UstVersion')
-            self.notes.insert(0, 'UST Version {}'.format(version_info))
+        if self.notes[0].get_tag() != r'[#VERSION]':
+            ust_version = self.notes[0].get_by_key('UstVersion')
+            note = Note()
+            note.set_tag(r'[#VERSION]')
+            note.set_by_key('UstVersion', ust_version)
+            self.notes.insert(0, note)
+        print('USTを読み取りました。: {}'.format(os.path.basename(path_ust)))
 
     def get_values(self):
         """中身を見る"""
@@ -74,10 +138,10 @@ class Ust:
     def get_tempo(self):
         """全体のBPMを見る"""
         try:
-            project_tempo = self.notes[1].tempo()
+            project_tempo = self.notes[1].get_tempo()
             return project_tempo
         except KeyError:
-            first_note_tempo = self.notes[2].tempo()
+            first_note_tempo = self.notes[2].get_tempo()
             return first_note_tempo
 
         print('\n[ERROR]--------------------------------------------------')
@@ -98,8 +162,7 @@ class Note:
         # ノートの種類
         tag = lines[0]
         self.d['Tag'] = tag
-        print('Making "Note" instance from UST: {}'.format(tag))
-
+        # print('Making "Note" instance from UST: {}'.format(tag))
         # タグ以外の行の処理
         if tag == '[#VERSION]':
             self.d['UstVersion'] = lines[1]
@@ -109,7 +172,6 @@ class Note:
             for v in lines[1:]:
                 tmp = v.split('=', 1)
                 self.d[tmp[0]] = tmp[1]
-
         return self
     # ここまでデータ入力系-----------------------------------------------------
 
@@ -132,7 +194,7 @@ class Note:
 
     def get_length_ms(self, tempo):
         """ノート長を確認[ms]"""
-        return 125 * float(self.d['Length']) / tempo
+        return 125 * float(self.d['Length']) / float(tempo)
 
     def get_lyric(self):
         """歌詞を確認"""
@@ -226,6 +288,7 @@ class OtoIni:
     """oto.iniを想定したクラス"""
 
     def __init__(self):
+        # 'Oto'クラスからなるリスト
         self.otolist = []
 
     def new_from_inifile(self, path, mode='r'):
@@ -350,4 +413,4 @@ if __name__ == '__main__':
     input('Press enter to exit.')
 
 if __name__ == '__init__':
-    print('UtauPy is being imported.')
+    print('ξ・ヮ・) < UtauPy imported.')

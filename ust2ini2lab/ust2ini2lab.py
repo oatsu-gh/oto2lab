@@ -20,8 +20,6 @@ import win32com.client  # Excel操作に使用
 
 from utaupy import utaupy as up
 
-TEST_MODE = False
-
 
 def run_ExecuteUstToOto(path_xlsm):
     """
@@ -59,7 +57,7 @@ def ust2otolist(path_ust):
     【パラメータ設定図】
     # t-dt         t-100          t            length+dt  length+dt    length+dt
     # | 左ブランク |オーバーラップ|  先行発声  | 固定範囲 | 右ブランク |
-    # | (dt-50)ms  |    100ms     | (length)ms |   0ms    |    0ms     |
+    # | (dt-100)ms |    100ms     | (length)ms |   0ms    |    0ms     |
     """
     otolist = []
     t = 0  # ノート開始位置
@@ -86,7 +84,6 @@ def ust2otolist(path_ust):
     return otolist
 
 
-
 # NOTE: ここ書いてる途中
 def write_ini(otolist, path_ini):
     """
@@ -97,6 +94,7 @@ def write_ini(otolist, path_ini):
     print('write_ini() は書き途中')
     pprint(path_ini)
     pprint(otolist)
+
 
 def read_ini(path_ini):
     """
@@ -236,14 +234,7 @@ def ini2lab_solo(path_ini):
     """
     # oto.ini を読み取り
     otolist = read_ini(path_ini)
-    if TEST_MODE:
-        pprint(otolist)
-        # 読み取ったデータを整形
     mono_oto = monophonize_oto(otolist)
-    if TEST_MODE:
-        print('mono_oto------------')
-        pprint(mono_oto)
-        print('--------------------')
     # lab を書き出し
     filename = path_ini.split('\\')[-1].rstrip('.ini')
     path_lab = write_lab(mono_oto, filename)
