@@ -18,7 +18,9 @@ from pprint import pprint
 
 import win32com.client  # Excel操作に使用
 
-from utaupy import utaupy as up
+# from utaupy import label
+# from utaupy import otoini
+from utaupy import convert, ust
 
 
 def run_ExecuteUstToOto(path_xlsm):
@@ -59,41 +61,13 @@ def ust2otolist(path_ust):
     # | 左ブランク |オーバーラップ|  先行発声  | 固定範囲 | 右ブランク |
     # | (dt-100)ms |    100ms     | (length)ms |   0ms    |    0ms     |
     """
-    otolist = []
-    t = 0  # ノート開始位置
     dt = 200  # 左ブランクと先行発声の距離[ms]
-    ust = up.Ust()
-    ust.new_from_ustfile(path_ust)
-    tempo = ust.get_tempo()
-
-    for note in ust.get_values()[2:]:
-        d = {}
-        basename = os.path.basename(path_ust)
-        basename_without_ext = os.path.splitext(basename)[0]
-        length = note.get_length_ms(tempo)  # [ms]
-        lyric = note.get_lyric().replace('R', 'pau').replace('息', 'br').replace('B, br')
-        d['ファイル名'] = basename_without_ext
-        d['エイリアス'] = lyric
-        d['左ブランク'] = max(t - dt, 0)
-        d['オーバーラップ'] = min(length - 20, 100)
-        d['先行発声'] = min(length - 10, dt)
-        d['固定範囲'] = length + dt
-        d['右ブランク'] = -(length + dt)  # 負で左ブランク相対時刻, 正で絶対時刻
-        t += length  # 今のノート終了位置が次のノート開始位置
-        otolist.append(d)
+    overlap = 100
+    u = ust.load(path_ust)
+    basename = os.path.basename(path_ust)
+    o = convert.ust2otoini(u, basename, dt=dt, overlap=overlap)  # <class 'utaupy.otoini.OtoIni'>
+    otolist = [v.get_values() for v in o.get_values()]
     return otolist
-
-
-# NOTE: ここ書いてる途中
-def write_ini(otolist, path_ini):
-    """
-    otolistをINIファイルに出力
-    lab2iniのwrite_iniと同じ関数
-    どうやって流用しよう？
-    """
-    print('write_ini() は書き途中')
-    pprint(path_ini)
-    pprint(otolist)
 
 
 def read_ini(path_ini):

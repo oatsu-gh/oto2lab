@@ -7,7 +7,10 @@ about module
 # from pprint import pprint
 import os
 
-from utaupy import utaupy as up
+# from utaupy import utaupy as up
+from utaupy import otoini
+from utaupy import convert, ust
+from pprint import pprint
 
 
 def test_1():
@@ -16,8 +19,7 @@ def test_1():
 
     basename = os.path.basename(path_ust)
 
-    ust = up.Ust()
-    ust.new_from_ustfile(path_ust)
+    u = ust.load(path_ust)
     # print('ust.getvalues()----')
     # pprint(ust.get_values())
     # print('ust.getvalues()----\n')
@@ -25,14 +27,25 @@ def test_1():
     # for note in ust.get_values():
     #     pprint(note.get_values())
     # print('note.getvalues()----\n')
-    otoini = up.new_otoiniobj_from_ustobj(ust, basename)
+    o = convert.ust2otoini(u, basename)
     # print('otoini-------------')
     # pprint(otoini)
     # print('otoini-------------\n')
     # print('otoini.getvalues()-------------')
     # pprint(otoini.get_values())
-    outpath = basename.replace('.wav', '') + '_test.ini'
-    up.write_inifile(otoini, outpath)
+    outpath = basename.replace('.ust', '') + '_test.ini'
+    o.write(outpath)
+
+def test_2():
+    """OtoIniクラスのテスト"""
+    path_ini = input('INIのパス: ').strip('"')
+    o = otoini.load(path_ini)
+    print('o.get_values----------------------------')
+    pprint(o.get_values())
+    print(type(o))
+    print('----------------------------------------')
+    for oto in o.get_values():
+        pprint(oto.get_values())
 
 if __name__ == '__main__':
-    test_1()
+    test_2()
