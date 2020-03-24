@@ -174,13 +174,12 @@ def write_lab(mono_oto, name_ini):
         try:
             s += '{:.6f} {:.6f} {}\n'.format(v[0], mono_oto[i + 1][0], v[1])
         except IndexError:
-            s += '{:.6f} {} {}\n'.format(v[0], v[0] + 1.0, v[1])
-
+            s += '{:.6f} {:.6f} {}\n'.format(v[0], v[0] + 1.0, v[1])
+    s += '\n'
     # ファイル作成とデータ書き込み
     path_lab = './lab/{}__{}.lab'.format(name_ini, datetime.now().strftime('%Y%m%d_%H%M%S'))
     with open(path_lab, 'w', encoding='utf-8', newline='\n') as f:
         f.write(s)
-
     return path_lab
 
 

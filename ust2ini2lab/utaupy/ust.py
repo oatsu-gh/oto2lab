@@ -62,7 +62,7 @@ class Ust:
         self.notes = l
 
     # def write_file(self, path, mode='w'):
-    def write_ust(self, path, mode='w'):
+    def write(self, path, mode='w', encoding='shift-jis'):
         """USTを保存"""
         lines = []
         for note in self.notes:
@@ -70,9 +70,9 @@ class Ust:
             tmp = note.as_lines()
             lines += tmp
         # 出力用の文字列
-        s = '\n'.join(lines) + '\n'
+        s = '\n'.join(lines)
         # ファイル出力
-        with open(path, mode=mode) as f:
+        with open(path, mode=mode, encoding=encoding) as f:
             f.write(s)
         return s
 
