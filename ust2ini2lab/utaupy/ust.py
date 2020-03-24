@@ -4,6 +4,7 @@
 USTファイルとデータを扱うモジュールです。
 """
 import os
+import sys
 
 
 def main():
@@ -90,6 +91,25 @@ class Ust:
         print('---------------------------------------------------------\n')
         return '120'
 
+    # NOTE: deepcopyすれば非破壊的処理にできそう。
+    def replace_lyrics(self, before, after):
+        """歌詞を置換（文字列指定・破壊的処理）"""
+        for note in self.notes[2:]:
+            # s = note.get_lyric().replace(before, after)
+            # note.set_lyric(s)
+            note.set_lyric(note.get_lyric().replace(before, after))
+        sys.exit()
+        return self.notes
+
+    # NOTE: deepcopyすれば非破壊的処理にできそう。
+    def translate_lyrics(self, before, after):
+        """歌詞を置換（複数文字指定・破壊的処理）"""
+        for note in self.notes[2:]:
+            # s = note.get_lyric().translate(before, after)
+            # note.set_lyric(s)
+            note.set_lyric(note.get_lyric().translate(before, after))
+        return self.notes
+
 
 class Note:
     """UST内のノート"""
@@ -156,31 +176,31 @@ class Note:
         self.d = d
 
     def set_by_key(self, key, x):
-        """ノートの特定の情報を確認"""
+        """ノートの特定の情報を上書き"""
         self.d[key] = x
 
-    def set_tag(self, x):
-        """タグを確認"""
-        self.d['Tag'] = x
+    def set_tag(self, s):
+        """タグを上書き"""
+        self.d['Tag'] = s
 
     def set_length(self, x):
-        """ノート長を確認[samples]"""
+        """ノート長を上書き[samples]"""
         self.d['Length'] = x
 
     def set_length_ms(self, x, tempo):
-        """ノート長を確認[ms]"""
+        """ノート長を上書き[ms]"""
         self.d['Length'] = x * tempo // 125
 
     def set_lyric(self, x):
-        """歌詞を確認"""
+        """歌詞を上書き"""
         self.d['Lyric'] = x
 
     def set_notenum(self, x):
-        """音階番号を確認"""
+        """音階番号を上書き"""
         self.d['NoteNum'] = x
 
     def set_tempo(self, x):
-        """BPMを確認"""
+        """BPMを上書き"""
         self.d['Tempo'] = x
     # ここまでデータ上書き系-----------------------------------------------------
 
