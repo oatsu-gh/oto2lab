@@ -6,6 +6,8 @@ setParam用のINIファイルとデータを扱うモジュールです。
 import os
 import re
 
+from . import table
+
 
 def main():
     """実行されたときの挙動"""
@@ -48,6 +50,46 @@ class OtoIni:
     def set_values(self, l):
         """中身を上書きする"""
         self.otolist = l
+
+    def replace_alieses(self, before, after):
+        """エイリアスを置換する"""
+        for oto in self.otolist:
+            oto.set_alies(oto.get_alies().replace(before, after))
+        return self
+
+    def romanize(self, path_table, replace=True):
+        """
+        エイリアスをローマ字にする
+        かな→ローマ字 変換表のパス
+        replace:
+          Trueのときエイリアスをローマ字に書き換え
+          Falseのときエイリアスは平仮名のまま
+        """
+        # ローマ字変換表読み取り
+        t = table.load(path_table)
+        # 発音記号の分割数によってパラメータを調整
+        for oto in self.otolist:
+            alies = oto.get_alies()
+            roma = table.kana2roma(t, alies)  # KeyErrorはリストにするだけで返される
+            # 歌詞をローマ字化
+            if replace is True:
+                s = ' '
+                oto.set_alieses(s)
+            # モノフォン
+            if len(roma) == 1:
+                print('alies: {} : 先行発声左詰め・オーバーラップ右シフト'.format(alies))
+                oto.set_overlap(oto.get_onset())
+                oto.set_onset(0)
+            # おもにCV形式のとき
+            elif len(roma) == 2:
+                print('alies: {} : そのまま'.format(alies))
+            # おもにCCV形式のとき
+            elif len(roma) == 3:
+                print('alies: {} : そのままでいい？'.format(alies))
+            else:
+                print('[ERROR]---------')
+                print('alies: {} : そのままにします。'.format(alies))
+                print('----------------')
 
     def write(self, path, mode='w', encoding='shift-jis'):
         """OtoIniクラスオブジェクトをINIファイルに出力"""
@@ -93,6 +135,26 @@ class Oto:
     def set_values(self, d):
         """中身を上書きする"""
         self.d = d
+
+    def shift_values(self, dt):
+        """
+        左ブランクをdt[ms] 左にずらす
+        オーバーラップをdt/2[ms] 左にずらす
+        先行発声とかは変更しない
+        【パラメータ設定図】
+        # 0(基準時刻)  dt/2            dt           length+dt length+dt
+        # |左ブランク  |オーバーラップ |先行発声    |固定範囲 |右ブランク
+        # |  (dt/2)ms  |   (dt/2)ms    | (length)ms |   0ms   |
+        """
+        lb = self.get_lblank()
+        rb = self.get_rblank()
+        length = max(rb - lb, -rb)
+        self.set_lblank(max(lb - dt, 0))
+        self.set_overlap(dt / 2)
+        self.set_onset(dt)
+        self.set_fixed(dt + length)
+        self.set_rblank(-(dt + length))  # 負で左ブランク相対時刻, 正で絶対時刻
+        return self
     # ここまでノートの全値の処理----------------------
 
     # ここからノートの各値の参照----------------------
@@ -160,4 +222,4 @@ if __name__ == '__main__':
     main()
 
 if __name__ == '__init__':
-    pass
+    print('utaupy.otoini imported')

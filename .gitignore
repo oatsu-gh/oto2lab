@@ -13,6 +13,7 @@ desktop.ini
 *.ccd
 *.setParam-Scache
 *setParam-backup*
+\test**
 exe*
 __pycache__*
 ~$*

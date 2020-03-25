@@ -56,16 +56,10 @@ def evacuate_files(path_dir, ext):
 def ust2otolist(path_ust):
     """
     USTを読み取ってINI向けリスト(otolist)に変換する
-    【パラメータ設定図】
-    # t-dt         t-100          t            length+dt  length+dt    length+dt
-    # | 左ブランク |オーバーラップ|  先行発声  | 固定範囲 | 右ブランク |
-    # | (dt-100)ms |    100ms     | (length)ms |   0ms    |    0ms     |
     """
-    dt = 200  # 左ブランクと先行発声の距離[ms]
-    overlap = 100
     u = ust.load(path_ust)
     basename = os.path.basename(path_ust)
-    o = convert.ust2otoini(u, basename, dt=dt, overlap=overlap)  # <class 'utaupy.otoini.OtoIni'>
+    o = convert.ust2otoini(u, basename)  # <class 'utaupy.otoini.OtoIni'>
     otolist = [v.get_values() for v in o.get_values()]
     return otolist
 

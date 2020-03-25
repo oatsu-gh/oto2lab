@@ -61,6 +61,7 @@ class Ust:
     def set_values(self, l):
         """中身を上書きする"""
         self.notes = l
+        return self
 
     # def write_file(self, path, mode='w'):
     def write(self, path, mode='w', encoding='shift-jis'):
@@ -109,6 +110,12 @@ class Ust:
             # note.set_lyric(s)
             note.set_lyric(note.get_lyric().translate(before, after))
         return self.notes
+
+    def vcv2cv(self):
+        """歌詞を連続音から単独音にする"""
+        for note in self.notes[2:]:
+            note.set_lyric(note.get_lyric().split()[-1])
+        return self
 
 
 class Note:
@@ -172,36 +179,44 @@ class Note:
 
     # ここからデータ上書き系-----------------------------------------------------
     def set_values(self, d):
-        """ノートの中身を見る"""
+        """ノートの中身を上書き"""
         self.d = d
+        return self
 
     def set_by_key(self, key, x):
         """ノートの特定の情報を上書き"""
         self.d[key] = x
+        return self
 
     def set_tag(self, s):
         """タグを上書き"""
         self.d['Tag'] = s
+        return self
 
     def set_length(self, x):
         """ノート長を上書き[samples]"""
         self.d['Length'] = x
+        return self
 
     def set_length_ms(self, x, tempo):
         """ノート長を上書き[ms]"""
         self.d['Length'] = x * tempo // 125
+        return self
 
     def set_lyric(self, x):
         """歌詞を上書き"""
         self.d['Lyric'] = x
+        return self
 
     def set_notenum(self, x):
         """音階番号を上書き"""
         self.d['NoteNum'] = x
+        return self
 
     def set_tempo(self, x):
         """BPMを上書き"""
         self.d['Tempo'] = x
+        return self
     # ここまでデータ上書き系-----------------------------------------------------
 
     # ここからデータ操作系-----------------------------------------------------
@@ -211,6 +226,7 @@ class Note:
         既存情報の上書きに注意
         """
         self.d[key] = value
+        return self
 
     def del_property(self, key):
         """ノート情報を削除"""
@@ -220,16 +236,19 @@ class Note:
             print('\n[ERROR]-----------------------------')
             print('タグ（ノート番号）は削除できません。')
             print('[ERROR]-----------------------------\n')
+        return self
     # ここまでデータ操作系-----------------------------------------------------
 
     # ここからノート操作系-----------------------------------------------------
     def delete(self):
         """選択ノートを削除"""
         self.d['Tag'] = '[#DELETE]'
+        return self
 
     def insert(self):
         """ノートを挿入(したい)"""
         self.d['Tag'] = '[#INSERT]'
+        return self
     # ここまでノート操作系-----------------------------------------------------
 
     # ここからデータ出力系-----------------------------------------------------

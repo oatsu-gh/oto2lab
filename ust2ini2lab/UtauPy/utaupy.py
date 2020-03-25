@@ -4,18 +4,18 @@
 UTAUのデータ整理用モジュール
 クラスを使ってがんばる
 """
-import os
-from utaupy import ust
-from utaupy import convert
+# import os
+# from utaupy import ust
+# from utaupy import convert
 
-def ust2ini_solo(path_ust, path_ini):
-    """USTファイルをINIファイルに変換する"""
-    basename = os.path.basename(path_ust)
-    print('converting UST->INI:', basename)
-    u = ust.load(path_ust)
-    o = convert.ust2otoini(u, basename)
-    o.write(path_ini)
-    return o
+# def ust2ini_solo(path_ust, path_ini):
+#     """USTファイルをINIファイルに変換する"""
+#     basename = os.path.basename(path_ust)
+#     print('converting UST->INI:', basename)
+#     u = ust.load(path_ust)
+#     o = convert.ust2otoini(u, basename)
+#     o.write(path_ini)
+#     return o
 
 def main():
     """デバッグ用実装"""

@@ -2,10 +2,10 @@
 UstVersion=1.19
 Tempo=120.00
 Tracks=1
-ProjectName=ëÂÇ´Ç»ÇÃÇ¡Ç€ÇÃå√éûåv
-VoiceDir=%VOICE%îgâπÉäÉcÅEÉLÉåâπåπVer1.0
-OutFile=C:\Programing\GitHub\oto2lab\ust2ini2lab\ini\ëÂÇ´Ç»ÇÃÇ¡Ç€ÇÃå√éûåv.wav
-CacheDir=ëÂÇ´Ç»ÇÃÇ¡Ç€ÇÃå√éûåv.cache
+ProjectName=Â§ß„Åç„Å™„ÅÆ„Å£„ÅΩ„ÅÆÂè§ÊôÇË®à
+VoiceDir=%VOICE%Ê≥¢Èü≥„É™„ÉÑ„Éª„Ç≠„É¨Èü≥Ê∫êVer1.0
+OutFile=C:\Programing\GitHub\oto2lab\ust2ini2lab\ini\Â§ß„Åç„Å™„ÅÆ„Å£„ÅΩ„ÅÆÂè§ÊôÇË®à.wav
+CacheDir=Â§ß„Åç„Å™„ÅÆ„Å£„ÅΩ„ÅÆÂè§ÊôÇË®à.cache
 Tool1=wavtool.exe
 Tool2=resampler.exe
 Mode2=True
@@ -27,7 +27,7 @@ NoteNum=60
 PreUtterance=
 [#0003]
 Length=360
-Lyric=ëß
+Lyric=ÊÅØ
 NoteNum=60
 PreUtterance=
 Velocity=119
@@ -45,7 +45,7 @@ NoteNum=60
 PreUtterance=
 [#0005]
 Length=480
-Lyric=- Ç®
+Lyric=- „Åä
 NoteNum=60
 PreUtterance=
 Velocity=119
@@ -59,7 +59,7 @@ Envelope=30.7,5,35.3,100,100,100,100,%,87.66058
 StartPoint=0.285
 [#0006]
 Length=480
-Lyric=o Ç®
+Lyric=o „Åä
 NoteNum=65
 PreUtterance=
 Velocity=119
@@ -73,7 +73,7 @@ Envelope=87.7,5.3,35.3,100,100,100,100,%,87.66058
 StartPoint=1.345
 [#0007]
 Length=240
-Lyric=o Ç´
+Lyric=o „Åç
 NoteNum=64
 PreUtterance=
 Velocity=119
@@ -87,7 +87,7 @@ Envelope=87.7,5.3,35,100,100,100,100,%,75
 StartPoint=1.423
 [#0008]
 Length=240
-Lyric=i Ç»
+Lyric=i „Å™
 NoteNum=65
 PreUtterance=
 Velocity=119
@@ -101,7 +101,7 @@ Envelope=75,5,35,100,100,100,100,%,75
 StartPoint=1.785
 [#0009]
 Length=240
-Lyric=a ÇÃ
+Lyric=a „ÅÆ
 NoteNum=67
 PreUtterance=
 Velocity=119
@@ -115,7 +115,7 @@ Envelope=75,5,34.7,100,100,100,100,%,56.25
 StartPoint=4.708
 [#0010]
 Length=240
-Lyric=Ç¡
+Lyric=„Å£
 NoteNum=67
 PreUtterance=
 Velocity=119
@@ -129,7 +129,7 @@ Envelope=56.3,4.7,35,100,100,100,0,%,0
 StartPoint=2.079
 [#0011]
 Length=240
-Lyric=- Ç€
+Lyric=- „ÅΩ
 NoteNum=65
 PreUtterance=
 Velocity=119
@@ -142,7 +142,7 @@ PBS=-23;0.0
 Envelope=0,5,35,0,100,100,100,%,75
 [#0012]
 Length=240
-Lyric=o ÇÃ
+Lyric=o „ÅÆ
 NoteNum=67
 PreUtterance=
 Velocity=119
@@ -156,7 +156,7 @@ Envelope=75,5,35,100,100,100,100,%,75
 StartPoint=2.923
 [#0013]
 Length=240
-Lyric=o Ç”
+Lyric=o „Åµ
 NoteNum=69
 PreUtterance=
 Velocity=119
@@ -170,7 +170,7 @@ Envelope=75,5,35,100,100,100,100,%,75
 StartPoint=3.234
 [#0014]
 Length=240
-Lyric=u ÇÈ
+Lyric=u „Çã
 NoteNum=69
 PreUtterance=
 Velocity=119
@@ -184,7 +184,7 @@ Envelope=75,5,35,100,100,100,100,%,75
 StartPoint=1.087
 [#0015]
 Length=240
-Lyric=u Ç«
+Lyric=u „Å©
 NoteNum=70
 PreUtterance=
 Velocity=119
@@ -198,7 +198,7 @@ Envelope=75,5,35,100,100,100,100,%,75
 StartPoint=1.138
 [#0016]
 Length=240
-Lyric=o ÇØ
+Lyric=o „Åë
 NoteNum=69
 PreUtterance=
 Velocity=119
@@ -212,7 +212,7 @@ Envelope=75,5,35,100,100,100,100,%,75
 StartPoint=2.199
 [#0017]
 Length=240
-Lyric=e Ç¢
+Lyric=e „ÅÑ
 NoteNum=62
 PreUtterance=
 Velocity=119
@@ -248,7 +248,7 @@ Modulation=0
 Moduration=0
 [#0020]
 Length=240
-Lyric=- Ç®
+Lyric=- „Åä
 NoteNum=67
 PreUtterance=
 Velocity=119
@@ -261,7 +261,7 @@ PBS=-23;0.0
 Envelope=0,5,35,0,100,100,100,%,75
 [#0021]
 Length=240
-Lyric=o Ç∂
+Lyric=o „Åò
 NoteNum=67
 PreUtterance=
 Velocity=119
@@ -275,7 +275,7 @@ Envelope=75,5,35,100,100,100,100,%,75
 StartPoint=1.423
 [#0022]
 Length=480
-Lyric=i Ç¢
+Lyric=i „ÅÑ
 NoteNum=65
 PreUtterance=
 Velocity=119
@@ -289,7 +289,7 @@ Envelope=75,5,35.3,100,100,100,100,%,87.66058
 StartPoint=3.647
 [#0023]
 Length=240
-Lyric=i Ç≥
+Lyric=i „Åï
 NoteNum=65
 PreUtterance=
 Velocity=119
@@ -303,7 +303,7 @@ Envelope=87.7,5.3,35,100,100,100,100,%,75
 StartPoint=3.13
 [#0024]
 Length=240
-Lyric=a ÇÒ
+Lyric=a „Çì
 NoteNum=65
 PreUtterance=
 Velocity=119
@@ -317,7 +317,7 @@ Envelope=75,5,35,100,100,100,100,%,75
 StartPoint=4.242
 [#0025]
 Length=480
-Lyric=n ÇÃ
+Lyric=n „ÅÆ
 NoteNum=64
 PreUtterance=
 Velocity=119
@@ -331,7 +331,7 @@ Envelope=75,5,35.3,100,100,100,100,%,87.66058
 StartPoint=4.372
 [#0026]
 Length=240
-Lyric=o Ç∆
+Lyric=o „Å®
 NoteNum=62
 PreUtterance=
 Velocity=119
@@ -345,7 +345,7 @@ Envelope=87.7,5.3,35,100,100,100,100,%,75
 StartPoint=3.466
 [#0027]
 Length=240
-Lyric=o ÇØ
+Lyric=o „Åë
 NoteNum=64
 PreUtterance=
 Velocity=119
@@ -359,7 +359,7 @@ Envelope=75,5,35,100,100,100,100,%,75
 StartPoint=5.613
 [#0028]
 Length=960
-Lyric=e Ç¢
+Lyric=e „ÅÑ
 NoteNum=65
 PreUtterance=
 Velocity=119

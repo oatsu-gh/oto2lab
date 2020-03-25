@@ -3,7 +3,9 @@
 """
 UTAU関連ファイルの相互変換
 """
-from utaupy import label, otoini
+from . import label
+from . import otoini
+
 # from utaupy import ust
 
 
@@ -12,15 +14,14 @@ def main():
     print('AtomとReaperが好き')
 
 
-def ust2otoini(ustobj, name_wav, dt=200, overlap=100):
+def ust2otoini(ustobj, name_wav, dt=100):
     """
     UstクラスオブジェクトからOtoIniクラスオブジェクトを生成
     dt     : 左ブランクと先行発声の時間距離
     overlap: オーバーラップと先行発声の距離
     【パラメータ設定図】
-    # t-dt           t-overlap      t            length+dt  length+dt    length+dt
-    # |  左ブランク  |オーバーラップ|  先行発声  | 固定範囲 | 右ブランク |
-    # |(dt-overlap)ms| (overlap)ms  | (length)ms |   0ms    |    0ms     |
+    # | 左ブランク |オーバーラップ| 先行発声 | 固定範囲 |   右ブランク   |
+    # |   (dt)ms   |    (dt)ms    |  (dt)ms  |  (dt)ms  | (length-2dt)ms |
     """
     notes = ustobj.get_values()
     tempo = ustobj.get_tempo()
@@ -32,11 +33,12 @@ def ust2otoini(ustobj, name_wav, dt=200, overlap=100):
         oto = otoini.Oto()
         oto.set_filename(name_wav)
         oto.set_alies(note.get_lyric())
-        oto.set_lblank(max(t - dt, 0))
-        oto.set_overlap(min(length - 20, dt - overlap))
-        oto.set_onset(min(length - 10, dt))
-        oto.set_fixed(length + dt)
-        oto.set_rblank(-(length + dt))  # 負で左ブランク相対時刻, 正で絶対時刻
+        oto.set_lblank(max(t - (2 * dt), 0))
+        # NOTE: オーバーラップをどこに置くか決める。CVの時は中央、モノフォンの時は先行発声を下げる？
+        oto.set_overlap(dt)
+        oto.set_onset(2 * dt)
+        oto.set_fixed(max(3 * dt, length))
+        oto.set_rblank(-(length + 2 * dt))  # 負で左ブランク相対時刻, 正で絶対時刻
         otolist.append(oto)
         t += length  # 今のノート終了位置が次のノート開始位置
     o.set_values(otolist)
@@ -86,7 +88,7 @@ def label2otoini(labelobj, name_wav):
     # Otoオブジェクトを格納するリスト
     otolist = []
     for l in labelobj.get_values():
-        l = [v * 1000 for v in l[:2]] + l[2:] # 単位換算(s -> ms)
+        l = [v * 1000 for v in l[:2]] + l[2:]  # 単位換算(s -> ms)
         t = l[1] - l[0]
         oto = otoini.Oto()
         oto.set_filename(name_wav)
