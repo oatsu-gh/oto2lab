@@ -141,7 +141,7 @@ def main():
     # ustフォルダ内にあるustファイルを変換
     if mode in ['1', '１']:
         print('USTファイルを指定してください。')
-        path_ust = input('>>>')
+        path_ust = input('>>> ')
         outdir = os.path.dirname(path_ust)
         evacuate_files(outdir, 'ini')
         ust2ini_solo(path_ust, outdir, path_table)
