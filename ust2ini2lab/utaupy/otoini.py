@@ -3,7 +3,6 @@
 """
 setParam用のINIファイルとデータを扱うモジュールです。
 """
-import os
 import re
 
 from . import table
@@ -32,7 +31,6 @@ def load(path, mode='r', encoding='shift-jis'):
     # OtoIniクラスオブジェクト化
     o = OtoIni()
     o.set_values(otolist)
-    print('INIを読み取りました。: {}'.format(os.path.basename(path)))
     return o
 
 
@@ -57,7 +55,7 @@ class OtoIni:
             oto.set_alies(oto.get_alies().replace(before, after))
         return self
 
-    def romanize(self, path_table, replace=True):
+    def romanize(self, path_table, replace=True, dt=100):
         """
         エイリアスをローマ字にする
         かな→ローマ字 変換表のパス
@@ -67,29 +65,82 @@ class OtoIni:
         """
         # ローマ字変換表読み取り
         t = table.load(path_table)
+        t.update({'R': ['pau'], 'pau': ['pau'], 'br': ['br']})
         # 発音記号の分割数によってパラメータを調整
         for oto in self.otolist:
-            alies = oto.get_alies()
+            alies = oto.get_alies().split()[-1]
             roma = table.kana2roma(t, alies)  # KeyErrorはリストにするだけで返される
             # 歌詞をローマ字化
             if replace is True:
-                s = ' '
-                oto.set_alieses(s)
+                oto.set_alies(' '.join(roma))
             # モノフォン
             if len(roma) == 1:
-                print('alies: {} : 先行発声左詰め・オーバーラップ右シフト'.format(alies))
-                oto.set_overlap(oto.get_onset())
-                oto.set_onset(0)
+                print('  alies: {}\t-> {}\t: オーバーラップ右シフト・先行発声右詰め'.format(alies, roma))
+                oto.set_overlap(2 * dt)
+                oto.set_onset(oto.get_fixed())
             # おもにCV形式のとき
             elif len(roma) == 2:
-                print('alies: {} : そのまま'.format(alies))
+                print('  alies: {}\t-> {}\t: そのまま'.format(alies, roma))
             # おもにCCV形式のとき
             elif len(roma) == 3:
-                print('alies: {} : そのままでいい？'.format(alies))
+                print('  alies: {}\t-> {}\t: そのままでいい？'.format(alies, roma))
             else:
-                print('[ERROR]---------')
-                print('alies: {} : そのままにします。'.format(alies))
-                print('----------------')
+                print('  [ERROR]---------')
+                print('  alies: {}\t-> {}\t: そのままにします。'.format(alies, roma))
+                print('  ----------------')
+
+    def monophonize(self):
+        """音素ごとに分割"""
+        # 新規OtoIniを作るために、otoを入れるリスト
+        l = []
+        for oto in self.otolist:
+            alieses = oto.get_alies().split()
+            if len(alieses) == 1:
+                l.append(oto)
+            elif len(alieses) in [2, 3]:
+                name_wav = oto.get_filename()
+                # 1文字目(オーバーラップから先行発声まで)------------
+                tmp1 = Oto()
+                a = alieses[0]
+                t = oto.get_lblank() + oto.get_overlap()  # オーバーラップの位置から
+                tmp1.set_filename(name_wav)
+                tmp1.set_alies(a)
+                tmp1.set_lblank(t)
+                tmp1.set_overlap(0)
+                # tmp1.set_onset(0)
+                # tmp1.set_fixed(0)
+                # tmp1.set_rblank(0)
+                l.append(tmp1)
+                # 2文字目(先行発声から固定範囲まで)----------------
+                tmp2 = Oto()
+                a = alieses[1]
+                t = oto.get_lblank() + oto.get_onset()  # 先行発声の位置から
+                tmp2.set_filename(name_wav)
+                tmp2.set_alies(a)
+                tmp2.set_lblank(t)
+                tmp2.set_overlap(0)
+                # tmp2.set_onset(0)
+                # tmp2.set_fixed(0)
+                # tmp2.set_rblank(0)
+                l.append(tmp2)
+                if len(alieses) == 3:
+                    # 3文字目(固定範囲から右ブランクまで)----------------
+                    tmp3 = Oto()
+                    a = alieses[2]
+                    t = oto.get_lblank() + oto.get_fixed()  # 固定範囲の位置から
+                    tmp1.set_filename(name_wav)
+                    tmp1.set_alies(a)
+                    tmp1.set_lblank(t)
+                    tmp1.set_overlap(0)
+                    l.append(tmp3)
+            else:
+                print('\n[ERROR in otoini.monophonize()]----------------')
+                print('エイリアスのローマ字分割数は 1, 2, 3 以外対応していません。')
+                print('alieses: {}'.format(alieses))
+                print('文字を連結して処理を続行します。')
+                print('-----------------------------------------------\n')
+                l.append(oto)
+        self.set_values(l)
 
     def write(self, path, mode='w', encoding='shift-jis'):
         """OtoIniクラスオブジェクトをINIファイルに出力"""
@@ -135,26 +186,6 @@ class Oto:
     def set_values(self, d):
         """中身を上書きする"""
         self.d = d
-
-    def shift_values(self, dt):
-        """
-        左ブランクをdt[ms] 左にずらす
-        オーバーラップをdt/2[ms] 左にずらす
-        先行発声とかは変更しない
-        【パラメータ設定図】
-        # 0(基準時刻)  dt/2            dt           length+dt length+dt
-        # |左ブランク  |オーバーラップ |先行発声    |固定範囲 |右ブランク
-        # |  (dt/2)ms  |   (dt/2)ms    | (length)ms |   0ms   |
-        """
-        lb = self.get_lblank()
-        rb = self.get_rblank()
-        length = max(rb - lb, -rb)
-        self.set_lblank(max(lb - dt, 0))
-        self.set_overlap(dt / 2)
-        self.set_onset(dt)
-        self.set_fixed(dt + length)
-        self.set_rblank(-(dt + length))  # 負で左ブランク相対時刻, 正で絶対時刻
-        return self
     # ここまでノートの全値の処理----------------------
 
     # ここからノートの各値の参照----------------------

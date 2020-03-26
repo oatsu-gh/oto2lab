@@ -3,8 +3,6 @@
 """
 USTファイルとデータを扱うモジュールです。
 """
-import os
-import sys
 
 
 def main():
@@ -42,7 +40,6 @@ def load(path, mode='r', encoding='shift-jis'):
     # Ustクラスオブジェクト化
     u = Ust()
     u.set_values(notes)
-    print('USTを読み取りました。: {}'.format(os.path.basename(path)))
     return u
 
 
@@ -95,11 +92,11 @@ class Ust:
     # NOTE: deepcopyすれば非破壊的処理にできそう。
     def replace_lyrics(self, before, after):
         """歌詞を置換（文字列指定・破壊的処理）"""
-        for note in self.notes[2:]:
+        for note in self.notes[2:-1]:
             # s = note.get_lyric().replace(before, after)
             # note.set_lyric(s)
+            # pprint(note.get_values())
             note.set_lyric(note.get_lyric().replace(before, after))
-        sys.exit()
         return self.notes
 
     # NOTE: deepcopyすれば非破壊的処理にできそう。

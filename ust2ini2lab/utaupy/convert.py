@@ -3,8 +3,7 @@
 """
 UTAU関連ファイルの相互変換
 """
-from . import label
-from . import otoini
+from . import label, otoini
 
 # from utaupy import ust
 
@@ -34,10 +33,10 @@ def ust2otoini(ustobj, name_wav, dt=100):
         oto.set_filename(name_wav)
         oto.set_alies(note.get_lyric())
         oto.set_lblank(max(t - (2 * dt), 0))
-        # NOTE: オーバーラップをどこに置くか決める。CVの時は中央、モノフォンの時は先行発声を下げる？
         oto.set_overlap(dt)
         oto.set_onset(2 * dt)
-        oto.set_fixed(max(3 * dt, length))
+        oto.set_fixed(min(3 * dt, length + 2 * dt))
+        # oto.set_fixed(length + 2 * dt)
         oto.set_rblank(-(length + 2 * dt))  # 負で左ブランク相対時刻, 正で絶対時刻
         otolist.append(oto)
         t += length  # 今のノート終了位置が次のノート開始位置
@@ -93,7 +92,7 @@ def label2otoini(labelobj, name_wav):
         oto = otoini.Oto()
         oto.set_filename(name_wav)
         oto.set_alies(l[2])
-        oto.set_lblank(0.0)
+        oto.set_lblank(l[0])
         oto.set_overlap(0.0)
         oto.set_onset(0.0)
         oto.set_fixed(t)

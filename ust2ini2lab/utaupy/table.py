@@ -68,7 +68,7 @@ class Table:
         self.d = d
         return self
 
-    def append(self, d):
+    def update(self, d):
         """辞書に要素を追加、重複項目は上書き"""
         self.d.update(d)
         return self
