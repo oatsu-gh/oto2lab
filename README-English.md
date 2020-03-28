@@ -4,7 +4,7 @@ A software which can convert UST to INI (for setParam), INI to LAB.
 
 Using this software, you can to phoneme-labeling of song wav files.
 
-THE BELOW IS TRANSLATED TEXT FROM JAPANESE README WITH "[MiraiTransrate](https://miraitranslate.com/trial/)".
+THE BELOW IS TRANSLATED TEXT FROM JAPANESE README BY "[MiraiTransrate](https://miraitranslate.com/trial/)".
 
 ## Purpose
 
