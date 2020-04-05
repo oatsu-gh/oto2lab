@@ -13,7 +13,7 @@ desktop.ini
 *secret*
 *test*
 *old*
-_config.yml
+*.yml
 exe*
 __pycache__*
 ~$*
