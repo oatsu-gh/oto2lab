@@ -10,13 +10,13 @@ setParam での音声ラベリング支援ツールです。
 """
 import os
 import shutil
+# import re
+import sys
 from datetime import datetime
 from glob import glob
 
 from utaupy import convert, label, otoini, ust
 
-# import re
-# import sys
 # from pathlib import Path
 # from pprint import pprint
 
@@ -128,7 +128,7 @@ def lab2ini_solo(path_lab, outdir):
 #     print('ust -> ini 変換しました。')
 
 
-def main():
+def main_cli():
     """
     全体の処理を実行
     """
@@ -167,10 +167,43 @@ def main():
 
     else:
         print('1 か 2 か 3 で選んでください。\n')
-        main()
+        main_cli()
+
+
+def main_gui(path, mode):
+    """
+    oto2lab_gui.exe から呼び出されたときの処理
+    """
+    path_table = './table/japanese_sinsy_sjis.table'
+
+    # ustファイルを変換
+    if mode == '1':
+        path_ust = path
+        outdir = os.path.dirname(path_ust)
+        evacuate_files(outdir, 'ini')
+        ust2ini_solo(path_ust, outdir, path_table)
+
+    # iniファイルを変換
+    elif mode == '2':
+        path_ini = path
+        outdir = os.path.dirname(path_ini)
+        evacuate_files(outdir, 'lab')
+        ini2lab_solo(path_ini, outdir)
+
+    # labファイルをiniファイルに変換
+    elif mode == '3':
+        path_lab = path
+        outdir = os.path.dirname(path)
+        evacuate_files(outdir, 'ini')
+        lab2ini_solo(path_lab, outdir)
 
 
 if __name__ == '__main__':
-    main()
-    while input('Press Enter to exit.') == 'r':
-        main()
+    args = sys.argv
+    if len(args) == 1:
+        main_cli()
+        input('Press Enter to exit.')
+
+    else:
+        print(args)
+        main_gui(path=args[1], mode=args[3])
