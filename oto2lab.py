@@ -46,7 +46,7 @@ def ust2ini_solo(path_ust, outdir, path_table):
     basename = os.path.basename(path_ust)  # '<name>.ust'
     name_wav = basename.replace('.ust', '.wav')  # '<name>.wav'
     path_ini = '{}/{}'.format(outdir, basename.replace('.ust', '.ini'))  # 'outdir/<name>.ini'
-    print('converting UST->INI:', path_ust)
+    print('converting UST to INI :', path_ust)
     # UST を読み取り
     u = ust.load(path_ust)
     u.replace_lyrics('息', 'br')
@@ -56,7 +56,7 @@ def ust2ini_solo(path_ust, outdir, path_table):
     o.romanize(path_table)
     # INI を書き出し
     o.write(path_ini)
-    print('converted  UST->INI:', path_ini)
+    print('converted  UST to INI :', path_ini)
     return path_ini
 
 
@@ -66,7 +66,7 @@ def ini2lab_solo(path_ini, outdir):
     """
     basename = os.path.basename(path_ini)
     path_lab = '{}/{}'.format(outdir, basename.replace('.ini', '.lab'))
-    print('converting INI->LAB:', path_ini)
+    print('converting INI to LAB :', path_ini)
     # INI を読み取り
     o = otoini.load(path_ini)
     # モノフォン化
@@ -75,7 +75,7 @@ def ini2lab_solo(path_ini, outdir):
     lab = convert.otoini2label(o)
     # LAB を書き出し
     lab.write(path_lab)
-    print('converted  INI->LAB:', path_lab)
+    print('converted  INI to LAB :', path_lab)
     return path_lab
 
 
@@ -88,11 +88,11 @@ def lab2ini_solo(path_lab, outdir):
     path_ini = '{}/{}'.format(outdir, basename.replace('.lab', '.ini'))
     name_wav = basename.replace('.lab', '.wav')
     # 変換開始
-    print('converting LAB->INI:', basename)
+    print('converting LAB to INI :', path_lab)
     lab = label.load(path_lab)
     o = convert.label2otoini(lab, name_wav)
     o.write(path_ini)
-    print('converted  LAB->INI:', path_ini)
+    print('converted  LAB to INI :', path_ini)
 
 
 # def run_ExecuteUstToOto(path_xlsm):
@@ -199,11 +199,11 @@ def main_gui(path, mode):
 
 
 if __name__ == '__main__':
+    print('_____ξ・ヮ・) < oto2lab v1.1.0________\n')
     args = sys.argv
     if len(args) == 1:
         main_cli()
         input('Press Enter to exit.')
 
     else:
-        print(args)
         main_gui(path=args[1], mode=args[3])

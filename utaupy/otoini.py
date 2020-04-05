@@ -75,17 +75,20 @@ class OtoIni:
                 oto.set_alies(' '.join(roma))
             # モノフォン
             if len(roma) == 1:
-                print('  alies: {}\t-> {}\t: オーバーラップ右シフト・先行発声右詰め'.format(alies, roma))
+                # print('  alies: {}\t-> {}\t: オーバーラップ右シフト・先行発声右詰め'.format(alies, roma))
                 oto.set_overlap(2 * dt)
                 oto.set_onset(oto.get_fixed())
             # おもにCV形式のとき
             elif len(roma) == 2:
-                print('  alies: {}\t-> {}\t: そのまま'.format(alies, roma))
+                # print('  alies: {}\t-> {}\t: そのまま'.format(alies, roma))
+                pass
             # おもにCCV形式のとき
             elif len(roma) == 3:
-                print('  alies: {}\t-> {}\t: そのままでいい？'.format(alies, roma))
-            else:
+                # print('  alies: {}\t-> {}\t: そのままでいい？'.format(alies, roma))
+                pass
+            elif len(roma) >= 4:
                 print('  [ERROR]---------')
+                print('  1,2,3音素しか対応していません。')
                 print('  alies: {}\t-> {}\t: そのままにします。'.format(alies, roma))
                 print('  ----------------')
 
