@@ -53,7 +53,7 @@ def ust2ini_solo(path_ust, outdir, path_table):
     u.replace_lyrics('R', 'pau')
     # 変換
     o = convert.ust2otoini(u, name_wav)
-    o.romanize(path_table)
+    o.kana2roma(path_table)
     # INI を書き出し
     o.write(path_ini)
     print('converted  UST to INI :', path_ini)
