@@ -3,10 +3,10 @@ UST Version1.2
 [#SETTING]
 Tempo=100.00
 Tracks=1
-ProjectName=大きなのっぽの古時計
+ProjectName=大きな古時計
 VoiceDir=%VOICE%uta
 OutFile=C:\Programing\GitHub\oto2lab\ust2ini2lab\ini\大きなのっぽの古時計.wav
-CacheDir=大きなのっぽの古時計.cache
+CacheDir=大きな古時計.cache
 Tool1=wavtool.exe
 Tool2=resampler.exe
 Mode2=True
