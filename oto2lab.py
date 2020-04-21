@@ -9,7 +9,7 @@ setParam での音声ラベリング支援ツールです。
 ・lab → ini
 """
 import os
-import shutil
+from shutil import move, copy2
 # import re
 import sys
 from datetime import datetime
@@ -36,8 +36,24 @@ def evacuate_files(path_dir, ext):
     os.mkdir(new_dir)
     # 移動
     for p in old_files:
-        shutil.move(p, new_dir)
+        move(p, new_dir)
 
+def backup_files(path_dir, ext):
+    """
+    特定の拡張子のファイルを退避させる。
+    上書きによるファイル消滅回避が目的。
+    path_dir: 処理対象フォルダ
+    ext     : 処理対象拡張子
+    """
+    ext = ext.replace('.', '')
+    old_files = glob('{}/*.{}'.format(path_dir, ext))
+    # 退避先のフォルダを作成
+    now = datetime.now().strftime('%Y%m%d_%H%M%S')
+    backup_dir = '{}/old__{}'.format(path_dir, now)
+    os.mkdir(backup_dir)
+    # 移動
+    for p in old_files:
+        copy2(p, backup_dir)
 
 def ust2ini_solo(path_ust, outdir, path_table):
     """

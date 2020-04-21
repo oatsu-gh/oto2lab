@@ -356,7 +356,7 @@ PBS=-23;0.0
 StartPoint=3.957
 Envelope=5,5,35,100,100,100,0
 [#0026]
-Length=2400
+Length=480
 Lyric=R
 NoteNum=65
 PreUtterance=0
