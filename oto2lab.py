@@ -9,11 +9,11 @@ setParam での音声ラベリング支援ツールです。
 ・lab → ini
 """
 import os
-from shutil import move, copy2
 # import re
 import sys
 from datetime import datetime
 from glob import glob
+from shutil import copy2, move
 
 from utaupy import convert, label, otoini, ust
 
@@ -38,6 +38,7 @@ def evacuate_files(path_dir, ext):
     for p in old_files:
         move(p, new_dir)
 
+
 def backup_files(path_dir, ext):
     """
     特定の拡張子のファイルを退避させる。
@@ -55,60 +56,65 @@ def backup_files(path_dir, ext):
     for p in old_files:
         copy2(p, backup_dir)
 
-def ust2ini_solo(path_ust, outdir, path_table):
+
+def ust2ini_solo(path_ustfile, outdir, path_tablefile, mode='romaji_cv'):
     """
     USTファイルをINIファイルに変換
     """
-    basename = os.path.basename(path_ust)  # '<name>.ust'
+    allowed_modes = ['mono', 'romaji_cv']
+    if mode not in allowed_modes:
+        raise ValueError('argument \'mode\' must be in {}'.format(allowed_modes))
+
+    basename = os.path.basename(path_ustfile)  # '<name>.ust'
     name_wav = basename.replace('.ust', '.wav')  # '<name>.wav'
-    path_ini = '{}/{}'.format(outdir, basename.replace('.ust', '.ini'))  # 'outdir/<name>.ini'
-    print('converting UST to INI :', path_ust)
+    path_inifile = '{}/{}'.format(outdir, basename.replace('.ust', '.ini'))
+    # 'outdir/<name>.ini'
+    print('converting UST to INI :', path_ustfile)
     # UST を読み取り
-    u = ust.load(path_ust)
-    u.replace_lyrics('息', 'br')
-    u.replace_lyrics('R', 'pau')
+    ustobj = ust.load(path_ustfile)
+    ustobj.replace_lyrics('息', 'br')
+    ustobj.replace_lyrics('R', 'pau')
     # 変換
-    o = convert.ust2otoini(u, name_wav)
-    o.kana2roma(path_table)
+    otoiniobj = convert.ust2otoini(ustobj, name_wav, path_tablefile)
     # INI を書き出し
-    o.write(path_ini)
-    print('converted  UST to INI :', path_ini)
-    return path_ini
+    otoiniobj.write(path_inifile)
+    print('converted  UST to INI :', path_inifile)
+    return path_inifile
 
 
-def ini2lab_solo(path_ini, outdir):
+def ini2lab_solo(path_inifile, outdir):
     """
     oto->lab 変換を単独ファイルに実行
     """
-    basename = os.path.basename(path_ini)
-    path_lab = '{}/{}'.format(outdir, basename.replace('.ini', '.lab'))
-    print('converting INI to LAB :', path_ini)
+    basename = os.path.basename(path_inifile)
+    path_labfile = '{}/{}'.format(outdir, basename.replace('.ini', '.lab'))
+    print('converting INI to LAB :', path_inifile)
     # INI を読み取り
-    o = otoini.load(path_ini)
+    o = otoini.load(path_inifile)
     # モノフォン化
     o.monophonize()
     # 変換
     lab = convert.otoini2label(o)
     # LAB を書き出し
-    lab.write(path_lab)
-    print('converted  INI to LAB :', path_lab)
-    return path_lab
+    lab.write(path_labfile)
+    print('converted  INI to LAB :', path_labfile)
+    return path_labfile
 
 
-def lab2ini_solo(path_lab, outdir):
+def lab2ini_solo(path_labfile, outdir):
     """
     lab->ini 変換
     """
     # 各種pathの設定
-    basename = os.path.basename(path_lab)
-    path_ini = '{}/{}'.format(outdir, basename.replace('.lab', '.ini'))
+    basename = os.path.basename(path_labfile)
+    path_inifile = '{}/{}'.format(outdir, basename.replace('.lab', '.ini'))
     name_wav = basename.replace('.lab', '.wav')
     # 変換開始
-    print('converting LAB to INI :', path_lab)
-    lab = label.load(path_lab)
+    print('converting LAB to INI :', path_labfile)
+    lab = label.load(path_labfile)
     o = convert.label2otoini(lab, name_wav)
-    o.write(path_ini)
-    print('converted  LAB to INI :', path_ini)
+    o.write(path_inifile)
+    print('converted  LAB to INI :', path_inifile)
 
 
 # def run_ExecuteUstToOto(path_xlsm):
@@ -148,7 +154,7 @@ def main_cli():
     """
     全体の処理を実行
     """
-    path_table = './table/japanese_sinsy_sjis.table'
+    path_tablefile = './table/japanese_sinsy_sjis.table'
     print('実行内容を数字で選択してください。')
     print('1 ... UST -> INI の変換（ひとつ）')
     print('2 ... INI -> LAB の変換（ひとつ）')
@@ -157,26 +163,26 @@ def main_cli():
     # ustフォルダ内にあるustファイルを変換
     if mode in ['1', '１']:
         print('USTファイルを指定してください。')
-        path_ust = input('>>> ')
-        outdir = os.path.dirname(path_ust)
+        path_ustfile = input('>>> ')
+        outdir = os.path.dirname(path_ustfile)
         evacuate_files(outdir, 'ini')
-        ust2ini_solo(path_ust, outdir, path_table)
+        ust2ini_solo(path_ustfile, outdir, path_tablefile)
 
     # iniファイルを変換
     elif mode in ['2', '２']:
         print('INIファイルを指定してください。')
-        path_ini = input('>>> ')
-        outdir = os.path.dirname(path_ini)
+        path_inifile = input('>>> ')
+        outdir = os.path.dirname(path_inifile)
         evacuate_files(outdir, 'lab')
-        ini2lab_solo(path_ini, outdir)
+        ini2lab_solo(path_inifile, outdir)
 
     # labファイルをiniファイルに変換
     elif mode in ['3', '３']:
         print('LABファイルを指定してください。')
-        path_lab = input('>>> ')
-        outdir = os.path.dirname(path_lab)
+        path_labfile = input('>>> ')
+        outdir = os.path.dirname(path_labfile)
         evacuate_files(outdir, 'ini')
-        lab2ini_solo(path_lab, outdir)
+        lab2ini_solo(path_labfile, outdir)
 
     # elif mode in ['4', '４']:
     #     lab2ini_solo('lab')
@@ -190,28 +196,28 @@ def main_gui(path, mode):
     """
     oto2lab_gui.exe から呼び出されたときの処理
     """
-    path_table = './table/japanese_sinsy_sjis.table'
+    path_tablefile = './table/japanese_sinsy_sjis.table'
 
     # ustファイルを変換
     if mode == '1':
-        path_ust = path
-        outdir = os.path.dirname(path_ust)
+        path_ustfile = path
+        outdir = os.path.dirname(path_ustfile)
         evacuate_files(outdir, 'ini')
-        ust2ini_solo(path_ust, outdir, path_table)
+        ust2ini_solo(path_ustfile, outdir, path_tablefile)
 
     # iniファイルを変換
     elif mode == '2':
-        path_ini = path
-        outdir = os.path.dirname(path_ini)
+        path_inifile = path
+        outdir = os.path.dirname(path_inifile)
         evacuate_files(outdir, 'lab')
-        ini2lab_solo(path_ini, outdir)
+        ini2lab_solo(path_inifile, outdir)
 
     # labファイルをiniファイルに変換
     elif mode == '3':
-        path_lab = path
+        path_labfile = path
         outdir = os.path.dirname(path)
         evacuate_files(outdir, 'ini')
-        lab2ini_solo(path_lab, outdir)
+        lab2ini_solo(path_labfile, outdir)
 
 
 if __name__ == '__main__':
