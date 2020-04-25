@@ -57,7 +57,7 @@ def backup_files(path_dir, ext):
         copy2(p, backup_dir)
 
 
-def ust2ini_solo(path_ustfile, outdir, path_tablefile, mode='romaji_cv'):
+def ustfile_to_inifile_solo(path_ustfile, outdir, path_tablefile, mode='romaji_cv'):
     """
     USTファイルをINIファイルに変換
     """
@@ -82,7 +82,7 @@ def ust2ini_solo(path_ustfile, outdir, path_tablefile, mode='romaji_cv'):
     return path_inifile
 
 
-def ini2lab_solo(path_inifile, outdir):
+def inifile_to_labfile_solo(path_inifile, outdir):
     """
     oto->lab 変換を単独ファイルに実行
     """
@@ -101,7 +101,7 @@ def ini2lab_solo(path_inifile, outdir):
     return path_labfile
 
 
-def lab2ini_solo(path_labfile, outdir):
+def labfile_to_inifile_solo(path_labfile, outdir):
     """
     lab->ini 変換
     """
@@ -131,7 +131,7 @@ def lab2ini_solo(path_labfile, outdir):
 #     excel.Application.Quit()
 
 
-# def ust2ini_Excel(dir_ust):
+# def ustfile_to_inifile_Excel(dir_ust):
 #     """
 #     Excelのツールを使用してUST→INI変換
 #     """
@@ -166,7 +166,7 @@ def main_cli():
         path_ustfile = input('>>> ')
         outdir = os.path.dirname(path_ustfile)
         evacuate_files(outdir, 'ini')
-        ust2ini_solo(path_ustfile, outdir, path_tablefile)
+        ustfile_to_inifile_solo(path_ustfile, outdir, path_tablefile)
 
     # iniファイルを変換
     elif mode in ['2', '２']:
@@ -174,7 +174,7 @@ def main_cli():
         path_inifile = input('>>> ')
         outdir = os.path.dirname(path_inifile)
         evacuate_files(outdir, 'lab')
-        ini2lab_solo(path_inifile, outdir)
+        inifile_to_labfile_solo(path_inifile, outdir)
 
     # labファイルをiniファイルに変換
     elif mode in ['3', '３']:
@@ -182,10 +182,10 @@ def main_cli():
         path_labfile = input('>>> ')
         outdir = os.path.dirname(path_labfile)
         evacuate_files(outdir, 'ini')
-        lab2ini_solo(path_labfile, outdir)
+        labfile_to_inifile_solo(path_labfile, outdir)
 
     # elif mode in ['4', '４']:
-    #     lab2ini_solo('lab')
+    #     labfile_to_inifile_solo('lab')
 
     else:
         print('1 か 2 か 3 で選んでください。\n')
@@ -203,21 +203,21 @@ def main_gui(path, mode):
         path_ustfile = path
         outdir = os.path.dirname(path_ustfile)
         evacuate_files(outdir, 'ini')
-        ust2ini_solo(path_ustfile, outdir, path_tablefile)
+        ustfile_to_inifile_solo(path_ustfile, outdir, path_tablefile)
 
     # iniファイルを変換
     elif mode == '2':
         path_inifile = path
         outdir = os.path.dirname(path_inifile)
         evacuate_files(outdir, 'lab')
-        ini2lab_solo(path_inifile, outdir)
+        inifile_to_labfile_solo(path_inifile, outdir)
 
     # labファイルをiniファイルに変換
     elif mode == '3':
         path_labfile = path
         outdir = os.path.dirname(path)
         evacuate_files(outdir, 'ini')
-        lab2ini_solo(path_labfile, outdir)
+        labfile_to_inifile_solo(path_labfile, outdir)
 
 
 if __name__ == '__main__':
