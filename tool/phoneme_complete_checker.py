@@ -33,7 +33,7 @@ def read_labels(path_labeldir):
     複数のモノフォンラベルを読み取って、音素を一次元のリストにする
     """
     labfiles = glob('{}/*.lab'.format(path_labeldir))
-    print('\n対象ファイル')
+    print('対象ファイル')
     pprint(labfiles)
 
     l = []
@@ -59,6 +59,25 @@ def check_mono(l):
     return d
 
 
+def check_di(l):
+    """
+    CC, CV, VV, VC でチェック
+    """
+    d = {}
+    # ダイフォン用の表（二次元の辞書）を作る
+    keys = VOWELS + CONSONANTS + SPECIALS
+    zerolist = [0] * len(keys)
+    for key in keys:
+        d[key] = dict(zip(keys, zerolist))
+
+    # カウント
+    before = l[0]
+    for v in l[1:]:
+        d[before][v] += 1
+        before = v
+    return d
+
+
 def main():
     """
     機能選択とパス指定
@@ -66,19 +85,20 @@ def main():
     print('まだテスト中')
     # 処理対象フォルダ指定
     path = input('path: ')
+    l = read_labels(path)
     # モード選択
     mode = input('mode: ')
-    if mode == 'mono':
-        # ここから本処理開始
-        l = read_labels(path)
+    if mode in ['1', 'mono', 'monophone']:
         d = check_mono(l)
         print('\n数え上げ結果')
         for k, v in d.items():
             print('  {}\t: {}'.format(k, v))
+    elif mode in ['2', 'di', 'diphone']:
+        d = check_di(l)
+        print('\n----------------------------')
+        pprint(d)
     else:
         print('未実装')
-
-
 
 
 if __name__ == '__main__':
