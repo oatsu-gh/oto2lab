@@ -64,23 +64,21 @@ def main():
     機能選択とパス指定
     """
     print('まだテスト中')
-
+    # 処理対象フォルダ指定
+    path = input('path: ')
     # モード選択
     mode = input('mode: ')
     if mode == 'mono':
-        print('mono未実装')
+        # ここから本処理開始
+        l = read_labels(path)
+        d = check_mono(l)
+        print('\n数え上げ結果')
+        for k, v in d.items():
+            print('  {}\t: {}'.format(k, v))
     else:
         print('未実装')
-    # 処理対象フォルダ指定
-    path = input('path: ')
 
-    # ここから本処理開始
-    l = read_labels(path)
-    d = check_mono(l)
-    print('\n数え上げ結果')
-    for k, v in d.items():
-        print('  {}\t: {}'.format(k, v))
-    # pprint(d)
+
 
 
 if __name__ == '__main__':
