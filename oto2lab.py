@@ -13,6 +13,7 @@ import os
 import sys
 from datetime import datetime
 from glob import glob
+# from pprint import pprint
 from shutil import copy2, move
 
 from utaupy import convert, label, otoini, ust
@@ -72,11 +73,10 @@ def ustfile_to_inifile_solo(path_ustfile, outdir, path_tablefile, mode='romaji_c
     print('converting UST to INI :', path_ustfile)
     # UST を読み取り
     ustobj = ust.load(path_ustfile)
-    ustobj.replace_lyrics('息', 'br')
-    ustobj.replace_lyrics('R', 'pau')
+    # ustobj.replace_lyrics('息', 'br')
+    # ustobj.replace_lyrics('R', 'pau')
     # 変換
     otoiniobj = convert.ust2otoini(ustobj, name_wav, path_tablefile)
-    # INI を書き出し
     otoiniobj.write(path_inifile)
     print('converted  UST to INI :', path_inifile)
     return path_inifile
@@ -173,7 +173,8 @@ def main_cli():
 
     # iniファイルを変換
     elif mode in ['2', '２']:
-        while not path_ustfile.endswith('.ini'):
+        path_inifile = ''
+        while not path_inifile.endswith('.ini'):
             print('INIファイルを指定してください。')
             path_inifile = input('>>> ')
         outdir = os.path.dirname(path_inifile)
@@ -182,6 +183,7 @@ def main_cli():
 
     # labファイルをiniファイルに変換
     elif mode in ['3', '３']:
+        path_labfile = ''
         while not path_ustfile.endswith('.lab'):
             print('LABファイルを指定してください。')
             path_labfile = input('>>> ')
