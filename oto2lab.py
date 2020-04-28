@@ -115,6 +115,7 @@ def labfile_to_inifile_solo(path_labfile, outdir):
     o = convert.label2otoini(lab, name_wav)
     o.write(path_inifile)
     print('converted  LAB to INI :', path_inifile)
+    return path_inifile
 
 
 # def run_ExecuteUstToOto(path_xlsm):
@@ -160,26 +161,30 @@ def main_cli():
     print('2 ... INI -> LAB の変換（ひとつ）')
     print('3 ... INI <- LAB の変換（ひとつ）')
     mode = input('>>> ')
-    # ustフォルダ内にあるustファイルを変換
+    # ustファイルを変換
     if mode in ['1', '１']:
-        print('USTファイルを指定してください。')
-        path_ustfile = input('>>> ')
+        path_ustfile = ''
+        while not path_ustfile.endswith('.ust'):
+            print('USTファイルを指定してください。')
+            path_ustfile = input('>>> ')
         outdir = os.path.dirname(path_ustfile)
         evacuate_files(outdir, 'ini')
         ustfile_to_inifile_solo(path_ustfile, outdir, path_tablefile)
 
     # iniファイルを変換
     elif mode in ['2', '２']:
-        print('INIファイルを指定してください。')
-        path_inifile = input('>>> ')
+        while not path_ustfile.endswith('.ini'):
+            print('INIファイルを指定してください。')
+            path_inifile = input('>>> ')
         outdir = os.path.dirname(path_inifile)
         evacuate_files(outdir, 'lab')
         inifile_to_labfile_solo(path_inifile, outdir)
 
     # labファイルをiniファイルに変換
     elif mode in ['3', '３']:
-        print('LABファイルを指定してください。')
-        path_labfile = input('>>> ')
+        while not path_ustfile.endswith('.lab'):
+            print('LABファイルを指定してください。')
+            path_labfile = input('>>> ')
         outdir = os.path.dirname(path_labfile)
         evacuate_files(outdir, 'ini')
         labfile_to_inifile_solo(path_labfile, outdir)
