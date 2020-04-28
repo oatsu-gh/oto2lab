@@ -62,7 +62,9 @@ class OtoIni:
         モノフォン形式のエイリアスになっているか判定する。
         返り値はbool。
         """
-        return all(len(v.alies) == 1 for v in self.values)
+        # for v in self.values:
+        #     print(v.alies)
+        return all(len(v.alies.split()) == 1 for v in self.values)
 
     def kana2romaji(self, path_table, replace=True, dt=100):
         """
@@ -74,7 +76,7 @@ class OtoIni:
         """
         # ローマ字変換表読み取り
         d = table.load(path_table)
-        d.update({'R': ['pau'], 'pau': ['pau'], 'sil': ['sil']})
+        d.update({'R': ['pau'], 'pau': ['pau'], 'sil': ['sil'], 'br': ['br']})
         # 発音記号の分割数によってパラメータを調整
         for oto in self._values:
             kana = oto.alies.split()[-1]
@@ -82,12 +84,13 @@ class OtoIni:
                 romaji = d[kana]
             # KeyErrorはリストにするだけで返される
             except KeyError as e:
-                print('\n[KeyError in otoini.kana2romaji]---------')
+                print('\n[KeyError in otoini.kana2romaji]------------')
                 print('想定外の文字が kana として入力されました。')
+                print('そのままぶち込みます。')
                 print('該当文字列(kana):', kana)
                 print('エラー詳細(e)   :', e)
-                print('--------------------------------------\n')
-                romaji = d[kana]
+                print('--------------------------------------------\n')
+                romaji = [kana]
             # 歌詞をローマ字化
             if replace is True:
                 oto.alies = ' '.join(romaji)
@@ -172,6 +175,7 @@ class OtoIni:
             l.append(oto.rblank)
             l.append(oto.onset)
             l.append(oto.overlap)
+            print(oto.lblank, oto.overlap, oto.onset)
             # 数値部分を丸めてから文字列に変換
             l = l[:2] + [str(round(float(v), 4)) for v in l[2:]]
             s += '{}={},{},{},{},{},{}\n'.format(*l)  # 'l[0]=l[1],l[2],...'

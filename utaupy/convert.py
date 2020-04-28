@@ -21,9 +21,11 @@ def ust2otoini(ustobj, name_wav, path_tablefile, mode='romaji_cv', dt=100):
     """
     allowed_modes = ['mono', 'romaji_cv']
     if mode == 'romaji_cv':
+        print('  mode: Ust(kana_CV) -> Otoini(romaji_cv)')
         otoiniobj = ust2otoini_romaji_cv(ustobj, name_wav, dt)
         otoiniobj.kana2romaji(path_tablefile)
     elif mode == 'mono':
+        print('  mode: Ust(kana_CV) -> Otoini(mono)')
         otoiniobj = ust2otoini_mono(ustobj, name_wav, path_tablefile)
     else:
         raise ValueError('argument \'mode\' must be in {}'.format(allowed_modes))
@@ -70,14 +72,24 @@ def ust2otoini_mono(ustobj, name_wav, path_tablefile, dt=100):
     # 音素単位に分割
     new = []  # mono_otoを入れるリスト
     for simple_oto in l:
-        phones = d[simple_oto.alies]
+        try:
+            phones = d[simple_oto.alies]
+        # KeyErrorはリストにするだけで返される
+        except KeyError as e:
+            print('\n[KeyError in otoini.kana2romaji]------------')
+            print('想定外の文字が歌詞として入力されました。')
+            print('そのままぶち込みます。')
+            print('該当文字列(kana):', simple_oto.alies)
+            print('エラー詳細(e)   :', e)
+            print('--------------------------------------------\n')
+            phones = [simple_oto.alies]
         # 子音+母音 「か(k a)」
         if len(phones) == 2:
             # 子音部分
             first_oto = otoini.Oto()
             first_oto.filename = name_wav
             first_oto.alies = phones[0]
-            first_oto.lblank = simple_oto.lblank - (2 * dt)
+            first_oto.lblank = simple_oto.lblank - dt
             first_oto.overlap = 0
             first_oto.onset = dt
             first_oto.fixed = 2 * dt
@@ -110,7 +122,7 @@ def ust2otoini_mono(ustobj, name_wav, path_tablefile, dt=100):
             first_oto = otoini.Oto()
             first_oto.filename = name_wav
             first_oto.alies = phones[0]
-            first_oto.lblank = simple_oto.lblank - (2 * dt)
+            first_oto.lblank = simple_oto.lblank - dt
             first_oto.overlap = 0
             first_oto.onset = dt
             first_oto.fixed = 2 * dt
@@ -139,6 +151,8 @@ def ust2otoini_mono(ustobj, name_wav, path_tablefile, dt=100):
         else:
             raise ValueError('len(alies) must be in [1, 2, 3]')
 
+    new[0].lblank = 0  # 最初の左ブランクを0にする
+    new[0].onset = 0  # 最初の発声開始位置(ここでは先行発声)を0にする
     mono_otoini = otoini.OtoIni()
     mono_otoini.values = new
     return mono_otoini
@@ -155,7 +169,7 @@ def ust2otoini_romaji_cv(ustobj, name_wav, dt=100):
     """
     notes = ustobj.values
     tempo = ustobj.tempo
-    o = otoini.OtoIni()
+    otoiniobj = otoini.OtoIni()
     l = []  # otoini生成元にするリスト
     t = 0  # ノート開始時刻を記録
 
@@ -171,11 +185,11 @@ def ust2otoini_romaji_cv(ustobj, name_wav, dt=100):
         oto.rblank = -(length + 2 * dt)  # 負で左ブランク相対時刻, 正で絶対時刻
         l.append(oto)
         t += length  # 今のノート終了位置が次のノート開始位置
-
     l[0].lblank = 0  # 最初の左ブランクを0にする
-    l[0].ovealap = 0  # 最初のオーバーラップを0にする
-    o.values = l
-    return o
+    l[0].overlap = 0  # 最初のオーバーラップを0にする
+    l[0].onset = 0
+    otoiniobj.values = l
+    return otoiniobj
 
 
 def otoini2label(otoiniobj, mode='auto', otoini_time_order=10**(-3), label_time_order=10**(-7)):
@@ -189,7 +203,7 @@ def otoini2label(otoiniobj, mode='auto', otoini_time_order=10**(-3), label_time_
     """
     otoini_values = otoiniobj.values
     time_order_ratio = otoini_time_order / label_time_order
-    print('time_order_ratio:', time_order_ratio)
+    print('  time_order_ratio:', time_order_ratio)
 
     allowed_modes = ['auto', 'mono', 'romaji_cv']
     # エイリアスのタイプ自動判別
@@ -200,11 +214,11 @@ def otoini2label(otoiniobj, mode='auto', otoini_time_order=10**(-3), label_time_
             mode = 'romaji_cv'
 
     if mode == 'mono':
-        print('mode: OtoIni(mono) -> Label(mono)')
+        print('  mode: OtoIni(mono) -> Label(mono)')
         # [[発音開始時刻, 発音記号], ...] の仮リストにする
         tmp = []
         for oto in otoini_values:
-            t_start = (oto.lblank + oto.onset) * time_order_ratio
+            t_start = round((oto.lblank + oto.onset) * time_order_ratio)
             tmp.append([t_start, oto.alies])
             # [[発音開始時刻, 発音終了時刻, 発音記号], ...]
         lines = [[v[0], tmp[i + 1][0], v[1]] for i, v in enumerate(tmp[:-1])]
@@ -216,14 +230,16 @@ def otoini2label(otoiniobj, mode='auto', otoini_time_order=10**(-3), label_time_
         # 最終ノートの処理
         last_oto = otoini_values[-1]
         # 発声開始位置
-        t_start = (last_oto.lblank + last_oto.onset) * time_order_ratio
+        t_start = round((last_oto.lblank + last_oto.onset) * time_order_ratio)
         # 発声終了位置(右ブランクの符号ごとの挙動違いに対応)
-        t_end = last_oto.rblank2 * time_order_ratio
+        t_end = round(last_oto.rblank2 * time_order_ratio)
         # 最終ノートをリストに追加
         lines.append([t_start, t_end, last_oto.alies])
 
     elif mode == 'romaji_cv':
-        print('mode: OtoIni(romaji_cv) -> Label(mono)')
+        print('  mode: OtoIni(romaji_cv) -> Label(mono)')
+        otoiniobj.monophonize()
+        otoini_values = otoiniobj.values
         # [[発音開始時刻, 発音記号], ...] の仮リストにする
         tmp = []
         for oto in otoini_values:
@@ -241,9 +257,9 @@ def otoini2label(otoiniobj, mode='auto', otoini_time_order=10**(-3), label_time_
         # 最終ノートの処理
         last_oto = otoini_values[-1]
         # 発声開始位置
-        t_start = (last_oto.lblank + last_oto.overlap) * time_order_ratio
+        t_start = round((last_oto.lblank + last_oto.overlap) * time_order_ratio)
         # 発声終了位置(右ブランクの符号ごとの挙動違いに対応)
-        t_end = last_oto.rblank2 * time_order_ratio
+        t_end = round(last_oto.rblank2 * time_order_ratio)
         # 最終ノートをリストに追加
         lines.append([t_start, t_end, last_oto.alies])
 
@@ -254,6 +270,7 @@ def otoini2label(otoiniobj, mode='auto', otoini_time_order=10**(-3), label_time_
     lab = label.Label()
     lab.values = lines
     return lab
+
 
 def label2otoini(labelobj, name_wav,
                  otoini_time_order=10**(-3), label_time_order=10**(-7)):
