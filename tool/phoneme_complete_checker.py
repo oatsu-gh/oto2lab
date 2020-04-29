@@ -20,17 +20,21 @@ Excelで可視化できるようにしたいですね。
 from glob import glob
 from pprint import pprint
 
+import numpy as np
+
+# import openpyxl
+
 VOWELS = ['a', 'i', 'u', 'e', 'o']
 CONSONANTS = ['k', 's', 't', 'n', 'h', 'm', 'y', 'r', 'w',
               'g', 'z', 'j', 'd', 'b', 'p',
               'ky', 'sh', 'ch', 'ts', 'ty', 'ny', 'hy',
               'by', 'py', 'my', 'ry', 'v', 'gy', 'dy', 'f']
-SPECIALS = ['pau', 'cl', 'N', 'br', 'sil', 'TRACKSTART', 'TRACKEND']
+SPECIALS = ['pau', 'cl', 'N', 'br', 'sil', 'TRACKSTART', 'TRACKEND', 'DUMMY']
 
 
 def read_labels(path_labeldir):
     """
-    複数のモノフォンラベルを読み取って、音素を一次元のリストにする
+    複数のモノフォンラベルを読み取って、トラック x 音素列 の二次元音素リストにする。
     """
     labfiles = glob('{}/*.lab'.format(path_labeldir))
     print('対象ファイル')
@@ -38,67 +42,95 @@ def read_labels(path_labeldir):
 
     l = []
     for labfile in labfiles:
-        l.append('TRACKSTART')
         with open(labfile) as f:
-            l += [s.strip().split()[2] for s in f.readlines()]
-        l.append('TRACKEND')
+            tmp = [s.strip().split()[2] for s in f.readlines()]
+            l.append(['TRACKSTART'] + tmp + ['TRACKEND'])
     return l
 
 
-def check_mono(l):
+def phonemes_as_number(keys, tracks, dimension=1):
     """
-    単音でチェック
+    ラベルの発音記号を数字にする
+    numpy.arrayで扱うために発音記号を数字に置き換える。
     """
-    # モノフォン用の表（一次元の辞書）をつくる
-    keys = VOWELS + CONSONANTS + SPECIALS
-    zerolist = [0] * len(keys)
-    d = dict(zip(keys, zerolist))
-    # カウント
-    for v in l:
-        d[v] += 1
-    return d
+    dummy_list = ['DUMMY'] * (dimension - 1)
+    d = dict(zip(keys, range(len(keys))))
+    # l = [[dummy_list + [d[v] for v in track] + dummy_list] for track in tracks]
+    # リスト内包表記を展開-------------
+    l = []
+    for track in tracks:
+        tmp = dummy_list + track + dummy_list
+        tmp = [d[v] for v in tmp]
+        l.append(tmp)
+    # ----------------------------------
+    return l
 
 
-def check_di(l):
+def count_how_often(keys, tracks, dimension):
     """
-    CC, CV, VV, VC でチェック
+    l 数字化した音素: ラベル中の発音記号リストを数字のリストにしたやつ
+    dimension 次元数: モノフォンなら1, ダイフォンなら2, トライフォンなら3。
+    length  辺の長さ: 発音記号の種類数。
     """
-    d = {}
-    # ダイフォン用の表（二次元の辞書）を作る
-    keys = VOWELS + CONSONANTS + SPECIALS
-    zerolist = [0] * len(keys)
-    for key in keys:
-        d[key] = dict(zip(keys, zerolist))
+    length = len(keys)
+    a = np.zeros((length, ) * dimension, dtype=np.int)  # 整数ゼロで初期化した多次元配列
 
-    # カウント
-    before = l[0]
-    for v in l[1:]:
-        d[before][v] += 1
-        before = v
-    return d
+    # numpy.array は tuple = (0, 1) とすれば a[tuple] で座標指定取得できる
+    if dimension == 1:
+        for track in tracks:
+            for v in track:
+                a[v] += 1
+    elif dimension == 2:
+        for track in tracks:
+            for i, _ in enumerate(track[:-1]):
+                tmp = track[i:(i + 2)]
+                a[tmp[0], tmp[1]] += 1
+    elif dimension == 3:
+        for track in tracks:
+            for i, _ in enumerate(track[:-2]):
+                tmp = track[i:(i + 3)]
+                a[tmp[0], tmp[1], tmp[2]] += 1
+    elif dimension == 4:
+        for track in tracks:
+            for i, _ in enumerate(track[:-3]):
+                tmp = track[i:(i + 4)]
+                a[tmp[0], tmp[1], tmp[2], tmp[3]] += 1
+    elif dimension == 5:
+        for track in tracks:
+            for i, _ in enumerate(track[:-4]):
+                tmp = track[i:(i + 5)]
+                a[tmp[0], tmp[1], tmp[2], tmp[3], tmp[4]] += 1
+    elif dimension == 6:
+        for track in tracks:
+            for i, _ in enumerate(track[:-5]):
+                tmp = track[i:(i + 6)]
+                a[tmp[0], tmp[1], tmp[2], tmp[3], tmp[4], tmp[5]] += 1
+
+    # pprint(a)
+    return a
 
 
 def main():
     """
     機能選択とパス指定
     """
+    np.set_printoptions(threshold=10000, linewidth=100)
     print('まだテスト中')
     # 処理対象フォルダ指定
-    path = input('path: ')
-    l = read_labels(path)
+    path = input('path     : ').strip(r'"')
     # モード選択
-    mode = input('mode: ')
-    if mode in ['1', 'mono', 'monophone']:
-        d = check_mono(l)
-        print('\n数え上げ結果')
-        for k, v in d.items():
-            print('  {}\t: {}'.format(k, v))
-    elif mode in ['2', 'di', 'diphone']:
-        d = check_di(l)
-        print('\n----------------------------')
-        pprint(d)
-    else:
-        print('未実装')
+    dimension = int(input('dimension: '))
+    if not isinstance(dimension, int):
+        print('数字で')
+
+    keys = VOWELS + CONSONANTS + SPECIALS
+    tracks = read_labels(path)
+    tracks = phonemes_as_number(keys, tracks, dimension)
+    a = count_how_often(keys, tracks, dimension)
+    np.set_printoptions(threshold=100000, linewidth=2000)
+    s = ' '.join(keys) + '\n' + str(a)
+    with open('result.txt', 'w') as f:
+        f.write(s)
 
 
 if __name__ == '__main__':

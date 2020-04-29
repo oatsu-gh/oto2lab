@@ -6,6 +6,7 @@ desktop.ini
 *.ini
 *.lnk*
 *.ccd
+*.xlsx
 *.setParam-Scache
 *setParam-backup*
 *python-*
