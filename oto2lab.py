@@ -13,10 +13,10 @@ import os
 import sys
 from datetime import datetime
 from glob import glob
-# from pprint import pprint
+from pprint import pprint
 from shutil import copy2, move
 
-from utaupy import convert, label, otoini, ust
+from utaupy import convert, label, otoini, table, ust
 
 # from pathlib import Path
 # from pprint import pprint
@@ -38,6 +38,7 @@ def evacuate_files(path_dir, ext):
     # 移動
     for p in old_files:
         move(p, new_dir)
+    return new_dir
 
 
 def backup_files(path_dir, ext):
@@ -56,6 +57,7 @@ def backup_files(path_dir, ext):
     # 移動
     for p in old_files:
         copy2(p, backup_dir)
+    return backup_dir
 
 
 def ustfile_to_inifile_solo(path_ustfile, outdir, path_tablefile, mode='romaji_cv'):
@@ -82,7 +84,34 @@ def ustfile_to_inifile_solo(path_ustfile, outdir, path_tablefile, mode='romaji_c
     return path_inifile
 
 
-def inifile_to_labfile_solo(path_inifile, outdir):
+def ustfile_to_inifile_multi(path, path_tablefile, mode='romaji_cv'):
+    """
+    USTファイルをINIファイルに一括変換
+    """
+    # フォルダを指定した場合
+    if os.path.isdir(path):
+        l = glob('{}/*.{}'.format(path, 'ust'))
+        outdir = path
+        print('\n処理対象ファイル---------')
+        pprint(l)
+        print('-------------------------\n')
+        print('出力ファイル上書き回避のため、既存INIファイルをバックアップします。')
+        path_backup = backup_files(path, 'ini')
+        print('バックアップ先:', path_backup)
+    # ファイルを指定した場合
+    else:
+        l = [path]
+        outdir = os.path.dirname(path)
+        print('\n出力ファイル上書き回避のため、既存INIファイルを移動します。')
+        path_backup = evacuate_files(outdir, 'ini')
+        print('移動先:', path_backup)
+    # ファイル変換処理
+    for p in l:
+        ustfile_to_inifile_solo(p, outdir, path_tablefile, mode=mode)
+    print('対象ファイルの変換が完了しました。')
+
+
+def inifile_to_labfile_solo(path_inifile, outdir, mode='auto'):
     """
     oto->lab 変換を単独ファイルに実行
     """
@@ -94,11 +123,37 @@ def inifile_to_labfile_solo(path_inifile, outdir):
     # モノフォン化
     o.monophonize()
     # 変換
-    lab = convert.otoini2label(o)
+    lab = convert.otoini2label(o, mode=mode)
     # LAB を書き出し
     lab.write(path_labfile)
     print('converted  INI to LAB :', path_labfile)
     return path_labfile
+
+
+def inifile_to_labfile_multi(path, mode='auto'):
+    """
+    複数のiniファイルをlabに変換する
+    """
+    # フォルダを指定した場合
+    if os.path.isdir(path):
+        l = glob('{}/*.{}'.format(path, 'ini'))
+        outdir = path
+        print('\n処理対象ファイル---------')
+        pprint(l)
+        print('-------------------------\n')
+        print('出力ファイル上書き回避のため、既存LABファイルをバックアップします。')
+        path_backup = backup_files(path, 'lab')
+        print('バックアップ先:', path_backup)
+    # ファイルを指定した場合
+    else:
+        l = [path]
+        outdir = os.path.dirname(path)
+        print('\n出力ファイル上書き回避のため、既存LABファイルを移動します。')
+        path_backup = evacuate_files(outdir, 'lab')
+        print('移動先:', path_backup)
+    # ファイル変換処理
+    for p in l:
+        inifile_to_labfile_solo(p, outdir, mode=mode)
 
 
 def labfile_to_inifile_solo(path_labfile, outdir):
@@ -115,7 +170,63 @@ def labfile_to_inifile_solo(path_labfile, outdir):
     o = convert.label2otoini(lab, name_wav)
     o.write(path_inifile)
     print('converted  LAB to INI :', path_inifile)
-    return path_inifile
+
+
+def labfile_to_inifile_multi(path):
+    """
+    複数のlabファイルをレビュー用iniファイルに変換する
+    """
+    if os.path.isdir(path):
+        l = glob('{}/*.{}'.format(path, 'lab'))
+        outdir = path
+        print('\n処理対象ファイル---------')
+        pprint(l)
+        print('-------------------------\n')
+        print('出力ファイル上書き回避のため、既存INIファイルをバックアップします。')
+        path_backup = backup_files(outdir, 'ini')
+        print('バックアップ先:', path_backup)
+    else:
+        l = [path]
+        outdir = os.path.dirname(path)
+        print('\n出力ファイル上書き回避のため、既存INIファイルを移動します。')
+        path_backup = evacuate_files(outdir, 'ini')
+        print('移動先:', path_backup)
+    # ファイル変換処理
+    for p in l:
+        labfile_to_inifile_solo(p, outdir)
+
+
+def inifile_kana2romaji(path, path_tablefile):
+    """
+    複数のiniファイルの平仮名エイリアスをローマ字にする
+    """
+    if os.path.isdir(path):
+        l = glob('{}/*.{}'.format(path, 'ini'))
+        outdir = path
+        print('\n処理対象ファイル---------')
+        pprint(l)
+        print('-------------------------\n')
+        print('出力ファイル上書き回避のため、既存INIファイルをバックアップします。')
+        path_backup = backup_files(outdir, 'ini')
+        print('バックアップ先:', path_backup)
+    else:
+        l = [path]
+        outdir = os.path.dirname(path)
+        print('\n出力ファイル上書き回避のため、既存INIファイルを移動します。')
+        path_backup = evacuate_files(outdir, 'ini')
+        print('移動先:', path_backup)
+    d = table.load(path_tablefile)
+    # ファイル変換処理
+    for p in l:
+        otoiniobj = otoini.load(p)
+        for oto in otoiniobj.values:
+            try:
+                oto.alies = ' '.join(d[oto.alies])
+            except KeyError as e:
+                print('[WARNING] KeyError in oto2lab.inifile_kana2ramaji')
+                print('  詳細:', e)
+        print(p)
+        otoiniobj.write(p)
 
 
 # def run_ExecuteUstToOto(path_xlsm):
@@ -157,43 +268,26 @@ def main_cli():
     """
     path_tablefile = './table/japanese_sinsy_sjis.table'
     print('実行内容を数字で選択してください。')
-    print('1 ... UST -> INI の変換（ひとつ）')
-    print('2 ... INI -> LAB の変換（ひとつ）')
-    print('3 ... INI <- LAB の変換（ひとつ）')
+    print('1 ... UST -> INI の変換')
+    print('2 ... INI -> LAB の変換')
+    print('3 ... INI <- LAB の変換')
+    print('4 ... INI ファイルのエイリアス置換（かな -> ローマ字）')
     mode = input('>>> ')
+    print('処理対象ファイルまたはフォルダを指定してください。')
+    path = input('>>> ').strip(r'"')
+
     # ustファイルを変換
     if mode in ['1', '１']:
-        path_ustfile = ''
-        while not path_ustfile.endswith('.ust'):
-            print('USTファイルを指定してください。')
-            path_ustfile = input('>>> ')
-        outdir = os.path.dirname(path_ustfile)
-        evacuate_files(outdir, 'ini')
-        ustfile_to_inifile_solo(path_ustfile, outdir, path_tablefile)
-
+        ustfile_to_inifile_multi(path, path_tablefile)
     # iniファイルを変換
     elif mode in ['2', '２']:
-        path_inifile = ''
-        while not path_inifile.endswith('.ini'):
-            print('INIファイルを指定してください。')
-            path_inifile = input('>>> ')
-        outdir = os.path.dirname(path_inifile)
-        evacuate_files(outdir, 'lab')
-        inifile_to_labfile_solo(path_inifile, outdir)
-
+        inifile_to_labfile_multi(path)
     # labファイルをiniファイルに変換
     elif mode in ['3', '３']:
-        path_labfile = ''
-        while not path_ustfile.endswith('.lab'):
-            print('LABファイルを指定してください。')
-            path_labfile = input('>>> ')
-        outdir = os.path.dirname(path_labfile)
-        evacuate_files(outdir, 'ini')
-        labfile_to_inifile_solo(path_labfile, outdir)
+        labfile_to_inifile_multi(path)
 
-    # elif mode in ['4', '４']:
-    #     labfile_to_inifile_solo('lab')
-
+    elif mode in ['4', '４']:
+        inifile_kana2romaji(path, path_tablefile)
     else:
         print('1 か 2 か 3 で選んでください。\n')
         main_cli()
@@ -204,27 +298,19 @@ def main_gui(path, mode):
     oto2lab_gui.exe から呼び出されたときの処理
     """
     path_tablefile = './table/japanese_sinsy_sjis.table'
+    path = path.strip(r'"')
 
     # ustファイルを変換
     if mode == '1':
-        path_ustfile = path
-        outdir = os.path.dirname(path_ustfile)
-        evacuate_files(outdir, 'ini')
-        ustfile_to_inifile_solo(path_ustfile, outdir, path_tablefile)
+        ustfile_to_inifile_multi(path, path_tablefile)
 
     # iniファイルを変換
     elif mode == '2':
-        path_inifile = path
-        outdir = os.path.dirname(path_inifile)
-        evacuate_files(outdir, 'lab')
-        inifile_to_labfile_solo(path_inifile, outdir)
+        inifile_to_labfile_multi(path)
 
     # labファイルをiniファイルに変換
     elif mode == '3':
-        path_labfile = path
-        outdir = os.path.dirname(path)
-        evacuate_files(outdir, 'ini')
-        labfile_to_inifile_solo(path_labfile, outdir)
+        labfile_to_inifile_multi(path)
 
 
 if __name__ == '__main__':
