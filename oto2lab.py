@@ -314,7 +314,7 @@ def main_gui(path, mode):
 
 
 if __name__ == '__main__':
-    print('_____ξ・ヮ・) < oto2lab v1.1.0________\n')
+    print('_____ξ・ヮ・) < oto2lab v1.2.0 alpha ________\n')
     args = sys.argv
     if len(args) == 1:
         main_cli()
