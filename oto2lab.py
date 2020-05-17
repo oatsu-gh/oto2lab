@@ -213,7 +213,7 @@ def inifile_kana2romaji(path, path_tablefile):
         l = [path]
         outdir = os.path.dirname(path)
         print('\n出力ファイル上書き回避のため、既存INIファイルを移動します。')
-        path_backup = evacuate_files(outdir, 'ini')
+        path_backup = backup_files(outdir, 'ini')
         print('移動先:', path_backup)
     d = table.load(path_tablefile)
     # ファイル変換処理
@@ -314,7 +314,7 @@ def main_gui(path, mode):
 
 
 if __name__ == '__main__':
-    print('_____ξ・ヮ・) < oto2lab v1.2.0 beta ________\n')
+    print('_____ξ・ヮ・) < oto2lab v1.2.0 beta2 ________\n')
     args = sys.argv
     if len(args) == 1:
         main_cli()
