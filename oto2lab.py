@@ -21,6 +21,8 @@ from utaupy import convert, label, otoini, table, ust
 # from pathlib import Path
 # from pprint import pprint
 
+DEBUG_MODE = False
+
 
 def evacuate_files(path_dir, ext):
     """
@@ -123,7 +125,7 @@ def inifile_to_labfile_solo(path_inifile, outdir, mode='auto'):
     # モノフォン化
     o.monophonize()
     # 変換
-    lab = convert.otoini2label(o, mode=mode)
+    lab = convert.otoini2label(o, mode=mode, debug=DEBUG_MODE)
     # LAB を書き出し
     lab.write(path_labfile)
     print('converted  INI to LAB :', path_labfile)
@@ -316,6 +318,11 @@ def main_gui(path, mode):
 if __name__ == '__main__':
     print('_____ξ・ヮ・) < oto2lab v1.2.0 beta2 ________\n')
     args = sys.argv
+    if '--debug' in args:
+        args.remove('--debug')
+        DEBUG_MODE = True
+
+
     if len(args) == 1:
         main_cli()
         input('Press Enter to exit.')
