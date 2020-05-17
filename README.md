@@ -6,10 +6,6 @@ setParamで歌唱ラベリングするための、UST→INI→LAB 変換ソフ�
 
 UTAUにおける既存インフラとノウハウの流用で、歌唱DBの充実を図る。
 
-## 注意事項
-- 「japanese.table」 を[きりたん歌唱DB](https://zunko.jp/kiridev/login.php)からお借りしています。
-- バージョンアップでスクリプト名が変わることがあるのでご注意ください。
-
 ## 開発環境
 
 -   Windows 10

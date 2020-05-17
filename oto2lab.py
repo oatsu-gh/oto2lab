@@ -122,8 +122,6 @@ def inifile_to_labfile_solo(path_inifile, outdir, mode='auto'):
     print('converting INI to LAB :', path_inifile)
     # INI を読み取り
     o = otoini.load(path_inifile)
-    # モノフォン化
-    o.monophonize()
     # 変換
     lab = convert.otoini2label(o, mode=mode, debug=DEBUG_MODE)
     # LAB を書き出し
@@ -283,7 +281,7 @@ def main_cli():
         ustfile_to_inifile_multi(path, path_tablefile)
     # iniファイルを変換
     elif mode in ['2', '２']:
-        inifile_to_labfile_multi(path)
+        inifile_to_labfile_multi(path, mode='auto')
     # labファイルをiniファイルに変換
     elif mode in ['3', '３']:
         labfile_to_inifile_multi(path)
@@ -316,7 +314,7 @@ def main_gui(path, mode):
 
 
 if __name__ == '__main__':
-    print('_____ξ・ヮ・) < oto2lab v1.2.0 beta2 ________\n')
+    print('_____ξ・ヮ・) < oto2lab v1.2.1 ________\n')
     args = sys.argv
     if '--debug' in args:
         args.remove('--debug')
