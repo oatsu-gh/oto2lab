@@ -8,9 +8,10 @@ setParam での音声ラベリング支援ツールです。
 ・ini → lab
 ・lab → ini
 """
+import argparse
 import os
 # import re
-import sys
+# import sys
 from datetime import datetime
 from glob import glob
 from pprint import pprint
@@ -310,19 +311,24 @@ def main_gui(path, mode):
     # labファイルをiniファイルに変換
     elif mode == '3':
         labfile_to_inifile_multi(path)
+    # iniファイルをひらがなCV→romaCV変換
+    elif mode in ['4', '４']:
+        inifile_kana2romaji(path, path_tablefile)
 
 
 if __name__ == '__main__':
-    print('_____ξ・ヮ・) < oto2lab v1.2.1 ________\n')
-    args = sys.argv
-    if '--debug' in args:
-        args.remove('--debug')
-        DEBUG_MODE = True
+    print('_____ξ・ヮ・) < oto2lab v1.2.2 beta ________\n')
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p', '--path', help='input path')
+    # parser.add_argument('-i', '--input', help='input path')
+    parser.add_argument('-m', '--mode', help='機能選択の番号')
+    parser.add_argument('--debug', help='debug flag', action='store_true')
+    args = parser.parse_args()
+    DEBUG_MODE = args.debug
 
-    if len(args) == 1:
+    if args.path is None and args.mode is None:
         main_cli()
         input('Press Enter to exit.')
-
     else:
-        main_gui(path=args[1], mode=args[3])
+        main_gui(path=args.path, mode=args.mode)
