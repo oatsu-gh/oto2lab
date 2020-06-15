@@ -221,7 +221,7 @@ def inifile_kana2romaji(path, path_tablefile):
         otoiniobj = otoini.load(p)
         for oto in otoiniobj.values:
             try:
-                oto.alies = ' '.join(d[oto.alies])
+                oto.alias = ' '.join(d[oto.alias])
             except KeyError as e:
                 print('[WARNING] KeyError in oto2lab.inifile_kana2ramaji')
                 print('  詳細:', e)
@@ -285,7 +285,7 @@ def main_cli():
     # labファイルをiniファイルに変換
     elif mode in ['3', '３']:
         labfile_to_inifile_multi(path)
-
+    # iniファイルをひらがなCV→romaCV変換
     elif mode in ['4', '４']:
         inifile_kana2romaji(path, path_tablefile)
     else:
@@ -303,11 +303,9 @@ def main_gui(path, mode):
     # ustファイルを変換
     if mode == '1':
         ustfile_to_inifile_multi(path, path_tablefile)
-
     # iniファイルを変換
     elif mode == '2':
         inifile_to_labfile_multi(path)
-
     # labファイルをiniファイルに変換
     elif mode == '3':
         labfile_to_inifile_multi(path)
