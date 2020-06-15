@@ -31,7 +31,7 @@ StartPoint=0
 Envelope=0,5,52,0,100,100,100,%,52
 [#0002]
 Length=240
-Lyric=‚¶
+Lyric=‚¸‚¡
 NoteNum=71
 PreUtterance=112
 VoiceOverlap=52
@@ -195,7 +195,7 @@ StartPoint=0
 Envelope=0,5,35,0,100,100,0
 [#0015]
 Length=240
-Lyric=‚©
+Lyric=‚®‚Ÿ
 NoteNum=67
 PreUtterance=102
 VoiceOverlap=0
