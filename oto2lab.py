@@ -17,8 +17,11 @@ from glob import glob
 from pprint import pprint
 from shutil import copy2, move
 
-# from utaupy import convert, label as _label, otoini as _otoini, table, ust as _ust
-import utaupy as up
+from utaupy import label as _label
+from utaupy import otoini as _otoini
+from utaupy import table as _table
+from utaupy import ust as _ust
+from utaupy import convert as _convert
 
 # from pathlib import Path
 # from pprint import pprint
@@ -78,11 +81,11 @@ def ustfile_to_inifile_solo(path_ustfile, outdir, path_tablefile, mode='romaji_c
     # 'outdir/<name>.ini'
     print('converting UST to INI :', path_ustfile)
     # UST を読み取り
-    ust = up.ust.load(path_ustfile)
+    ust = _ust.load(path_ustfile)
     # ust.replace_lyrics('息', 'br')
     # ust.replace_lyrics('R', 'pau')
     # 変換
-    otoini = up.convert.ust2otoini(ust, name_wav, path_tablefile)
+    otoini = _convert.ust2otoini(ust, name_wav, path_tablefile, mode=mode, debug=DEBUG_MODE)
     otoini.write(path_inifile)
     print('converted  UST to INI :', path_inifile)
     return path_inifile
@@ -123,9 +126,9 @@ def inifile_to_labfile_solo(path_inifile, outdir, mode='auto'):
     path_labfile = '{}/{}'.format(outdir, basename.replace('.ini', '.lab'))
     print('converting INI to LAB :', path_inifile)
     # INI を読み取り
-    o = up.otoini.load(path_inifile)
+    o = _otoini.load(path_inifile)
     # 変換
-    lab = up.convert.otoini2label(o, mode=mode, debug=DEBUG_MODE)
+    lab = _convert.otoini2label(o, mode=mode, debug=DEBUG_MODE)
     # LAB を書き出し
     lab.write(path_labfile)
     print('converted  INI to LAB :', path_labfile)
@@ -168,8 +171,8 @@ def labfile_to_inifile_solo(path_labfile, outdir):
     name_wav = basename.replace('.lab', '.wav')
     # 変換開始
     print('converting LAB to INI :', path_labfile)
-    label = up.label.load(path_labfile)
-    otoini = up.convert.label2otoini(label, name_wav)
+    label = _label.load(path_labfile)
+    otoini = _convert.label2otoini(label, name_wav)
     otoini.write(path_inifile)
     print('converted  LAB to INI :', path_inifile)
 
@@ -217,10 +220,10 @@ def inifile_kana2romaji(path, path_tablefile):
         print('\n出力ファイル上書き回避のため、既存INIファイルを移動します。')
         path_backup = backup_files(outdir, 'ini')
         print('移動先:', path_backup)
-    d = up.table.load(path_tablefile)
+    d = _table.load(path_tablefile)
     # ファイル変換処理
     for p in l:
-        otoini = up.otoini.load(p)
+        otoini = _otoini.load(p)
         for oto in otoini.values:
             try:
                 oto.alias = ' '.join(d[oto.alias])
