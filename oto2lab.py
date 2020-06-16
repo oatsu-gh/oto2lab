@@ -8,15 +8,20 @@ setParam での音声ラベリング支援ツールです。
 ・ini → lab
 ・lab → ini
 """
+import argparse
 import os
 # import re
-import sys
+# import sys
 from datetime import datetime
 from glob import glob
 from pprint import pprint
 from shutil import copy2, move
 
-from utaupy import convert, label, otoini, table, ust
+from utaupy import label as _label
+from utaupy import otoini as _otoini
+from utaupy import table as _table
+from utaupy import ust as _ust
+from utaupy import convert as _convert
 
 # from pathlib import Path
 # from pprint import pprint
@@ -76,12 +81,12 @@ def ustfile_to_inifile_solo(path_ustfile, outdir, path_tablefile, mode='romaji_c
     # 'outdir/<name>.ini'
     print('converting UST to INI :', path_ustfile)
     # UST を読み取り
-    ustobj = ust.load(path_ustfile)
-    # ustobj.replace_lyrics('息', 'br')
-    # ustobj.replace_lyrics('R', 'pau')
+    ust = _ust.load(path_ustfile)
+    # ust.replace_lyrics('息', 'br')
+    # ust.replace_lyrics('R', 'pau')
     # 変換
-    otoiniobj = convert.ust2otoini(ustobj, name_wav, path_tablefile)
-    otoiniobj.write(path_inifile)
+    otoini = _convert.ust2otoini(ust, name_wav, path_tablefile, mode=mode, debug=DEBUG_MODE)
+    otoini.write(path_inifile)
     print('converted  UST to INI :', path_inifile)
     return path_inifile
 
@@ -121,9 +126,9 @@ def inifile_to_labfile_solo(path_inifile, outdir, mode='auto'):
     path_labfile = '{}/{}'.format(outdir, basename.replace('.ini', '.lab'))
     print('converting INI to LAB :', path_inifile)
     # INI を読み取り
-    o = otoini.load(path_inifile)
+    o = _otoini.load(path_inifile)
     # 変換
-    lab = convert.otoini2label(o, mode=mode, debug=DEBUG_MODE)
+    lab = _convert.otoini2label(o, mode=mode, debug=DEBUG_MODE)
     # LAB を書き出し
     lab.write(path_labfile)
     print('converted  INI to LAB :', path_labfile)
@@ -166,9 +171,9 @@ def labfile_to_inifile_solo(path_labfile, outdir):
     name_wav = basename.replace('.lab', '.wav')
     # 変換開始
     print('converting LAB to INI :', path_labfile)
-    lab = label.load(path_labfile)
-    o = convert.label2otoini(lab, name_wav)
-    o.write(path_inifile)
+    label = _label.load(path_labfile)
+    otoini = _convert.label2otoini(label, name_wav)
+    otoini.write(path_inifile)
     print('converted  LAB to INI :', path_inifile)
 
 
@@ -215,18 +220,18 @@ def inifile_kana2romaji(path, path_tablefile):
         print('\n出力ファイル上書き回避のため、既存INIファイルを移動します。')
         path_backup = backup_files(outdir, 'ini')
         print('移動先:', path_backup)
-    d = table.load(path_tablefile)
+    d = _table.load(path_tablefile)
     # ファイル変換処理
     for p in l:
-        otoiniobj = otoini.load(p)
-        for oto in otoiniobj.values:
+        otoini = _otoini.load(p)
+        for oto in otoini.values:
             try:
-                oto.alies = ' '.join(d[oto.alies])
+                oto.alias = ' '.join(d[oto.alias])
             except KeyError as e:
                 print('[WARNING] KeyError in oto2lab.inifile_kana2ramaji')
                 print('  詳細:', e)
         print(p)
-        otoiniobj.write(p)
+        otoini.write(p)
 
 
 # def run_ExecuteUstToOto(path_xlsm):
@@ -285,7 +290,7 @@ def main_cli():
     # labファイルをiniファイルに変換
     elif mode in ['3', '３']:
         labfile_to_inifile_multi(path)
-
+    # iniファイルをひらがなCV→romaCV変換
     elif mode in ['4', '４']:
         inifile_kana2romaji(path, path_tablefile)
     else:
@@ -303,27 +308,30 @@ def main_gui(path, mode):
     # ustファイルを変換
     if mode == '1':
         ustfile_to_inifile_multi(path, path_tablefile)
-
     # iniファイルを変換
     elif mode == '2':
         inifile_to_labfile_multi(path)
-
     # labファイルをiniファイルに変換
     elif mode == '3':
         labfile_to_inifile_multi(path)
+    # iniファイルをひらがなCV→romaCV変換
+    elif mode in ['4', '４']:
+        inifile_kana2romaji(path, path_tablefile)
 
 
 if __name__ == '__main__':
-    print('_____ξ・ヮ・) < oto2lab v1.2.1 ________\n')
-    args = sys.argv
-    if '--debug' in args:
-        args.remove('--debug')
-        DEBUG_MODE = True
+    print('_____ξ・ヮ・) < oto2lab v1.2.2 beta ________\n')
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p', '--path', help='input path')
+    # parser.add_argument('-i', '--input', help='input path')
+    parser.add_argument('-m', '--mode', help='機能選択の番号')
+    parser.add_argument('--debug', help='debug flag', action='store_true')
+    args = parser.parse_args()
+    DEBUG_MODE = args.debug
 
-    if len(args) == 1:
+    if args.path is None and args.mode is None:
         main_cli()
         input('Press Enter to exit.')
-
     else:
-        main_gui(path=args[1], mode=args[3])
+        main_gui(path=args.path, mode=args.mode)
