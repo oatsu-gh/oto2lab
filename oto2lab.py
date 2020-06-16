@@ -320,7 +320,10 @@ def main_gui(path, mode):
 
 
 if __name__ == '__main__':
-    print('_____ξ・ヮ・) < oto2lab v1.2.2 beta ________\n')
+    print('_____ξ・ヮ・) < oto2lab v1.2.2 beta ________')
+    print('© 2001-2020 Python Software Foundation')
+    print('© 2020 oatsu, Haruqa\n')
+
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--path', help='input path')
