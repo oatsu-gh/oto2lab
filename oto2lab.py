@@ -320,7 +320,7 @@ def main_gui(path, mode):
 
 
 if __name__ == '__main__':
-    print('_____ξ・ヮ・) < oto2lab v1.2.2 beta ________')
+    print('_____ξ・ヮ・) < oto2lab v1.2.2 ________')
     print('© 2001-2020 Python Software Foundation')
     print('© 2020 oatsu, Haruqa\n')
 
