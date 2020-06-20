@@ -27,6 +27,7 @@ from utaupy import convert as _convert
 # from pprint import pprint
 
 DEBUG_MODE = False
+TABLE_PATH = './table/japanese_sjis.table'
 
 
 def evacuate_files(path_dir, ext):
@@ -271,7 +272,7 @@ def main_cli():
     """
     全体の処理を実行
     """
-    path_tablefile = './table/japanese_sinsy_sjis.table'
+    path_tablefile = TABLE_PATH
     print('実行内容を数字で選択してください。')
     print('1 ... UST -> INI の変換')
     print('2 ... INI -> LAB の変換')
@@ -302,7 +303,7 @@ def main_gui(path, mode):
     """
     oto2lab_gui.exe から呼び出されたときの処理
     """
-    path_tablefile = './table/japanese_sinsy_sjis.table'
+    path_tablefile = TABLE_PATH
     path = path.strip(r'"')
 
     # ustファイルを変換
@@ -320,7 +321,7 @@ def main_gui(path, mode):
 
 
 if __name__ == '__main__':
-    print('_____ξ・ヮ・) < oto2lab v1.2.2 ________')
+    print('_____ξ・ヮ・) < oto2lab v1.3.0 ________')
     print('© 2001-2020 Python Software Foundation')
     print('© 2020 oatsu, Haruqa\n')
 
