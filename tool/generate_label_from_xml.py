@@ -11,13 +11,13 @@ import pysinsy
 
 def main():
     p = input('musicxmlがあるフォルダのPATHを入力してね : ')
-    xmlfiles = glob(f'{p}/**/*.musicxml')
-    xmlfiles += glob(f'{p}/**/*.xml')
+    xmlfiles = glob(f'{p}/**/*.musicxml', recursive=True)
+    xmlfiles += glob(f'{p}/**/*.xml', recursive=True)
     for v in xmlfiles:
         print(v)
-    input('waiting')
     for xml in xmlfiles:
         generate_label(xml)
+    print('complete')
 
 
 def generate_label(xmlpath):
