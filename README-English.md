@@ -12,10 +12,7 @@ To make singing DB by utilizing existing software (setParam) and know-how (Otoin
 
 ## Notes
 
-- I borrowed "Japanese. table" from [Kiritan singing DB](https://zunko.jp/kiridev/login.php).
 - Please note that the script name may change with the upgrade.
-
-
 
 ## Development Environment
 
@@ -24,12 +21,14 @@ To make singing DB by utilizing existing software (setParam) and know-how (Otoin
 
 ## Procedure (Entire)
 
+The specification has changed after v2.0.0.
+
 1. Sing to make a WAV file.
-1. Make UST.
+1. Make UST of the song.
 1. Match the timing of WAV to UST.
-1. Use this tool to convert UST to INI.
-1. Edit the INI with setParam and save it.
-1. Convert to LAB with this tool.
+1. Convert UST to INI with **oto2lab**.
+1. Edit the INI with **setParam** and save it.
+1. Convert to LAB with **oto2lab**.
 1. Finished
 
 ## Procedure (Details)
@@ -39,11 +38,11 @@ To make singing DB by utilizing existing software (setParam) and know-how (Otoin
 For the purpose of label conversion, it is used differently from the original sound setting of UTAU.
 Set the following.
 
-- Left blank: Not used
-- Overlap: Voice start position
-- Precedence: Consonant and vowel breaks
-- Fixed Range: Not used (the boundary between the second and third notes only when composed of three phonemes)
-- Right Blank: Not used
+- Offset: Not used
+- Overlap: Consonant start
+- Preutterance: Vowel start
+- Consonant: Not used (the boundary between the second and third notes only when composed of three phonemes)
+- Cutoff: Not used
 
 ### How to use this tool
 

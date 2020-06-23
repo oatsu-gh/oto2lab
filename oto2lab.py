@@ -63,6 +63,16 @@ def backup_files(path_dir, ext):
     return backup_dir
 
 
+def backup_io(path_file, outdirname):
+    """
+    ファイル名に時刻を組み込んでバックアップ
+    入出力ファイル向け。
+    """
+    basename, ext = os.path.splitext(os.path.basename(path_file))
+    now = datetime.now().strftime('%Y%m%d_%H%M%S')
+    copy2(path_file, f'{os.path.dirname(__file__)}/backup/{outdirname}/{basename}__{now}{ext}')
+
+
 def ustfile_to_inifile_solo(path_ustfile, outdir, path_tablefile, mode='romaji_cv'):
     """
     USTファイルをINIファイルに変換
@@ -74,8 +84,9 @@ def ustfile_to_inifile_solo(path_ustfile, outdir, path_tablefile, mode='romaji_c
     basename = os.path.basename(path_ustfile)  # '<name>.ust'
     name_wav = basename.replace('.ust', '.wav')  # '<name>.wav'
     path_inifile = '{}/{}'.format(outdir, basename.replace('.ust', '.ini'))
-    # 'outdir/<name>.ini'
-    print('converting UST to INI :', path_ustfile)
+
+    print('converting UST to INI :', path_ustfile)  # 'outdir/<name>.ini'
+    backup_io(path_ustfile, 'in')
     # UST を読み取り
     ust = up.ust.load(path_ustfile)
     # ust.replace_lyrics('息', 'br')
@@ -83,7 +94,9 @@ def ustfile_to_inifile_solo(path_ustfile, outdir, path_tablefile, mode='romaji_c
     # 変換
     otoini = up.convert.ust2otoini(ust, name_wav, path_tablefile, mode=mode, debug=DEBUG_MODE)
     otoini.write(path_inifile)
+    backup_io(path_inifile, 'out')
     print('converted  UST to INI :', path_inifile)
+
     return path_inifile
 
 
@@ -120,13 +133,16 @@ def inifile_to_labfile_solo(path_inifile, outdir, mode='auto'):
     """
     basename = os.path.basename(path_inifile)
     path_labfile = '{}/{}'.format(outdir, basename.replace('.ini', '.lab'))
+
     print('converting INI to LAB :', path_inifile)
+    backup_io(path_inifile, 'in')
     # INI を読み取り
     o = up.otoini.load(path_inifile)
     # 変換
     lab = up.convert.otoini2label(o, mode=mode, debug=DEBUG_MODE)
     # LAB を書き出し
     lab.write(path_labfile)
+    backup_io(path_labfile, 'out')
     print('converted  INI to LAB :', path_labfile)
     return path_labfile
 
@@ -167,9 +183,11 @@ def labfile_to_inifile_solo(path_labfile, outdir):
     name_wav = basename.replace('.lab', '.wav')
     # 変換開始
     print('converting LAB to INI :', path_labfile)
+    backup_io(path_labfile, 'in')
     label = up.label.load(path_labfile)
     otoini = up.convert.label2otoini(label, name_wav)
     otoini.write(path_inifile)
+    backup_io(path_inifile, 'out')
     print('converted  LAB to INI :', path_inifile)
 
 
@@ -219,6 +237,7 @@ def inifile_kana2romaji(path, path_tablefile):
     d = up.table.load(path_tablefile)
     # ファイル変換処理
     for p in l:
+        backup_io(p, 'in')
         otoini = up.otoini.load(p)
         for oto in otoini.values:
             try:
@@ -228,39 +247,7 @@ def inifile_kana2romaji(path, path_tablefile):
                 print('  詳細:', e)
         print(p)
         otoini.write(p)
-
-
-# def run_ExecuteUstToOto(path_xlsm):
-#     """
-#     ust→ini 用のExcelVBAを実行する
-#     """
-#     abspath = str(Path(path_xlsm).resolve())  # 絶対パスに変換
-#     excel = win32com.client.Dispatch('Excel.Application')
-#     excel.Visible = 0  # Excelの表示設定（0:非表示, 1:表示）
-#     excel.Workbooks.Open(abspath, UpdateLinks=0, ReadOnly=True)  # 読み取り専用で開く
-#
-#     excel.Application.Run('ExecuteUstToOto')  # マクロを実行
-#     excel.Workbooks(1).Close(SaveChanges=0)  # ブックを保存せずに閉じる
-#     excel.Application.Quit()
-
-
-# def ustfile_to_inifile_Excel(dir_ust):
-#     """
-#     Excelのツールを使用してUST→INI変換
-#     """
-#     import win32com.client  # Excel操作に使用
-#     print('\nust -> ini 変換します。数秒かかります。')
-#     ust_files = glob('{}/*.ust'.format(dir_ust))
-#     if ust_files == []:
-#         print('[ERROR] ustファイルを設置してください。')
-#         input('Press Enter to exit.')
-#         sys.exit()
-#
-#     print('入力UST一覧-------------------')
-#     pprint(ust_files)
-#     print('------------------------------')
-#     run_ExecuteUstToOto('歌声DBラベリング用ust→oto変換ツール.xlsm')
-#     print('ust -> ini 変換しました。')
+        backup_io(p, 'out')
 
 
 def main_cli():
@@ -316,7 +303,7 @@ def main_gui(path, mode):
 
 
 if __name__ == '__main__':
-    print('_____ξ・ヮ・) < oto2lab v1.3.0 ________')
+    print('_____ξ・ヮ・) < oto2lab v2.0.0 ________')
     print('© 2001-2020 Python Software Foundation')
     print('© 2020 oatsu, Haruqa\n')
 
