@@ -13,23 +13,25 @@ D&Dでファイルもしくはフォルダー指定可能
 　Windows標準のフォルダー選択ダイアログも使えるけど、使いづらいのでファイルダイアログを使用してます
 　使いづらい：パスが入力できなかったり、ツリーを開いてくのが面倒だったり
 
---input [ファイル/フォルダパス]
+\--input [ファイル/フォルダパス]
 
 ### Option
 
-実行オプションに --mode 
-ust to oto：1
-oto to lab：2
-lab to oto：3
-svp to oto：4
+実行オプションに `--mode`
+
+-   ust to oto：`1`
+-   oto to lab：`2`
+-   lab to oto：`3`
+-   svp to oto：`4`  
+
 を付加します
 
 ### Append option
 
-実行オプションに
-Debug：--debug
-Kana Alias：--kana
-を付加します
+実行オプションに付加します。
+
+-   Debug：`--debug`
+-   Kana Alias：`--kana`
 
 ### oto2lab.exeの起動時
 
@@ -47,11 +49,12 @@ Kana Alias：--kana
 
 ## 更新履歴
 
-- 2.1.0
-  - Debug mode を削除
-  - Kana Alias は残してあるけどoto2lab本体は未実装
+-   2.1.0
 
-- 2.0.0
-  - オプション「svp to oto」を追加
-  - 追加オプション「Debug mode」「Kana Alias」を追加
-  - ウィンドウサイズを変更可能に更新
+    -   Debug mode を削除
+    -   Kana Alias は残してあるけどoto2lab本体は未実装
+
+-   2.0.0
+    -   オプション「svp to oto」を追加
+    -   追加オプション「Debug mode」「Kana Alias」を追加
+    -   ウィンドウサイズを変更可能に更新
