@@ -70,7 +70,8 @@ def backup_io(path_file, outdirname):
     """
     basename, ext = os.path.splitext(os.path.basename(path_file))
     now = datetime.now().strftime('%Y%m%d_%H%M%S')
-    copy2(path_file, f'{os.path.dirname(__file__)}/backup/{outdirname}/{basename}__{now}{ext}')
+
+    copy2(path_file, f'backup/{outdirname}/{basename}__{now}{ext}')
 
 
 def ustfile_to_inifile_solo(path_ustfile, outdir, path_tablefile, mode='romaji_cv'):
@@ -250,6 +251,30 @@ def inifile_kana2romaji(path, path_tablefile):
         backup_io(p, 'out')
 
 
+def svpfile_to_inifile_solo(path_svpfile, outdir, path_tablefile, mode='romaji_cv'):
+    """
+    USTファイルをINIファイルに変換
+    """
+    allowed_modes = ['mono', 'romaji_cv']
+    if mode not in allowed_modes:
+        raise ValueError('argument \'mode\' must be in {}'.format(allowed_modes))
+
+    basename = os.path.basename(path_svpfile)  # '<name>.ust'
+    name_wav = basename.replace('.svp', '.wav')  # '<name>.wav'
+    path_inifile = '{}/{}'.format(outdir, basename.replace('.svp', '.ini'))
+
+    print('converting SVP to INI :', path_svpfile)  # 'outdir/<name>.ini'
+    backup_io(path_svpfile, 'in')
+    svp = up.svp.load(path_svpfile)
+    ust = up.convert.svp2ust(svp, debug=DEBUG_MODE)
+    otoini = up.convert.ust2otoini(ust, name_wav, path_tablefile, mode=mode, debug=DEBUG_MODE)
+    otoini.write(path_inifile)
+    backup_io(path_inifile, 'out')
+    print('converted  SVP to INI :', path_inifile)
+
+    return path_inifile
+
+
 def main_cli():
     """
     全体の処理を実行
@@ -259,7 +284,8 @@ def main_cli():
     print('1 ... UST -> INI の変換')
     print('2 ... INI -> LAB の変換')
     print('3 ... INI <- LAB の変換')
-    print('4 ... INI ファイルのエイリアス置換（かな -> ローマ字）')
+    print('4 ... SVP -> INI の変換')
+    print('5 ... INI ファイルのエイリアス置換（かな -> ローマ字）')
     mode = input('>>> ')
     print('処理対象ファイルまたはフォルダを指定してください。')
     path = input('>>> ').strip(r'"')
@@ -273,11 +299,16 @@ def main_cli():
     # labファイルをiniファイルに変換
     elif mode in ['3', '３']:
         labfile_to_inifile_multi(path)
-    # iniファイルをひらがなCV→romaCV変換
     elif mode in ['4', '４']:
+        # svpファイルをiniファイルに変換(ustオブジェクト経由)
+        outdir = os.path.dirname(path)
+        svpfile_to_inifile_solo(path, outdir, path_tablefile)
+    elif mode in ['5', '５']:
+        # iniファイルをひらがなCV→romaCV変換
         inifile_kana2romaji(path, path_tablefile)
     else:
-        print('1 か 2 か 3 で選んでください。\n')
+        # 想定外のモードが指定されたとき
+        print('1 から 5 で選んでください。\n')
         main_cli()
 
 
@@ -287,36 +318,50 @@ def main_gui(path, mode):
     """
     path_tablefile = TABLE_PATH
     path = path.strip(r'"')
-
-    # ustファイルを変換
     if mode == '1':
+        # ustファイルを変換
         ustfile_to_inifile_multi(path, path_tablefile)
-    # iniファイルを変換
     elif mode == '2':
+        # iniファイルを変換
         inifile_to_labfile_multi(path)
-    # labファイルをiniファイルに変換
     elif mode == '3':
+        # labファイルをiniファイルに変換
         labfile_to_inifile_multi(path)
-    # iniファイルをひらがなCV→romaCV変換
-    elif mode in ['4', '４']:
-        inifile_kana2romaji(path, path_tablefile)
+    elif mode == '4':
+        # svpファイルをiniファイルに変換(ustオブジェクト経由)
+        outdir = os.path.dirname(path)
+        svpfile_to_inifile_solo(path, outdir, path_tablefile)
+    elif mode == None:
+        print('mode番号が設定されてないみたい。')
 
 
 if __name__ == '__main__':
-    print('_____ξ・ヮ・) < oto2lab v2.0.0 ________')
-    print('© 2001-2020 Python Software Foundation')
-    print('© 2020 oatsu, Haruqa\n')
+    print('_____ξ・ヮ・) < oto2lab v2.1.0 ________')
+    print('Copyright (c) 2001-2020 Python Software Foundation')
+    print('Copyright (c) 2020 oatsu, Haruqa')
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p', '--path', help='input path')
-    # parser.add_argument('-i', '--input', help='input path')
-    parser.add_argument('-m', '--mode', help='機能選択の番号')
-    parser.add_argument('--debug', help='debug flag', action='store_true')
+    parser.add_argument('-i', '--input', help='入力ファイルかフォルダ input path\t(file or dir)')
+    parser.add_argument('-m', '--mode', help='モード選択 mode seliction\t(1~5)')
+    parser.add_argument('--debug', help='デバッグモード debug flag\t(bool)', action='store_true')
+    parser.add_argument('--gui', help='executed by oto2labGUI\t(bool)', action='store_true')
+    parser.add_argument('--kana', help='日本語のINIエイリアスの時に有効にしてね\t(bool)', action='store_true')
+
     args = parser.parse_args()
     DEBUG_MODE = args.debug
 
-    if args.path is None and args.mode is None:
+    # バックアップ用のフォルダを生成
+    os.makedirs('backup/in', exist_ok=True)
+    os.makedirs('backup/out', exist_ok=True)
+
+    if args.gui is False:
+        if DEBUG_MODE:
+            print('args:', args)
         main_cli()
         input('Press Enter to exit.')
+
     else:
-        main_gui(path=args.path, mode=args.mode)
+        # NOTE: GUI呼び出しでデバッグモードにすると実行失敗することが判明。
+        # args は 扱えるがprintしようとすると落ちる。
+        # args をつかうのやめてもなんか落ちる。標準出力が多いせいか。
+        main_gui(path=args.input, mode=args.mode)
