@@ -6,6 +6,7 @@ desktop.ini
 *.ini
 *.lnk*
 *.ccd
+*.csv
 *.xlsx
 *.setParam-Scache
 *setParam-backup*
