@@ -1,7 +1,8 @@
 #!python3
 # coding: utf-8
+# Copyright (c) 2020 oatsu
 """
-about module
+USTからSHIRO用のCSVを生成するツール
 """
 
 import os
@@ -15,11 +16,10 @@ import utaupy as up
 
 def ustfiles2shiroindexfile(ust_dir, d):
     """
-    ustオブジェクト、音声ファイル名、かなローマ辞書
+    ust_dir: ustファイルがあるディレクトリパス、
+    d: かなローマ変換辞書
     """
-    if os.path.isdir(ust_dir):
-        ustfiles = glob('{}/*.{}'.format(ust_dir, 'ust'))
-    print()
+    ustfiles = glob('{}/*.{}'.format(ust_dir, 'ust'))
     pprint(ustfiles)
 
     l = []  # indexの元にするリスト
