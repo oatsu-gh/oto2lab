@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!python3
 # coding: utf-8
 # Copyright 2020 oatsu
 """
@@ -338,7 +338,7 @@ def main_gui(path, mode):
 if __name__ == '__main__':
     print('_____ξ・ヮ・) < oto2lab v2.1.0 ________')
     print('Copyright (c) 2001-2020 Python Software Foundation')
-    print('Copyright (c) 2020 oatsu, Haruqa')
+    print('Copyright (c) 2020 oatsu, Haruqa\n')
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--input', help='入力ファイルかフォルダ input path\t(file or dir)')
