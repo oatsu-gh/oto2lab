@@ -6,7 +6,7 @@
 
 ## ツール紹介
 
-### audacitylabel2lab.py
+### audacitylabel2lab
 
 Audacityでラベリングしたいときのツール。
 Audacityのラベルファイル（txt）を歌唱DBのモノラベルファイル（lab）に変換します。
