@@ -5,7 +5,7 @@ copy /Y reclist2region.py 録音リストからリージョンCSVを生成するツール\reclist2re
 copy /Y README.md 録音リストからリージョンCSVを生成するツール\readme.txt
 cd 録音リストからリージョンCSVを生成するツール
 
-pyinstaller reclist2region.py --onefile --clean --exclude-module readme.txt
+pyinstaller.exe reclist2region.py --onefile --clean --exclude-module readme.txt
 
 move /Y dist\reclist2region.exe reclist2region.exe
 rmdir /s /q dist, build, __pycache__
