@@ -8,6 +8,7 @@ desktop.ini
 *.ccd
 *.csv
 *.xlsx
+*.zip
 *.setParam-Scache
 *setParam-backup*
 *python-*

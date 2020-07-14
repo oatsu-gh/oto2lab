@@ -17,8 +17,8 @@ Audacityのラベルファイル（txt）を歌唱DBのモノラベルファイ�
 
 相互変換対象は以下の２種類です。
 
-- Sinsy（時間単位 [100ns]）
-- 東北きりたん歌唱DB（時間単位 [s]） 
+- Sinsy（時間単位 100ns）
+- 東北きりたん歌唱DB（時間単位 s） 
 
 ### generate_label_from_xml
 
@@ -31,6 +31,12 @@ pysinsyの環境が無いと使えません。
 歌唱DBのモノラベルをすべて取得して、音素の網羅状況をチェックします。
 
 検査結果を タブ区切りテキストに出力します。Excel で編集すると良いかもしれません。
+
+### reclist2region
+
+UTAU音源収録の録音リストから、REAPER用のリージョン用CSVを生成します。
+
+参考： [REAPERでUTAU音源を録音しよう](http://tatsu3.hateblo.jp/entry/2019/10/25/210055)
 
 ### ust2shiroindex
 
