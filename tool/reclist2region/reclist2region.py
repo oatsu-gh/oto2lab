@@ -50,7 +50,7 @@ def reclist2regioncsv(reclist, a, b):
 def main():
     a = int(input('1行ごとの発声長さ（小節）を入力してください: '))
     b = int(input('1行ごとの余白長さ（小節）を入力してください: '))
-    inpath = input('録音リストのパスを指定してください: ')
+    inpath = input('録音リストのパスを指定してください: ').strip(r'"')
     print()
 
     reclist = up.reclist.load(inpath)
@@ -62,7 +62,7 @@ def main():
 
 
 if __name__ == '__main__':
-    print('_____ξ・ヮ・) < reclist2region v0.0.1 ________')
+    print('_____ξ・ヮ・) < reclist2region v0.0.2 ________')
     print('録音リストからリージョンCSVを生成するツール')
     print('Copyright (c) 2001-2020 Python Software Foundation')
     print('Copyright (c) 2020 oatsu\n')
