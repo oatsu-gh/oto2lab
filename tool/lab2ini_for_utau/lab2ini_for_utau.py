@@ -41,15 +41,18 @@ def label2otoini_for_utau(label, name_wav, table, dt=100, threshold=300):
                 tmp.append(phoneme)
                 oto = up.otoini.Oto()
                 oto.filename = name_wav
-                kana = table[''.join([ph.symbol for ph in tmp])][0]
-                oto.alias = '{} {}'.format(prev_vowel, kana)
-                # oto.alias = '{}'.format(''.join([ph.symbol for ph in tmp]))
-                oto.offset = (time_order_ratio * tmp[0].start) - dt
-                oto.overlap = dt
-                oto.preutterance = (time_order_ratio * tmp[-1].start) - oto.offset
-                oto.consonant = oto.preutterance + dt
-                oto.cutoff2 = time_order_ratio * tmp[-1].end - dt
-                l.append(oto)
+                try:
+                    kana = table[''.join([ph.symbol for ph in tmp])][0]
+                    oto.alias = '{} {}'.format(prev_vowel, kana)
+                    # oto.alias = '{}'.format(''.join([ph.symbol for ph in tmp]))
+                    oto.offset = (time_order_ratio * tmp[0].start) - dt
+                    oto.overlap = dt
+                    oto.preutterance = (time_order_ratio * tmp[-1].start) - oto.offset
+                    oto.consonant = oto.preutterance + dt
+                    oto.cutoff2 = time_order_ratio * tmp[-1].end - dt
+                    l.append(oto)
+                except KeyError as e:
+                    print('[ERROR]:', e)
             tmp = []
             prev_vowel = phoneme.symbol.replace('N', 'n')
         else:
