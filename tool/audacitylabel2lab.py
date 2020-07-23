@@ -18,8 +18,11 @@ def audacitylabelfile2labfile(inpath, outpath):
     txt (Audacityのラベル) -> lab (歌唱DBモノフォンラベル)
     単一ファイルを変換
     """
-    label = up.label.load(inpath, kiritan=True)
-    lines = label.write(outpath, delimiter='\t')
+    l = up.label.load_as_plainlist(inpath, kiritan=True)
+    lines = ['{}\t{}\t{}'.format(*v) for v in l]
+    # ファイル出力
+    with open(path, mode=mode, encoding=encoding, newline=newline) as f:
+        f.write('\n'.join(lines))
 
 
 def main():

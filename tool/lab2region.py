@@ -2,7 +2,9 @@
 # coding: utf-8
 # Copyright (c) oatsu
 """
-歌唱DBのモノフォンラベルファイルをREAPERのリージョンようCSVに変換する
+歌唱DBのモノフォンラベルファイルをREAPERのリージョン用CSVに変換する
+【更新履歴】
+v0.0.1 ... utaupy.label の仕様変更に対応
 """
 
 import datetime
@@ -16,13 +18,13 @@ def label2regioncsv(label):
     """
     ラベルオブジェクト（？）をリージョンCSV用のオブジェクトに変換する。
     """
-    l = label.values
+    phonemes = label.values
     regioncsv = up.reaper.RegionCsv()
-    for v in l:
+    for phoneme in phonemes:
         region = up.reaper.Region()
-        region.name = v[2]
-        region.start = datetime.timedelta(seconds = v[0] * (10**(-7)))
-        region.end = datetime.timedelta(seconds = v[1] * (10**(-7)))
+        region.name = phoneme.symbol
+        region.start = datetime.timedelta(seconds = phoneme.start * (10**(-7)))
+        region.end = datetime.timedelta(seconds = phoneme.end * (10**(-7)))
         regioncsv.append(region)
     return regioncsv
 
@@ -50,9 +52,8 @@ def main():
     labfile2regionfile(inpath, outpath)
 
 
-
 if __name__ == '__main__':
-    print('_____ξ・ヮ・) < lab2region v0.0.0 ________')
+    print('_____ξ・ヮ・) < lab2region v0.0.1 ________')
     print('音素ラベルからリージョンCSVを生成するツール')
     print('Copyright (c) 2001-2020 Python Software Foundation')
     print('Copyright (c) 2020 oatsu\n')
