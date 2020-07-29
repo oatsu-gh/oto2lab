@@ -3,10 +3,13 @@
 # Copyright (c) oatsu
 """
 歌唱DBのモノフォンラベルファイルをREAPERのリージョンようCSVに変換する
+v0.0.1
+- フォルダごと処理できるようにした。
 """
 
 import datetime
 import os
+from glob import glob
 from pprint import pprint
 
 import utaupy as up
@@ -18,11 +21,11 @@ def label2regioncsv(label):
     """
     l = label.values
     regioncsv = up.reaper.RegionCsv()
-    for v in l:
+    for phoneme in l:
         region = up.reaper.Region()
-        region.name = v[2]
-        region.start = datetime.timedelta(seconds = v[0] * (10**(-7)))
-        region.end = datetime.timedelta(seconds = v[1] * (10**(-7)))
+        region.name = phoneme.symbol
+        region.start = datetime.timedelta(seconds = phoneme.start * (10**(-7)))
+        region.end = datetime.timedelta(seconds = phoneme.end * (10**(-7)))
         regioncsv.append(region)
     return regioncsv
 
@@ -42,17 +45,18 @@ def main():
     """
     パスを入力させて処理を実行する
     """
-    # 入力パス
-    inpath = input('labファイルのパスを入力してください。\n>>> ').strip(r'"')
-    # 出力パス
-    outpath = os.path.splitext(inpath)[0] + '.csv'
-    # ファイル変換
-    labfile2regionfile(inpath, outpath)
+    path_labdir = input('labfileがあるフォルダのパスを入力してください。（再帰的に取得します。）\n>>> ').strip('\"')
+    l = glob(f'{path_labdir}/**/*.lab')
+    pprint(l)
+    for path_lab in l:
+        path_outcsv = os.path.splitext(path_lab)[0] + '.csv'
+        # ファイル変換
+        labfile2regionfile(path_lab, path_outcsv)
 
 
 
 if __name__ == '__main__':
-    print('_____ξ・ヮ・) < lab2region v0.0.0 ________')
+    print('_____ξ・ヮ・) < lab2region v0.0.1 ________')
     print('音素ラベルからリージョンCSVを生成するツール')
     print('Copyright (c) 2001-2020 Python Software Foundation')
     print('Copyright (c) 2020 oatsu\n')

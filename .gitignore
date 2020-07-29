@@ -5,6 +5,7 @@ desktop.ini
 *.exe
 *.ini
 *.lnk*
+*.cache
 *.ccd
 *.csv
 *.xlsx

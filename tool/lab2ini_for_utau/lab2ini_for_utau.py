@@ -6,8 +6,9 @@
 wavファイルと同じディレクトリにoto.iniを生成する。
 """
 import os
-from pprint import pprint
 from glob import glob
+from pprint import pprint
+
 import utaupy as up
 
 CONSONANTS = ['b', 'by', 'ch', 'd', 'dy', 'f', 'g', 'gy', 'h', 'hy', 'j', 'k', 'ky',
