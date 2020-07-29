@@ -55,5 +55,7 @@ def main():
 
 if __name__ == '__main__':
     print('_____ξ・ヮ・) < voiced part length from lab v0.0.1 ________')
+    print('Copyright (c) 2001-2020 Python Software Foundation')
+    print('Copyright (c) 2020 oatsu\n')
     main()
     input('Press Enter to exit')
