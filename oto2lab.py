@@ -235,14 +235,15 @@ def inifile_kana2romaji(path, path_tablefile):
         print('\n出力ファイル上書き回避のため、既存INIファイルを移動します。')
         path_backup = backup_files(outdir, 'ini')
         print('移動先:', path_backup)
-    d = up.table.load(path_tablefile)
+    d_table = up.table.load(path_tablefile)
+    d_table.update({'R': ['pau'], 'pau': ['pau'], 'sil': ['sil'], 'br': ['br'], '息': ['br']})
     # ファイル変換処理
     for p in l:
         backup_io(p, 'in')
         otoini = up.otoini.load(p)
         for oto in otoini.values:
             try:
-                oto.alias = ' '.join(d[oto.alias])
+                oto.alias = ' '.join(d_table[oto.alias])
             except KeyError as e:
                 print('[WARNING] KeyError in oto2lab.inifile_kana2ramaji')
                 print('  詳細:', e)
@@ -267,7 +268,9 @@ def svpfile_to_inifile_solo(path_svpfile, outdir, path_tablefile, mode='romaji_c
     backup_io(path_svpfile, 'in')
     svp = up.svp.load(path_svpfile)
     ust = up.convert.svp2ust(svp, debug=DEBUG_MODE)
-    otoini = up.convert.ust2otoini(ust, name_wav, path_tablefile, mode=mode, debug=DEBUG_MODE)
+    d_table = up.table.load(path_tablefile)
+    d_table.update({'R': ['pau'], 'pau': ['pau'], 'sil': ['sil'], 'br': ['br'], '息': ['br']})
+    otoini = up.convert.ust2otoini(ust, name_wav, d_table, mode=mode, debug=DEBUG_MODE)
     otoini.write(path_inifile)
     backup_io(path_inifile, 'out')
     print('converted  SVP to INI :', path_inifile)

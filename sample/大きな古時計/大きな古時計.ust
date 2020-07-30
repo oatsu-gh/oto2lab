@@ -52,6 +52,7 @@ PBY=0.0
 PBS=-23;0.0
 StartPoint=0.285
 Envelope=0,5,20,0,100,100,100,%,15
+Label=1920
 [#0004]
 Length=480
 Lyric=‚¨
