@@ -125,7 +125,20 @@ def split_otoini(otoini, split_time_list):
         if oto.offset >= l[i + 1]:
             i += 1
         oto.filename = oto.filename.replace('.wav', f'__{str(i).zfill(6)}') + '.wav'
+        # 左ブランク位置を、切断した音声ファイルに合わせる
         oto.offset -= l[i]
+
+# 実装済み、未テスト
+def remove_pau_from_otoini(otoini):
+    """
+    エイリアスが tpl = ('R', 'pau', 'br', '息') 内にあったら Oto の行を削除
+    """
+    tpl = ('R', 'pau', 'br', '息')
+    l = []
+    for oto in otoini.values:
+        if oto.alias not in tpl:
+            l.append(oto)
+    otoini.values = l
 
 
 # 未実装
@@ -163,8 +176,8 @@ def split_wavfile(path_wav, path_outdir, split_time_list):
 
 def main():
     # 処理対象ファイルを指定
-    path_ust = input('path_ust: ')
-    path_table = input('path_table: ')
+    path_ust = input('path_ust: ').strip('"')
+    path_table = input('path_table: ').strip('"')
     path_wav = path_ust.replace('.ust', '.wav')
     # 出力フォルダを作成
     os.makedirs('out', exist_ok=True)
@@ -184,7 +197,11 @@ def main():
     name_wav = os.path.basename(path_wav)
     # 休符結合済みustオブジェクトからmoresampler用のotoiniオブジェクトを生成する
     # NOTE: ひらがな連続音エイリアスになるようにする
-    otoini_processed = up.convert.ust2otoini(ust_processed, name_wav, path_table)
+    d_table = up.table.load(path_table)
+    d_table.update({'R': ['pau'], 'pau': ['pau'], 'sil': ['sil'], 'br': ['br'], '息': ['br']})
+    otoini_processed = up.convert.ust2otoini(ust_processed, name_wav, d_table, dt=50, replace=False)
+    # moresampler で使えるように休符とブレスを除く
+    remove_pau_from_otoini(otoini_processed)
     # 左ブランクの時刻をもとに、切断が含まれるエイリアスでfilenameの通し番号を変える
     split_otoini(otoini_processed, split_time_list)
     otoini_processed.write('out/oto.ini')
