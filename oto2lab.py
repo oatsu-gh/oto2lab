@@ -334,7 +334,7 @@ def main_gui(path, mode):
         # svpファイルをiniファイルに変換(ustオブジェクト経由)
         outdir = os.path.dirname(path)
         svpfile_to_inifile_solo(path, outdir, path_tablefile)
-    elif mode == None:
+    elif mode is None:
         print('mode番号が設定されてないみたい。')
 
 
