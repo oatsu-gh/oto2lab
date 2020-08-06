@@ -11,8 +11,9 @@ from pprint import pprint
 
 import utaupy as up
 
-CONSONANTS = ['b', 'by', 'ch', 'd', 'dy', 'f', 'g', 'gy', 'h', 'hy', 'j', 'k', 'ky',
-              'm', 'my', 'n', 'ny', 'p', 'py', 'r', 'ry', 's', 'sh', 't', 'ts', 'ty', 'v', 'w', 'y', 'z']
+CONSONANTS = ['b', 'by', 'ch', 'd', 'dy', 'f', 'g', 'gy', 'h', 'hy', 'j',
+              'k', 'ky', 'm', 'my', 'n', 'ny', 'p', 'py', 'r', 'ry', 's',
+              'sh', 't', 'ts', 'ty', 'v', 'w', 'y', 'z']
 VOWELS = ['a', 'i', 'u', 'e', 'o', 'N']
 # VOWELS = ['a', 'i', 'u', 'e', 'o', 'N', 'cl']
 
@@ -66,7 +67,10 @@ def label2otoini_for_utau(label, name_wav, table, dt=100, threshold=300):
     return otoini
 
 
-def labfiles2inifile_for_utau(path_labdir, path_table, kiritan=False):
+def labfiles2inifile_for_utau(path_labdir, path_table, dt=100, kiritan=False):
+    """
+    ファイル入出力とオブジェクト変換処理
+    """
     labfiles = glob(f'{path_labdir}/**/*.lab', recursive=True)
     pprint(labfiles)
     table = up.table.load(path_table)
@@ -74,19 +78,23 @@ def labfiles2inifile_for_utau(path_labdir, path_table, kiritan=False):
     for path_lab in labfiles:
         basename_wav = os.path.basename(path_lab).replace('.lab', '.wav')
         label = up.label.load(path_lab, kiritan=kiritan)
-        otoini = label2otoini_for_utau(label, basename_wav, table)
+        otoini = label2otoini_for_utau(label, basename_wav, table, dt=dt)
         l += otoini.values
     total_otoini = up.otoini.OtoIni()
     total_otoini.values = l
-    print('登録エイリアス数:',len(total_otoini.values))
+    print('登録エイリアス数:', len(total_otoini.values))
     total_otoini.write(path_labdir + '/oto.ini')
 
 
 def main():
+    """
+    パラメータとパスを指定して実行
+    """
     path_labdir = input('path_labdir: ')
-    path_ini = path_labdir.replace('.lab', '.ini')
+    # 左ブランクとかのずらす長さ
+    dt = float(input('dt_shift: '))
     path_table = './roma2kana_sjis.table'
-    labfiles2inifile_for_utau(path_labdir, path_table, kiritan=False)
+    labfiles2inifile_for_utau(path_labdir, path_table, dt=dt, kiritan=False)
 
 
 if __name__ == '__main__':
