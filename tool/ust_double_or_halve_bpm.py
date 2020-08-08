@@ -18,8 +18,6 @@ def double_tempo_ust(ust):
     notes = ust.notes
     for note in notes:
         note.length *= 2
-        note.pbs = [v * 2 for v in note.pbs]
-        note.pbw = [v * 2 for v in note.pbw]
 
 
 def halve_tempo_ust(ust):
@@ -30,15 +28,13 @@ def halve_tempo_ust(ust):
     notes = ust.notes
     for note in notes:
         note.length /= 2
-        note.pbs = [v / 2 for v in note.pbs]
-        note.pbw = [v // 2 for v in note.pbw]
 
 
 def main():
     """
     機能選択とファイル入出力
     """
-    path_ust_in = input('USTファイルのパスを入力してください\n>>> ')
+    path_ust_in = input('USTファイルのパスを入力してください\n>>> ').strip('"')
     ust = utaupy.ust.load(path_ust_in)
     print('どちらの機能を使いますか？( 1 / 2 )')
     print('1) ピッチを保って BPMを２倍にする')
@@ -53,7 +49,7 @@ def main():
 
     # 実行ファイルの隣に出力
     path_ust_out = os.path.basename(path_ust_in)
-    ust.write(f'./{path_ust_out}')
+    ust.write(f'{path_ust_out}')
 
 
 if __name__ == '__main__':
