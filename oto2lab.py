@@ -5,6 +5,7 @@
 setParam での音声ラベリング支援ツールです。
 ファイル形式を変換できます。
 ・ust → ini
+・svp → ini
 ・ini → lab
 ・lab → ini
 """
@@ -14,53 +15,14 @@ import os
 # import sys
 from datetime import datetime
 from glob import glob
-from pprint import pprint
-from shutil import copy2, move
-
 # from pathlib import Path
-# from pprint import pprint
+from pprint import pprint
+from shutil import copy2
+
 import utaupy as up
 
 DEBUG_MODE = False
 TABLE_PATH = './table/japanese_sjis.table'
-
-
-def evacuate_files(path_dir, ext):
-    """
-    特定の拡張子のファイルを退避させる。
-    上書きによるファイル消滅回避が目的。
-    path_dir: 処理対象フォルダ
-    ext     : 処理対象拡張子
-    """
-    ext = ext.replace('.', '')
-    old_files = glob('{}/*.{}'.format(path_dir, ext))
-    # 退避先のフォルダを作成
-    now = datetime.now().strftime('%Y%m%d_%H%M%S')
-    new_dir = '{}/old__{}'.format(path_dir, now)
-    os.mkdir(new_dir)
-    # 移動
-    for p in old_files:
-        move(p, new_dir)
-    return new_dir
-
-
-def backup_files(path_dir, ext):
-    """
-    特定の拡張子のファイルを退避させる。
-    上書きによるファイル消滅回避が目的。
-    path_dir: 処理対象フォルダ
-    ext     : 処理対象拡張子
-    """
-    ext = ext.replace('.', '')
-    old_files = glob('{}/*.{}'.format(path_dir, ext))
-    # 退避先のフォルダを作成
-    now = datetime.now().strftime('%Y%m%d_%H%M%S')
-    backup_dir = '{}/old__{}'.format(path_dir, now)
-    os.mkdir(backup_dir)
-    # 移動
-    for p in old_files:
-        copy2(p, backup_dir)
-    return backup_dir
 
 
 def backup_io(path_file, outdirname):
@@ -93,7 +55,7 @@ def split_cl_note_of_ust(ust):
             note_cl.length = half_length
 
 
-def ustfile_to_inifile_solo(path_ustfile, outdir, path_tablefile, mode='romaji_cv'):
+def ustfile_to_inifile(path, path_tablefile, mode='romaji_cv'):
     """
     USTファイルをINIファイルに変換
     """
@@ -105,122 +67,100 @@ def ustfile_to_inifile_solo(path_ustfile, outdir, path_tablefile, mode='romaji_c
     d_table = up.table.load(path_tablefile)  # kana-romaji table
     d_table.update({'R': ['pau'], 'pau': ['pau'], 'sil': ['sil'], '息': ['br'], 'br': ['br']})
 
-    basename = os.path.basename(path_ustfile)  # '<name>.ust'
-    name_wav = basename.replace('.ust', '.wav')  # '<name>.wav'
-    path_inifile = '{}/{}'.format(outdir, basename.replace('.ust', '.ini'))
-
-    print('converting UST to INI :', path_ustfile)  # 'outdir/<name>.ini'
-    backup_io(path_ustfile, 'in')
-    # UST を読み取り
-    ust = up.ust.load(path_ustfile)
-    # 促音を含むノートを分割
-    split_cl_note_of_ust(ust)
-
-    # 変換
-    otoini = up.convert.ust2otoini(ust, name_wav, d_table, mode=mode, debug=DEBUG_MODE)
-    otoini.write(path_inifile)
-    backup_io(path_inifile, 'out')
-    print('converted  UST to INI :', path_inifile)
-
-    return path_inifile
-
-
-def ustfile_to_inifile_multi(path, path_tablefile, mode='romaji_cv'):
-    """
-    USTファイルをINIファイルに一括変換
-    """
-    # フォルダを指定した場合
-    if os.path.isdir(path):
-        l = glob('{}/*.{}'.format(path, 'ust'))
-        outdir = path
     # ファイルを指定した場合
-    else:
+    if os.path.isfile(path):
         l = [path]
         outdir = os.path.dirname(path)
-    # ファイル変換処理
+    # フォルダを指定した場合
+    else:
+        path = glob('{}/*.{}'.format(path, 'ust'))
+        outdir = path
+
     print('\n処理対象ファイル---------')
     pprint(l)
     print('-------------------------\n')
-    for p in l:
-        ustfile_to_inifile_solo(p, outdir, path_tablefile, mode=mode)
-    print('対象ファイルの変換が完了しました。')
+    # USTファイルをINIファイルに変換して保存する処理
+    for path_ustfile in l:
+        print('converting UST to INI :', path_ustfile)  # 'outdir/name.ini'
+        backup_io(path_ustfile, 'in')
+        basename = os.path.basename(path_ustfile)  # 'name.ust'
+        name_wav = basename.replace('.ust', '.wav')  # 'name.wav'
+        # 出力するINIファイルのパス
+        path_inifile = '{}/{}'.format(outdir, basename.replace('.ust', '.ini'))
+        # UST を読み取り
+        ust = up.ust.load(path_ustfile)
+        # 促音を含むノートを分割
+        split_cl_note_of_ust(ust)
+        # 変換
+        otoini = up.convert.ust2otoini(ust, name_wav, d_table, mode=mode, debug=DEBUG_MODE)
+        otoini.write(path_inifile)
+        backup_io(path_inifile, 'out')
+        print('converted  UST to INI :', path_inifile)
 
 
-def inifile_to_labfile_solo(path_inifile, outdir, mode='auto'):
+def inifile_to_labfile(path, mode='auto'):
     """
     oto->lab 変換を単独ファイルに実行
     """
-    basename = os.path.basename(path_inifile)
-    path_labfile = '{}/{}'.format(outdir, basename.replace('.ini', '.lab'))
 
-    print('converting INI to LAB :', path_inifile)
-    backup_io(path_inifile, 'in')
-    # INI を読み取り
-    o = up.otoini.load(path_inifile)
-    # 変換
-    lab = up.convert.otoini2label(o, mode=mode, debug=DEBUG_MODE)
-    # LAB を書き出し
-    lab.write(path_labfile)
-    backup_io(path_labfile, 'out')
-    print('converted  INI to LAB :', path_labfile)
-    return path_labfile
-
-
-def inifile_to_labfile_multi(path, mode='auto'):
-    """
-    複数のiniファイルをlabに変換する
-    """
-    # フォルダを指定した場合
-    if os.path.isdir(path):
-        l = glob('{}/*.{}'.format(path, 'ini'))
-        outdir = path
     # ファイルを指定した場合
-    else:
+    if os.path.isfile(path):
         l = [path]
         outdir = os.path.dirname(path)
-    # ファイル変換処理
+    # フォルダを指定した場合
+    else:
+        l = glob('{}/*.{}'.format(path, 'ini'))
+        outdir = path
+
     print('\n処理対象ファイル---------')
     pprint(l)
     print('-------------------------\n')
-    for p in l:
-        inifile_to_labfile_solo(p, outdir, mode=mode)
+    # ファイル変換処理
+    for path_inifile in l:
+        print('converting INI to LAB :', path_inifile)
+        backup_io(path_inifile, 'in')
+
+        basename = os.path.basename(path)
+        path_labfile = '{}/{}'.format(outdir, basename.replace('.ini', '.lab'))
+
+        # INI を読み取り
+        otoini = up.otoini.load(path_inifile)
+        # 変換
+        lab = up.convert.otoini2label(otoini, mode=mode, debug=DEBUG_MODE)
+        # LAB を書き出し
+        lab.write(path_labfile)
+        backup_io(path_labfile, 'out')
+        print('converted  INI to LAB :', path_labfile)
 
 
-def labfile_to_inifile_solo(path_labfile, outdir):
+def labfile_to_inifile(path):
     """
     lab->ini 変換
     """
-    # 各種pathの設定
-    basename = os.path.basename(path_labfile)
-    path_inifile = '{}/{}'.format(outdir, basename.replace('.lab', '.ini'))
-    name_wav = basename.replace('.lab', '.wav')
-    # 変換開始
-    print('converting LAB to INI :', path_labfile)
-    backup_io(path_labfile, 'in')
-    label = up.label.load(path_labfile)
-    otoini = up.convert.label2otoini(label, name_wav)
-    otoini.write(path_inifile)
-    backup_io(path_inifile, 'out')
-    print('converted  LAB to INI :', path_inifile)
-
-
-def labfile_to_inifile_multi(path):
-    """
-    複数のlabファイルをレビュー用iniファイルに変換する
-    """
-    if os.path.isdir(path):
-        l = glob('{}/*.{}'.format(path, 'lab'))
-        outdir = path
-    else:
+    if os.path.isfile(path):
         l = [path]
         outdir = os.path.dirname(path)
+    else:
+        l = glob('{}/*.{}'.format(path, 'lab'))
+        outdir = path
 
     # ファイル変換処理
     print('\n処理対象ファイル---------')
     pprint(l)
     print('-------------------------\n')
-    for p in l:
-        labfile_to_inifile_solo(p, outdir)
+    for path_labfile in l:
+        # 各種pathの設定
+        basename = os.path.basename(path_labfile)
+        path_inifile = '{}/{}'.format(outdir, basename.replace('.lab', '.ini'))
+        name_wav = basename.replace('.lab', '.wav')
+        # 変換開始
+        print('converting LAB to INI :', path_labfile)
+        backup_io(path_labfile, 'in')
+        label = up.label.load(path_labfile)
+        otoini = up.convert.label2otoini(label, name_wav)
+        otoini.write(path_inifile)
+        backup_io(path_inifile, 'out')
+        print('converted  LAB to INI :', path_inifile)
 
 
 def inifile_kana2romaji(path, path_tablefile):
@@ -254,7 +194,7 @@ def inifile_kana2romaji(path, path_tablefile):
         backup_io(p, 'out')
 
 
-def svpfile_to_inifile_solo(path_svpfile, outdir, path_tablefile, mode='romaji_cv'):
+def svpfile_to_inifile(path, path_tablefile, mode='romaji_cv'):
     """
     SVPファイルをINIファイルに変換する。
     Ustオブジェクトを中間フォーマットにする。
@@ -263,29 +203,41 @@ def svpfile_to_inifile_solo(path_svpfile, outdir, path_tablefile, mode='romaji_c
     if mode not in allowed_modes:
         raise ValueError('argument \'mode\' must be in {}'.format(allowed_modes))
 
-    basename = os.path.basename(path_svpfile)  # '<name>.ust'
-    name_wav = basename.replace('.svp', '.wav')  # '<name>.wav'
-    path_inifile = '{}/{}'.format(outdir, basename.replace('.svp', '.ini'))
-
-    print('converting SVP to INI :', path_svpfile)  # 'outdir/<name>.ini'
-    # 入力ファイルをバックアップ
-    backup_io(path_svpfile, 'in')
-    # SvpをUstに変換
-    svp = up.svp.load(path_svpfile)
-    ust = up.convert.svp2ust(svp, debug=DEBUG_MODE)
     # かな→ローマ字変換テーブル
     d_table = up.table.load(path_tablefile)
     d_table.update({'R': ['pau'], 'pau': ['pau'], 'sil': ['sil'], 'br': ['br'], '息': ['br']})
-    # 促音を含むノートを分割
-    split_cl_note_of_ust(ust)
-    # UstをOtoIniに変換してファイル出力
-    otoini = up.convert.ust2otoini(ust, name_wav, d_table, mode=mode, debug=DEBUG_MODE)
-    otoini.write(path_inifile)
-    # 出力ファイルをバックアップ
-    backup_io(path_inifile, 'out')
 
-    print('converted  SVP to INI :', path_inifile)
-    return path_inifile
+    # ファイルを指定した場合
+    if os.path.isfile(path):
+        l = [path]
+        outdir = os.path.dirname(path)
+    # フォルダを指定した場合
+    else:
+        l = glob('{}/*.{}'.format(path, 'svp'))
+        outdir = path
+
+    print('\n処理対象ファイル---------')
+    pprint(l)
+    print('-------------------------\n')
+    for path_svpfile in l:
+        print('converting SVP to INI :', path_svpfile)  # 'outdir/<name>.ini'
+        # 入力ファイルをバックアップ
+        backup_io(path_svpfile, 'in')
+        # 出力パスを決める
+        basename = os.path.basename(path_svpfile)  # '<name>.ust'
+        name_wav = basename.replace('.svp', '.wav')  # '<name>.wav'
+        path_inifile = '{}/{}'.format(outdir, basename.replace('.svp', '.ini'))
+        # SvpをUstに変換
+        svp = up.svp.load(path_svpfile)
+        ust = up.convert.svp2ust(svp, debug=DEBUG_MODE)
+        # 促音を含むノートを分割
+        split_cl_note_of_ust(ust)
+        # UstをOtoIniに変換してファイル出力
+        otoini = up.convert.ust2otoini(ust, name_wav, d_table, mode=mode, debug=DEBUG_MODE)
+        otoini.write(path_inifile)
+        # 出力ファイルをバックアップ
+        backup_io(path_inifile, 'out')
+        print('converted  SVP to INI :', path_inifile)
 
 
 def main_cli():
@@ -305,17 +257,16 @@ def main_cli():
 
     # ustファイルを変換
     if mode in ['1', '１']:
-        ustfile_to_inifile_multi(path, path_tablefile)
+        ustfile_to_inifile(path, path_tablefile)
     # iniファイルを変換
     elif mode in ['2', '２']:
-        inifile_to_labfile_multi(path, mode='auto')
+        inifile_to_labfile(path, mode='auto')
     # labファイルをiniファイルに変換
     elif mode in ['3', '３']:
-        labfile_to_inifile_multi(path)
+        labfile_to_inifile(path)
+    # svpファイルをiniファイルに変換(ustオブジェクト経由)
     elif mode in ['4', '４']:
-        # svpファイルをiniファイルに変換(ustオブジェクト経由)
-        outdir = os.path.dirname(path)
-        svpfile_to_inifile_solo(path, outdir, path_tablefile)
+        svpfile_to_inifile(path, path_tablefile)
     elif mode in ['5', '５']:
         # iniファイルをひらがなCV→romaCV変換
         inifile_kana2romaji(path, path_tablefile)
@@ -333,17 +284,16 @@ def main_gui(path, mode):
     path = path.strip(r'"')
     if mode == '1':
         # ustファイルを変換
-        ustfile_to_inifile_multi(path, path_tablefile)
+        ustfile_to_inifile(path, path_tablefile)
     elif mode == '2':
         # iniファイルを変換
-        inifile_to_labfile_multi(path)
+        inifile_to_labfile(path)
     elif mode == '3':
         # labファイルをiniファイルに変換
-        labfile_to_inifile_multi(path)
+        labfile_to_inifile(path)
     elif mode == '4':
         # svpファイルをiniファイルに変換(ustオブジェクト経由)
-        outdir = os.path.dirname(path)
-        svpfile_to_inifile_solo(path, outdir, path_tablefile)
+        svpfile_to_inifile(path, path_tablefile)
     elif mode is None:
         print('mode番号が設定されてないみたい。')
 
