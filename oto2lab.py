@@ -73,6 +73,7 @@ def backup_io(path_file, outdirname):
 
     copy2(path_file, f'backup/{outdirname}/{basename}__{now}{ext}')
 
+
 def split_cl_note_of_ust(ust):
     """
     Ustオブジェクト中のNoteのうち、促音を含むノートを半分に割る。
@@ -84,12 +85,13 @@ def split_cl_note_of_ust(ust):
         if ('っ' in s) and (s != 'っ'):
             # 元のノートを処理
             note.lyric = s[:-1]            # 'っ' を削る
-            half_length = note.length // 2 # ノート長の半分の値を取得する
+            half_length = note.length // 2  # ノート長の半分の値を取得する
             note.length = half_length      # ノート長を半分にする
             # 新規ノートを追加
-            note_cl = ust.insert(i+1)
+            note_cl = ust.insert(i + 1)
             note_cl.lyric = 'っ'
             note_cl.length = half_length
+
 
 def ustfile_to_inifile_solo(path_ustfile, outdir, path_tablefile, mode='romaji_cv'):
     """
@@ -131,20 +133,14 @@ def ustfile_to_inifile_multi(path, path_tablefile, mode='romaji_cv'):
     if os.path.isdir(path):
         l = glob('{}/*.{}'.format(path, 'ust'))
         outdir = path
-        print('\n処理対象ファイル---------')
-        pprint(l)
-        print('-------------------------\n')
-        print('出力ファイル上書き回避のため、既存INIファイルをバックアップします。')
-        path_backup = backup_files(path, 'ini')
-        print('バックアップ先:', path_backup)
     # ファイルを指定した場合
     else:
         l = [path]
         outdir = os.path.dirname(path)
-        print('\n出力ファイル上書き回避のため、既存INIファイルを移動します。')
-        path_backup = evacuate_files(outdir, 'ini')
-        print('移動先:', path_backup)
     # ファイル変換処理
+    print('\n処理対象ファイル---------')
+    pprint(l)
+    print('-------------------------\n')
     for p in l:
         ustfile_to_inifile_solo(p, outdir, path_tablefile, mode=mode)
     print('対象ファイルの変換が完了しました。')
@@ -178,20 +174,14 @@ def inifile_to_labfile_multi(path, mode='auto'):
     if os.path.isdir(path):
         l = glob('{}/*.{}'.format(path, 'ini'))
         outdir = path
-        print('\n処理対象ファイル---------')
-        pprint(l)
-        print('-------------------------\n')
-        print('出力ファイル上書き回避のため、既存LABファイルをバックアップします。')
-        path_backup = backup_files(path, 'lab')
-        print('バックアップ先:', path_backup)
     # ファイルを指定した場合
     else:
         l = [path]
         outdir = os.path.dirname(path)
-        print('\n出力ファイル上書き回避のため、既存LABファイルを移動します。')
-        path_backup = evacuate_files(outdir, 'lab')
-        print('移動先:', path_backup)
     # ファイル変換処理
+    print('\n処理対象ファイル---------')
+    pprint(l)
+    print('-------------------------\n')
     for p in l:
         inifile_to_labfile_solo(p, outdir, mode=mode)
 
@@ -221,19 +211,14 @@ def labfile_to_inifile_multi(path):
     if os.path.isdir(path):
         l = glob('{}/*.{}'.format(path, 'lab'))
         outdir = path
-        print('\n処理対象ファイル---------')
-        pprint(l)
-        print('-------------------------\n')
-        print('出力ファイル上書き回避のため、既存INIファイルをバックアップします。')
-        path_backup = backup_files(outdir, 'ini')
-        print('バックアップ先:', path_backup)
     else:
         l = [path]
         outdir = os.path.dirname(path)
-        print('\n出力ファイル上書き回避のため、既存INIファイルを移動します。')
-        path_backup = evacuate_files(outdir, 'ini')
-        print('移動先:', path_backup)
+
     # ファイル変換処理
+    print('\n処理対象ファイル---------')
+    pprint(l)
+    print('-------------------------\n')
     for p in l:
         labfile_to_inifile_solo(p, outdir)
 
@@ -244,22 +229,17 @@ def inifile_kana2romaji(path, path_tablefile):
     """
     if os.path.isdir(path):
         l = glob('{}/*.{}'.format(path, 'ini'))
-        outdir = path
-        print('\n処理対象ファイル---------')
-        pprint(l)
-        print('-------------------------\n')
-        print('出力ファイル上書き回避のため、既存INIファイルをバックアップします。')
-        path_backup = backup_files(outdir, 'ini')
-        print('バックアップ先:', path_backup)
     else:
         l = [path]
-        outdir = os.path.dirname(path)
-        print('\n出力ファイル上書き回避のため、既存INIファイルを移動します。')
-        path_backup = backup_files(outdir, 'ini')
-        print('移動先:', path_backup)
+
+    # かな→ローマ字変換テーブル
     d_table = up.table.load(path_tablefile)
     d_table.update({'R': ['pau'], 'pau': ['pau'], 'sil': ['sil'], 'br': ['br'], '息': ['br']})
+
     # ファイル変換処理
+    print('\n処理対象ファイル---------')
+    pprint(l)
+    print('-------------------------\n')
     for p in l:
         backup_io(p, 'in')
         otoini = up.otoini.load(p)
@@ -276,7 +256,8 @@ def inifile_kana2romaji(path, path_tablefile):
 
 def svpfile_to_inifile_solo(path_svpfile, outdir, path_tablefile, mode='romaji_cv'):
     """
-    USTファイルをINIファイルに変換
+    SVPファイルをINIファイルに変換する。
+    Ustオブジェクトを中間フォーマットにする。
     """
     allowed_modes = ['mono', 'romaji_cv']
     if mode not in allowed_modes:
@@ -287,17 +268,23 @@ def svpfile_to_inifile_solo(path_svpfile, outdir, path_tablefile, mode='romaji_c
     path_inifile = '{}/{}'.format(outdir, basename.replace('.svp', '.ini'))
 
     print('converting SVP to INI :', path_svpfile)  # 'outdir/<name>.ini'
+    # 入力ファイルをバックアップ
     backup_io(path_svpfile, 'in')
+    # SvpをUstに変換
     svp = up.svp.load(path_svpfile)
     ust = up.convert.svp2ust(svp, debug=DEBUG_MODE)
+    # かな→ローマ字変換テーブル
     d_table = up.table.load(path_tablefile)
     d_table.update({'R': ['pau'], 'pau': ['pau'], 'sil': ['sil'], 'br': ['br'], '息': ['br']})
+    # 促音を含むノートを分割
     split_cl_note_of_ust(ust)
+    # UstをOtoIniに変換してファイル出力
     otoini = up.convert.ust2otoini(ust, name_wav, d_table, mode=mode, debug=DEBUG_MODE)
     otoini.write(path_inifile)
+    # 出力ファイルをバックアップ
     backup_io(path_inifile, 'out')
-    print('converted  SVP to INI :', path_inifile)
 
+    print('converted  SVP to INI :', path_inifile)
     return path_inifile
 
 
