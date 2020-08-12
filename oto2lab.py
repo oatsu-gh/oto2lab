@@ -73,6 +73,23 @@ def backup_io(path_file, outdirname):
 
     copy2(path_file, f'backup/{outdirname}/{basename}__{now}{ext}')
 
+def split_cl_note_of_ust(ust):
+    """
+    Ustオブジェクト中のNoteのうち、促音を含むノートを半分に割る。
+    「かっ」→「か」「っ」
+    促音のみのノートはそのままにすることに注意。
+    """
+    for i, note in enumerate(ust.notes):
+        s = note.lyric
+        if ('っ' in s) and (s != 'っ'):
+            # 元のノートを処理
+            note.lyric = s[:-1]            # 'っ' を削る
+            half_length = note.length // 2 # ノート長の半分の値を取得する
+            note.length = half_length      # ノート長を半分にする
+            # 新規ノートを追加
+            note_cl = ust.insert(i+1)
+            note_cl.lyric = 'っ'
+            note_cl.length = half_length
 
 def ustfile_to_inifile_solo(path_ustfile, outdir, path_tablefile, mode='romaji_cv'):
     """
@@ -82,6 +99,10 @@ def ustfile_to_inifile_solo(path_ustfile, outdir, path_tablefile, mode='romaji_c
     if mode not in allowed_modes:
         raise ValueError('argument \'mode\' must be in {}'.format(allowed_modes))
 
+    # かな→ローマ字変換テーブルを読み取り
+    d_table = up.table.load(path_tablefile)  # kana-romaji table
+    d_table.update({'R': ['pau'], 'pau': ['pau'], 'sil': ['sil'], '息': ['br'], 'br': ['br']})
+
     basename = os.path.basename(path_ustfile)  # '<name>.ust'
     name_wav = basename.replace('.ust', '.wav')  # '<name>.wav'
     path_inifile = '{}/{}'.format(outdir, basename.replace('.ust', '.ini'))
@@ -90,10 +111,11 @@ def ustfile_to_inifile_solo(path_ustfile, outdir, path_tablefile, mode='romaji_c
     backup_io(path_ustfile, 'in')
     # UST を読み取り
     ust = up.ust.load(path_ustfile)
-    # ust.replace_lyrics('息', 'br')
-    # ust.replace_lyrics('R', 'pau')
+    # 促音を含むノートを分割
+    split_cl_note_of_ust(ust)
+
     # 変換
-    otoini = up.convert.ust2otoini(ust, name_wav, path_tablefile, mode=mode, debug=DEBUG_MODE)
+    otoini = up.convert.ust2otoini(ust, name_wav, d_table, mode=mode, debug=DEBUG_MODE)
     otoini.write(path_inifile)
     backup_io(path_inifile, 'out')
     print('converted  UST to INI :', path_inifile)
@@ -270,6 +292,7 @@ def svpfile_to_inifile_solo(path_svpfile, outdir, path_tablefile, mode='romaji_c
     ust = up.convert.svp2ust(svp, debug=DEBUG_MODE)
     d_table = up.table.load(path_tablefile)
     d_table.update({'R': ['pau'], 'pau': ['pau'], 'sil': ['sil'], 'br': ['br'], '息': ['br']})
+    split_cl_note_of_ust(ust)
     otoini = up.convert.ust2otoini(ust, name_wav, d_table, mode=mode, debug=DEBUG_MODE)
     otoini.write(path_inifile)
     backup_io(path_inifile, 'out')
