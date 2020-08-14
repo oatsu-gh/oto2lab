@@ -39,10 +39,10 @@ def main():
 
     pprint(xmlfiles)
 
-    for path in xmlfiles:
-        print(f'  label generating: {path}')
-        generate_label(xml)
-        print(f'  label generated : {path}')
+    for path_xml in xmlfiles:
+        print(f'  label generating: {path_xml}')
+        generate_label(path_xml)
+        print(f'  label generated : {path_xml}')
     print('complete')
 
 
