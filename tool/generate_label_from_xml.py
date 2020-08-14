@@ -25,7 +25,7 @@ def generate_label(xmlpath):
 
     is_mono = False
     labels = sinsy.createLabelData(is_mono, 1, 1).getData()
-    with open(xmlpath.replace('.musicxml', '.lab').replace('.xml', '.lab'), 'w') as f:
+    with open(xmlpath.replace('.musicxml', '.full').replace('.xml', '.full'), 'w') as f:
         f.writelines(labels)
 
     sinsy.clearScore()
