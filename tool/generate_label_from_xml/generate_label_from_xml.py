@@ -11,8 +11,6 @@ import pysinsy
 
 
 def generate_label(xmlpath):
-    print(xmlpath)
-
     sinsy = pysinsy.sinsy.Sinsy()
     # Set language to Japanese
     assert sinsy.setLanguages("j", "/usr/local/lib/sinsy/dic")
@@ -41,10 +39,10 @@ def main():
 
     pprint(xmlfiles)
 
-    for v in xmlfiles:
-        print(v)
     for xml in xmlfiles:
+        print(f'  generating labels: {v}')
         generate_label(xml)
+        print(f'  generated  labels: {v}')
     print('complete')
 
 
