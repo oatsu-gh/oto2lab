@@ -19,5 +19,13 @@ musicxml から 音素ラベルとフルコンテキストラベルを生成す�
 5. musicxml があるフォルダのパスを入力（Window形式のパスでOK）
 6. musicxml があるフォルダに 音素ラベル lab と フルコンテキストラベル full が生成される。
 
+## 同梱ファイル
 
+### generate_label_from_xml.py
+
+musicxmlから音素ラベルとフルコンテキストラベルを出力する。
+
+### generate_label_from_xml_(wrongformat).py
+
+musicxmlから音素ラベルとフルコンテキストラベルを出力する。フォーマット間違ってて、改行含んでない。
 
