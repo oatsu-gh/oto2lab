@@ -30,21 +30,22 @@ def generate_label(xmlpath):
 
     sinsy.clearScore()
 
-    def main():
-        p = input('musicxmlがあるフォルダのPATHを入力してね : ').strip('"')
-        p = p.replace('C:\\', 'mnt/c/').replace('D:\\', 'mnt/d/').replace('D:\\', 'mnt/e/')
-        p = p.replace('\\, /')
 
-        xmlfiles = glob(f'{p}/**/*.musicxml', recursive=True)
-        xmlfiles += glob(f'{p}/**/*.xml', recursive=True)
+def main():
+    p = input('musicxmlがあるフォルダのPATHを入力してね : ').strip('"')
+    p = p.replace('C:\\', 'mnt/c/').replace('D:\\', 'mnt/d/').replace('D:\\', 'mnt/e/')
+    p = p.replace('\\, /')
 
-        pprint(xmlfiles)
+    xmlfiles = glob(f'{p}/**/*.musicxml', recursive=True)
+    xmlfiles += glob(f'{p}/**/*.xml', recursive=True)
 
-        for v in xmlfiles:
-            print(v)
-        for xml in xmlfiles:
-            generate_label(xml)
-        print('complete')
+    pprint(xmlfiles)
+
+    for v in xmlfiles:
+        print(v)
+    for xml in xmlfiles:
+        generate_label(xml)
+    print('complete')
 
 
 if __name__ == '__main__':
