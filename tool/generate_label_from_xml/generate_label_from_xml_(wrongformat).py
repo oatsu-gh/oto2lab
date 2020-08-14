@@ -1,8 +1,7 @@
 #!python3
 # coding: utf-8
 """
-Sinsy をつかって musicxml から
-音素ラベル と フルコンテキストラベルを生成するツール。
+about module
 """
 
 from glob import glob
@@ -12,10 +11,6 @@ import pysinsy
 
 
 def generate_label(path_xml):
-    """
-    xml を読み取って
-    音素ラベルとフルコンテキストラベルを生成する。
-    """
     sinsy = pysinsy.sinsy.Sinsy()
     # Set language to Japanese
     assert sinsy.setLanguages("j", "/usr/local/lib/sinsy/dic")
@@ -23,23 +18,18 @@ def generate_label(path_xml):
 
     is_mono = True
     labels = sinsy.createLabelData(is_mono, 1, 1).getData()
-    s = '\n'.join(labels)
     with open(path_xml.replace('.musicxml', '.lab').replace('.xml', '.lab'), 'w') as f:
-        f.write(s)
+        f.writelines(labels)
 
-    is_mono = False
-    labels = sinsy.createLabelData(is_mono, 1, 1).getData()
-    s = '\n'.join(labels)
-    with open(path_xml.replace('.musicxml', '.full').replace('.xml', '.full'), 'w') as f:
-        f.write(s)
+    # is_mono = False
+    # labels = sinsy.createLabelData(is_mono, 1, 1).getData()
+    # with open(path_xml.replace('.musicxml', '.full').replace('.xml', '.full'), 'w') as f:
+    #     f.writelines(labels)
 
     sinsy.clearScore()
 
 
 def main():
-    """
-    入力ファイルのパスを取得して、変換にかける。
-    """
     p = input('musicxmlがあるフォルダのPATHを入力してね : ').strip('"')
     p = p.replace('C:\\', '/mnt/c/').replace('D:\\', 'mnt/d/').replace('D:\\', 'mnt/e/')
     p = p.replace('\\', '/')
