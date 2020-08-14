@@ -34,7 +34,7 @@ def generate_label(xmlpath):
 def main():
     p = input('musicxmlがあるフォルダのPATHを入力してね : ').strip('"')
     p = p.replace('C:\\', 'mnt/c/').replace('D:\\', 'mnt/d/').replace('D:\\', 'mnt/e/')
-    p = p.replace('\\, /')
+    p = p.replace('\\', '/')
 
     xmlfiles = glob(f'{p}/**/*.musicxml', recursive=True)
     xmlfiles += glob(f'{p}/**/*.xml', recursive=True)
