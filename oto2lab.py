@@ -22,7 +22,7 @@ from shutil import copy2
 import utaupy as up
 
 DEBUG_MODE = False
-TABLE_PATH = './table/japanese_sjis.table'
+PATH_TABLE = './table/kana2romaji_sjis_for_oto2lab.table'
 
 
 def backup_io(path_file, outdirname):
@@ -43,10 +43,10 @@ def split_cl_note_of_ust(ust):
     促音のみのノートはそのままにすることに注意。
     """
     for i, note in enumerate(ust.notes):
-        s = note.lyric
-        if ('っ' in s) and (s != 'っ'):
+        lyric = note.lyric
+        if ('っ' in lyric) and (lyric != 'っ'):
             # 元のノートを処理
-            note.lyric = s[:-1]            # 'っ' を削る
+            note.lyric = lyric[:-1]            # 'っ' を削る
             half_length = note.length // 2  # ノート長の半分の値を取得する
             note.length = half_length      # ノート長を半分にする
             # 新規ノートを追加
@@ -65,7 +65,6 @@ def ustfile_to_inifile(path, path_tablefile, mode='romaji_cv'):
 
     # かな→ローマ字変換テーブルを読み取り
     d_table = up.table.load(path_tablefile)  # kana-romaji table
-    d_table.update({'R': ['pau'], 'pau': ['pau'], 'sil': ['sil'], '息': ['br'], 'br': ['br']})
 
     # ファイルを指定した場合
     if os.path.isfile(path):
@@ -163,35 +162,34 @@ def labfile_to_inifile(path):
         print('converted  LAB to INI :', path_inifile)
 
 
-def inifile_kana2romaji(path, path_tablefile):
+def inifile_kana2romaji(path_input, path_tablefile):
     """
     複数のiniファイルの平仮名エイリアスをローマ字にする
     """
-    if os.path.isdir(path):
-        l = glob('{}/*.{}'.format(path, 'ini'))
+    if os.path.isdir(path_input):
+        l = glob('{}/*.{}'.format(path_input, 'ini'))
     else:
-        l = [path]
+        l = [path_input]
 
     # かな→ローマ字変換テーブル
     d_table = up.table.load(path_tablefile)
-    d_table.update({'R': ['pau'], 'pau': ['pau'], 'sil': ['sil'], 'br': ['br'], '息': ['br']})
 
     # ファイル変換処理
     print('\n処理対象ファイル---------')
     pprint(l)
     print('-------------------------\n')
-    for p in l:
-        backup_io(p, 'in')
-        otoini = up.otoini.load(p)
+    for path_ini in l:
+        backup_io(path_ini, 'in')
+        otoini = up.otoini.load(path_ini)
         for oto in otoini.values:
             try:
                 oto.alias = ' '.join(d_table[oto.alias])
-            except KeyError as e:
+            except KeyError as err:
                 print('[WARNING] KeyError in oto2lab.inifile_kana2ramaji')
-                print('  詳細:', e)
-        print(p)
-        otoini.write(p)
-        backup_io(p, 'out')
+                print('  詳細:', err)
+        print(path_ini)
+        otoini.write(path_ini)
+        backup_io(path_ini, 'out')
 
 
 def svpfile_to_inifile(path, path_tablefile, mode='romaji_cv'):
@@ -205,7 +203,6 @@ def svpfile_to_inifile(path, path_tablefile, mode='romaji_cv'):
 
     # かな→ローマ字変換テーブル
     d_table = up.table.load(path_tablefile)
-    d_table.update({'R': ['pau'], 'pau': ['pau'], 'sil': ['sil'], 'br': ['br'], '息': ['br']})
 
     # ファイルを指定した場合
     if os.path.isfile(path):
@@ -244,7 +241,7 @@ def main_cli():
     """
     全体の処理を実行
     """
-    path_tablefile = TABLE_PATH
+    path_tablefile = PATH_TABLE
     print('実行内容を数字で選択してください。')
     print('1 ... UST -> INI の変換')
     print('2 ... INI -> LAB の変換')
@@ -280,7 +277,7 @@ def main_gui(path, mode):
     """
     oto2lab_gui.exe から呼び出されたときの処理
     """
-    path_tablefile = TABLE_PATH
+    path_tablefile = PATH_TABLE
     path = path.strip(r'"')
     if mode == '1':
         # ustファイルを変換
@@ -305,13 +302,16 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--input', help='入力ファイルかフォルダ input path\t(file or dir)')
-    parser.add_argument('-m', '--mode', help='モード選択 mode seliction\t(1~5)')
+    parser.add_argument('-m', '--mode', help='モード選択 mode selection\t(1~5)')
+    parser.add_argument('--table', help='変換テーブルのパス table path\t(file)')
     parser.add_argument('--debug', help='デバッグモード debug flag\t(bool)', action='store_true')
     parser.add_argument('--gui', help='executed by oto2labGUI\t(bool)', action='store_true')
     parser.add_argument('--kana', help='日本語のINIエイリアスの時に有効にしてね\t(bool)', action='store_true')
 
     args = parser.parse_args()
     DEBUG_MODE = args.debug
+    if not args.table is None:
+        PATH_TABLE = args.table
 
     # バックアップ用のフォルダを生成
     os.makedirs('backup/in', exist_ok=True)

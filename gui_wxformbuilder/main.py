@@ -4,8 +4,9 @@
 """
 wxPythonの動作チェック
 """
-import os
-import sys
+# import os
+# import sys
+
 
 import wx
 from MyProject1MyFrame1Child import MyProject1MyFrame1Child

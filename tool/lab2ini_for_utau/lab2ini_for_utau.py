@@ -10,7 +10,7 @@ from glob import glob
 from pprint import pprint
 
 import utaupy as up
-
+PATH_TABLE = './romaji2kana_sjis.table'
 CONSONANTS = ['b', 'by', 'ch', 'd', 'dy', 'f', 'g', 'gy', 'h', 'hy', 'j',
               'k', 'ky', 'm', 'my', 'n', 'ny', 'p', 'py', 'r', 'ry', 's',
               'sh', 't', 'ts', 'ty', 'v', 'w', 'y', 'z']
@@ -53,8 +53,8 @@ def label2otoini_for_utau(label, name_wav, table, dt=100, threshold=300):
                     oto.consonant = oto.preutterance + dt
                     oto.cutoff2 = time_order_ratio * tmp[-1].end - dt
                     l.append(oto)
-                except KeyError as e:
-                    print('[ERROR]:', e)
+                except KeyError as err:
+                    print('[ERROR]:', err)
             tmp = []
             prev_vowel = phoneme.symbol.replace('N', 'n')
         else:
@@ -93,7 +93,7 @@ def main():
     path_labdir = input('path_labdir: ')
     # 左ブランクとかのずらす長さ
     dt = float(input('dt_shift: '))
-    path_table = './roma2kana_sjis.table'
+    path_table = PATH_TABLE
     labfiles2inifile_for_utau(path_labdir, path_table, dt=dt, kiritan=False)
 
 
