@@ -150,7 +150,7 @@ def labfile_to_inifile(path):
     for path_labfile in l:
         # 各種pathの設定
         basename = os.path.basename(path_labfile)
-        path_inifile = '{}/{}'.format(outdir, basename.replace('.lab', '.ini'))
+        path_inifile = '{}/{}'.format(outdir, basename.replace('.lab', '_review.ini'))
         name_wav = basename.replace('.lab', '.wav')
         # 変換開始
         print('converting LAB to INI :', path_labfile)
