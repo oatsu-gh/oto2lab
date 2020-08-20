@@ -50,7 +50,7 @@ def main():
         l.append(get_param(p))
     pprint(l)
 
-    path_csv = f'.result(ust_bpm_and_range).csv'
+    path_csv = f'result(ust_bpm_and_range).csv'
     with open(path_csv, mode='w', newline='\n', encoding='shift-jis') as f:
         writer = csv.writer(f)
         writer.writerows(l)
