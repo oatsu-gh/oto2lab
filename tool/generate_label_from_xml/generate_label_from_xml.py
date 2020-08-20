@@ -24,7 +24,7 @@ def generate_label(path_xml):
     is_mono = True
     labels = sinsy.createLabelData(is_mono, 1, 1).getData()
     s = '\n'.join(labels)
-    with open(path_xml.replace('.musicxml', '.lab').replace('.xml', '.lab'), 'w') as f:
+    with open(path_xml.replace('.musicxml', '_sinsy.lab').replace('.xml', '_sinsy.lab'), 'w') as f:
         f.write(s)
 
     is_mono = False
