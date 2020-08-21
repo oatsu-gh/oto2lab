@@ -15,8 +15,8 @@ def main():
         label = up.label.load(path_lab)
         for phoneme in label.values:
             duration = phoneme.end - phoneme.start
-            if duration <= 0:
-                print(f'  [ERROR] 発声時間がゼロ以下です : {phoneme.start} {phoneme.end} {phoneme.symbol}')
+            if duration <= 20000:
+                print(f'  [ERROR] 発声時間が2ms未満です : {phoneme.start} {phoneme.end} {phoneme.symbol}')
 
 if __name__ == '__main__':
     main()
