@@ -123,25 +123,25 @@ def main():
     print()
 
     # 出力フォルダをつくる
-    makedirs('out', exist_ok=True)
-    makedirs('out/ust_for_midi', exist_ok=True)
+    makedirs('out/ust_for_wav_and_lab', exist_ok=True)
+    makedirs('out/ust_for_midi_and_musicxml', exist_ok=True)
 
     # Ustオブジェクトを生成して保存する
     for i in range(d_config['file_number']):
-        path_ust = f'out/random_{i}.ust'
-        path_ust_for_midi = f'out/ust_for_midi/random_{i}.ust'
+        path_ust_for_wav_and_lab = f'out/ust_for_wav_and_lab/random_{i}.ust'
+        path_ust_for_midi_and_musicxml = f'out/ust_for_midi_and_musicxml/random_{i}.ust'
         # print('-----------------------------------------------------------')
-        print(f'generating UST: path_ust         : {path_ust}')
-        print(f'                path_ust_for_midi: {path_ust_for_midi}')
+        print(f'generating UST: path_ust_for_wav_and_lab      : {path_ust_for_wav_and_lab}')
+        print(f'                path_ust_for_midi_and_musicxml: {path_ust_for_midi_and_musicxml}')
         ust = generate_random_ustobj(d_config)
         # 連続する休符を結合
         join_rest_note(ust)
         # WAV生成用のUSTを出力
-        ust.write(path_ust)
+        ust.write(path_ust_for_wav_and_lab)
         # 促音を前のノートに結合
         join_cl_note(ust)
         # MIDI, MusicXML, LAB 生成用のUSTを出力
-        ust.write(path_ust_for_midi)
+        ust.write(path_ust_for_midi_and_musicxml)
     # print('-----------------------------------------------------------')
 
 
