@@ -40,8 +40,8 @@ def main():
     """
     入力ファイルのパスを取得して、変換にかける。
     """
-    p = input('musicxmlがあるフォルダのPATHを入力してね : ').strip('"')
-    p = p.replace('C:\\', '/mnt/c/').replace('D:\\', 'mnt/d/').replace('D:\\', 'mnt/e/')
+    p = input('musicxmlがあるフォルダのPATHを入力してね (WindowsのPATHでもOK)\n>>> ').strip('"')
+    p = p.replace('C:\\', '/mnt/c/').replace('D:\\', '/mnt/d/').replace('E:\\', '/mnt/e/')
     p = p.replace('\\', '/')
 
     xmlfiles = glob(f'{p}/**/*.musicxml', recursive=True)
