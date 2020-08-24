@@ -97,19 +97,19 @@ def ustfile_to_inifile(path, path_tablefile, mode='romaji_cv'):
         print('converted  UST to INI :', path_inifile)
 
 
-def inifile_to_labfile(path, mode='auto'):
+def inifile_to_labfile(path_dir_in, mode='auto'):
     """
     oto->lab 変換を単独ファイルに実行
     """
 
     # ファイルを指定した場合
-    if os.path.isfile(path):
-        l = [path]
-        outdir = os.path.dirname(path)
+    if os.path.isfile(path_dir_in):
+        l = [path_dir_in]
+        outdir = os.path.dirname(path_dir_in)
     # フォルダを指定した場合
     else:
-        l = glob('{}/*.{}'.format(path, 'ini'))
-        outdir = path
+        l = glob('{}/*.{}'.format(path_dir_in, 'ini'))
+        outdir = path_dir_in
 
     print('\n処理対象ファイル---------')
     pprint(l)
@@ -119,7 +119,7 @@ def inifile_to_labfile(path, mode='auto'):
         print('converting INI to LAB :', path_inifile)
         backup_io(path_inifile, 'in')
 
-        basename = os.path.basename(path)
+        basename = os.path.basename(path_inifile)
         path_labfile = '{}/{}'.format(outdir, basename.replace('.ini', '.lab'))
 
         # INI を読み取り
