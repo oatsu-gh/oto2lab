@@ -50,7 +50,7 @@ def split_cl_note_of_ust(ust):
             half_length = note.length // 2  # ノート長の半分の値を取得する
             note.length = half_length      # ノート長を半分にする
             # 新規ノートを追加
-            note_cl = ust.insert(i + 1)
+            note_cl = ust.insert_note(i + 1)
             note_cl.lyric = 'っ'
             note_cl.length = half_length
 
@@ -72,7 +72,7 @@ def ustfile_to_inifile(path, path_tablefile, mode='romaji_cv'):
         outdir = os.path.dirname(path)
     # フォルダを指定した場合
     else:
-        path = glob('{}/*.{}'.format(path, 'ust'))
+        l = glob('{}/*.{}'.format(path, 'ust'))
         outdir = path
 
     print('\n処理対象ファイル---------')
@@ -138,10 +138,8 @@ def labfile_to_inifile(path):
     """
     if os.path.isfile(path):
         l = [path]
-        outdir = os.path.dirname(path)
     else:
         l = glob('{}/**/*.{}'.format(path, 'lab'), recursive=True)
-        outdir = path
 
     # ファイル変換処理
     print('\n処理対象ファイル---------')
