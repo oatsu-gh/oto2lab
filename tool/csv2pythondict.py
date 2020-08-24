@@ -1,11 +1,14 @@
-from pprint import pprint
-
+#! /usr/bin/env python3
+# coding: utf-8
+# Copyright (c) oatsu
 """
 音階番号をC4みたいな表記にするときに使う辞書を作るために、
 Excelから書きだしたCSVをPythonの辞書にしようと思って作ったやつ
 
 コンマ区切りCSVをPythonの辞書にします。
 """
+from pprint import pprint
+
 
 def main():
     path = input('path: ')
@@ -21,6 +24,7 @@ def main():
     with open(outpath, 'w') as f:
         f.write(s)
     input('press enter to exit')
+
 
 if __name__ == '__main__':
     main()
