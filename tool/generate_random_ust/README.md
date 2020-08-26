@@ -23,8 +23,11 @@
     -   aliases (list of str)
     -   max_notenum (int)
     -   min_notenum (int)
-    -   bpm (int or float)
+    -   bpm (list of int, or list of float)
     -   ust_length (int)
+        - BPM120の場合1800程度が上限（wavが100MBを超えるため）
+        - BPM240の場合3600程度
+        - UTAUの仕様で9999が上限
     -   note_length (list of int)
     -   file_number (int)
 -   任意パラメーター
