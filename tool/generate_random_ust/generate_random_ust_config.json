@@ -1,14 +1,14 @@
 {
-    "file_number": 20,
+    "file_number": 10,
 
-    "max_notenum": 77,
-    "min_notenum": 58,
-    "bpm": 120.0,
+    "max_notenum": 96,
+    "min_notenum": 36,
+    "bpm": [151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269],
     "ust_length": 1800,
 
-    "voicedir":"%VOICE%波音リツ・キレ音源Ver1.0",
-    "tool1":"wavtool4vcv.exe",
-    "tool2":"doppeltler009\\doppeltler64.exe",
+    "voicedir": "%VOICE%波音リツ・キレ音源Ver1.0",
+    "tool1": "wavtool4vcv.exe",
+    "tool2": "doppeltler009\\doppeltler64.exe",
 
     "note_length": [
         120, 120,
@@ -16,7 +16,7 @@
         360,
         480, 480, 480, 480, 480, 480, 480, 480,
         720, 720,
-        960, 960,
+        960, 960, 960,
         1440,
         1920
     ],

@@ -46,6 +46,9 @@ def generate_random_ustobj(d_config):
         note.lyric = random.choice(d_config['aliases'])
         note.length = random.choice(d_config['note_length'])
         note.notenum = random.randrange(d_config['min_notenum'], d_config['max_notenum'])
+        # 休符は長めにする
+        if note.lyric == 'R':
+            note.length *= 2
     # 最初は全休符にする
     notes[0].lyric = 'R'
     notes[0].length = 1920
@@ -60,7 +63,7 @@ def generate_random_ustobj(d_config):
     ust = up.ust.Ust()
     ust.values = l_for_ust
     # BPMをセット
-    ust.tempo = d_config['bpm']
+    ust.tempo = random.choice(d_config['bpm'])
 
     return ust
 
