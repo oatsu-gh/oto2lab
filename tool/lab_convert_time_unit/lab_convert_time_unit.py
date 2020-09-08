@@ -101,8 +101,8 @@ def main():
         backup_files(os.path.dirname(path), 'lab')
         wrapper(path, mode)
     print('完了しました。')
-    input('press enter to exit')
 
 
 if __name__ == '__main__':
     main()
+    input('press enter to exit')

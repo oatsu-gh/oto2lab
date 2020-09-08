@@ -46,7 +46,7 @@ def main():
     パスを入力させて処理を実行する
     """
     path_labdir = input('labfileがあるフォルダのパスを入力してください。（再帰的に取得します。）\n>>> ').strip('\"')
-    l = glob(f'{path_labdir}/**/*.lab')
+    l = glob(f'{path_labdir}/**/*.lab', recursive=True)
     pprint(l)
     for path_lab in l:
         path_outcsv = os.path.splitext(path_lab)[0] + '.csv'
