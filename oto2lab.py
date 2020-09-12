@@ -179,7 +179,7 @@ def inifile_kana2romaji(path_input, path_tablefile):
     for path_ini in l:
         backup_io(path_ini, 'in')
         otoini = up.otoini.load(path_ini)
-        for oto in otoini.values:
+        for oto in otoini:
             try:
                 oto.alias = ' '.join(d_table[oto.alias])
             except KeyError as err:
@@ -294,7 +294,7 @@ def main_gui(path, mode):
 
 
 if __name__ == '__main__':
-    print('_____ξ・ヮ・) < oto2lab v2.2.1 ________')
+    print('_____ξ・ヮ・) < oto2lab v2.2.2 ________')
     print('Copyright (c) 2001-2020 Python Software Foundation')
     print('Copyright (c) 2020 oatsu, Haruqa\n')
 
