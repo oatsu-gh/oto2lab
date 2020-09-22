@@ -1,1 +1,1 @@
-utaupy==1.6
+utaupy==1.7

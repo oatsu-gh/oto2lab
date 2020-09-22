@@ -234,6 +234,39 @@ def svpfile_to_inifile(path, path_tablefile, mode='romaji_cv'):
         backup_io(path_inifile, 'out')
         print('converted  SVP to INI :', path_inifile)
 
+def labfile_to_inifile_revise(path):
+    """
+    lab->ini 変換
+    """
+    if os.path.isfile(path):
+        l = [path]
+    else:
+        l = glob('{}/**/*.{}'.format(path, 'lab'), recursive=True)
+
+    # ファイル変換処理
+    print('\n処理対象ファイル---------')
+    pprint(l)
+    print('-------------------------\n')
+    for path_labfile in l:
+        # 各種pathの設定
+        basename = os.path.basename(path_labfile)
+        path_inifile = os.path.splitext(path_labfile)[0] + '_revise.ini'
+        name_wav = basename.replace('.lab', '.wav')
+        # 変換開始
+        print('converting LAB to INI :', path_labfile)
+        backup_io(path_labfile, 'in')
+        label = up.label.load(path_labfile)
+        otoini = up.convert.label2otoini(label, name_wav)
+        for oto in otoini:
+            oto.offset -= 100
+            oto.overlap = 0
+            oto.preutterance += 100
+            oto.consonant += 100
+            oto.cutoff2 += 100
+        otoini.write(path_inifile)
+        backup_io(path_inifile, 'out')
+        print('converted  LAB to INI :', path_inifile)
+
 
 def main_cli():
     """
@@ -243,9 +276,10 @@ def main_cli():
     print('実行内容を数字で選択してください。')
     print('1 ... UST -> INI の変換')
     print('2 ... INI -> LAB の変換')
-    print('3 ... INI <- LAB の変換')
+    print('3 ... LAB -> INI の変換（点検用）')
     print('4 ... SVP -> INI の変換')
     print('5 ... INI ファイルのエイリアス置換（かな -> ローマ字）')
+    print('6 ... LAB -> INI の変換（再編集用）')
     mode = input('>>> ')
     print('処理対象ファイルまたはフォルダを指定してください。')
     path = input('>>> ').strip(r'"')
@@ -265,6 +299,9 @@ def main_cli():
     elif mode in ['5', '５']:
         # iniファイルをひらがなCV→romaCV変換
         inifile_kana2romaji(path, path_tablefile)
+    elif mode in ['6', '６']:
+        # labファイルを再編集用のモノフォンiniファイルに変換
+        labfile_to_inifile_revise(path)
     else:
         # 想定外のモードが指定されたとき
         print('1 から 5 で選んでください。\n')
@@ -294,7 +331,7 @@ def main_gui(path, mode):
 
 
 if __name__ == '__main__':
-    print('_____ξ・ヮ・) < oto2lab v2.2.2 ________')
+    print('_____ξ・ヮ・) < oto2lab v2.2.3 ________')
     print('Copyright (c) 2001-2020 Python Software Foundation')
     print('Copyright (c) 2020 oatsu, Haruqa\n')
 
