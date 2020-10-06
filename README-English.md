@@ -38,11 +38,11 @@ The specification has changed after v2.0.0.
 For the purpose of label conversion, it is used differently from the original sound setting of UTAU.
 Set the following.
 
--   Offset: Not used
--   Overlap: Consonant start
--   Preutterance: Vowel start
--   Consonant: Not used (the boundary between the second and third notes only when composed of three phonemes)
--   Cutoff: Not used
+-   **Offset**:  Not used
+-   **Overlap** : Consonant start
+-   **Preutterance** : Vowel start
+-   **Consonant** : Not used (the boundary between the second and third notes only when composed of three phonemes)
+-   **Cutoff** : Not used
 
 ### How to use this tool
 
