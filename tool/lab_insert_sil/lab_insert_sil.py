@@ -30,51 +30,79 @@ def check_label_diff_for_debug(labobj_oto2lab, labobj_sinsy):
     sinsy_sil = [phoneme for phoneme in labobj_oto2lab if phoneme.symbol == 'sil']
     oto2lab_br = [phoneme for phoneme in labobj_oto2lab if phoneme.symbol == 'br']
     sinsy_br = [phoneme for phoneme in labobj_sinsy if phoneme.symbol == 'br']
+    oto2lab_cl = [phoneme for phoneme in labobj_oto2lab if phoneme.symbol == 'cl']
+    sinsy_cl = [phoneme for phoneme in labobj_sinsy if phoneme.symbol == 'cl']
     print('  oto2labのラベルの音素数   :', len(labobj_oto2lab))
     print('  Sinsy  のラベルの音素数   :', len(labobj_sinsy))
     print('  oto2labのラベル中のsilの数:', len(oto2lab_sil))
     print('  Sinsy  のラベル中のsilの数:', len(sinsy_sil))
     print('  oto2labのラベル中のbrの数 :', len(oto2lab_br))
     print('  Sinsy  のラベル中のbrの数 :', len(sinsy_br))
+    print('  oto2labのラベル中のclの数 :', len(oto2lab_cl))
+    print('  Sinsy  のラベル中のclの数 :', len(sinsy_cl))
 
 
-def delete_sil(labobj):
+def delete_pau_and_sil(labobj):
     """
-    silを全部消す
+    pauとsilを全部消す
     """
-    labobj.data = [phoneme for phoneme in labobj if phoneme.symbol != 'sil']
-    labobj[0].start = 0
-    labobj.reload()
+    labobj.data = [phoneme for phoneme in labobj if phoneme.symbol not in ('pau', 'sil')]
 
 
-def insert_sil(labobj_oto2lab, labobj_sinsy):
+def insert_pau_and_sil(labobj_oto2lab, labobj_sinsy):
     """
-    間奏部分のsilを挿入する
-    1. Sinsyのラベル中のsilな音素を検出
-    2. silを挿入する前に、manualのラベルへの挿入部分の前後のpauを複製する
-    3. silを挿入する
+    pauとsilを入れる。それ以外の音素は完璧に一致している前提とする。
     """
-    # 一番最初のpauを処理する
-    if labobj_oto2lab[0].symbol == 'pau' and labobj_sinsy[0].symbol == 'sil':
-        # silを挿入する
-        labobj_oto2lab.insert(0, deepcopy(labobj_sinsy[0]))
-        # silの直後のpauの時刻を調整する
-        labobj_oto2lab[1].start = labobj_oto2lab[1].end
-    # 前奏の最初以外と間奏のsilを挿入する
-    for i, phoneme_sinsy in enumerate(labobj_sinsy[1:-1], 1):
-        if phoneme_sinsy.symbol == 'sil':
-            if labobj_oto2lab[i - 1] != 'pau':
-                if labobj_oto2lab[i - 1].symbol != 'sil':
-                    # pauを複製する
-                    labobj_oto2lab.insert(i, deepcopy(labobj_oto2lab[i - 1]))
-                # silを挿入する
-                labobj_oto2lab.insert(i, deepcopy(phoneme_sinsy))
-                # silの直前のpauの時刻を調整する
-                labobj_oto2lab[i - 1].end = labobj_oto2lab[i].start
-                # silの直後のpauの時刻を調整する
-                labobj_oto2lab[i + 1].start = labobj_oto2lab[i].end
-            else:
-                raise ValueError('sil を挿入したい場所にある音素が pau 以外です。:', str(labobj_oto2lab[i]))
+    for i, phoneme_sinsy in enumerate(labobj_sinsy):
+        if phoneme_sinsy.symbol in ('pau', 'sil'):
+            labobj_oto2lab.insert(i, deepcopy(phoneme_sinsy))
+
+
+def restore_pau_time(labobj_oto2lab):
+    """
+    一度削除されたことによってpauの開始時刻と終了時刻が崩れているため、
+    前後の音符の音素の終了時刻と開始時刻から、本来の値を復元する。
+    """
+    rest_symbols = ('pau', 'sil')
+    for i, current_phoneme in enumerate(labobj_oto2lab[1:], 1):
+        if current_phoneme.symbol == 'pau':
+            previous_phoneme = labobj_oto2lab[i - 1]
+            if previous_phoneme.symbol not in rest_symbols:
+                current_phoneme.start = previous_phoneme.end
+    for i, current_phoneme in enumerate(labobj_oto2lab[:-1]):
+        if current_phoneme.symbol == 'pau':
+            next_phoneme = labobj_oto2lab[i + 1]
+            if next_phoneme.symbol not in rest_symbols:
+                current_phoneme.end = next_phoneme.start
+
+# def insert_sil(labobj_oto2lab, labobj_sinsy):
+#     """
+#     間奏部分のsilを挿入する
+#     1. Sinsyのラベル中のsilな音素を検出
+#     2. silを挿入する前に、manualのラベルへの挿入部分の前後のpauを複製する
+#     3. silを挿入する
+#     """
+#     # 一番最初のpauを処理する
+#     if labobj_oto2lab[0].symbol == 'pau' and labobj_sinsy[0].symbol == 'sil':
+#         # silを挿入する
+#         labobj_oto2lab.insert(0, deepcopy(labobj_sinsy[0]))
+#         # silの直後のpauの時刻を調整する
+#         labobj_oto2lab[1].start = labobj_oto2lab[1].end
+#     # 前奏の最初以外と間奏のsilを挿入する
+#     for i, phoneme_sinsy in enumerate(labobj_sinsy[1:-1], 1):
+#         if phoneme_sinsy.symbol == 'sil':
+#             if labobj_oto2lab[i - 1] != 'pau':
+#                 if labobj_oto2lab[i - 1].symbol != 'sil':
+#                     # pauを複製する
+#                     labobj_oto2lab.insert(i, deepcopy(labobj_oto2lab[i - 1]))
+#                 # silを挿入する
+#                 labobj_oto2lab.insert(i, deepcopy(phoneme_sinsy))
+#                 # silの直前のpauの時刻を調整する
+#                 labobj_oto2lab[i - 1].end = labobj_oto2lab[i].start
+#                 # silの直後のpauの時刻を調整する
+#                 labobj_oto2lab[i + 1].start = labobj_oto2lab[i].end
+#             else:
+#                 raise ValueError('sil を挿入したい場所にある音素が pau 以外です。:', str(labobj_oto2lab[i]))
 
 
 def main_wrap(path_lab_oto2lab, path_lab_sinsy, path_lab_out):
@@ -86,20 +114,21 @@ def main_wrap(path_lab_oto2lab, path_lab_sinsy, path_lab_out):
     """
     # 前処理
     labobj_oto2lab = utaupy.label.load(path_lab_oto2lab)
-    labobj_oto2lab.check_invalid_time()
     labobj_sinsy = utaupy.label.load(path_lab_sinsy)
-    labobj_sinsy.check_invalid_time()
     print('  処理前------------------------')
     check_label_diff_for_debug(labobj_oto2lab, labobj_sinsy)
     # oto2labのラベルのsilを全部消す
-    delete_sil(labobj_oto2lab)
+    delete_pau_and_sil(labobj_oto2lab)
     # oto2labのラベルとSinsyのラベルを比較してsilを挿入する
-    insert_sil(labobj_oto2lab, labobj_sinsy)
+    insert_pau_and_sil(labobj_oto2lab, labobj_sinsy)
+    # pauが失った時間情報を復元する
+    restore_pau_time(labobj_oto2lab)
     print('  処理後------------------------')
     check_label_diff_for_debug(labobj_oto2lab, labobj_sinsy)
     labobj_oto2lab.check_invalid_time()
     # ファイル出力
     labobj_oto2lab.write(path_lab_out)
+    assert len(labobj_sinsy) == len(labobj_oto2lab), 'Sinsyのラベルと出力するラベルの音素数が一致しません'
 
 
 def main():
@@ -117,8 +146,7 @@ def main():
     len_oto2lab_labels = len(oto2lab_labels)
     print('len_sinsny_labels :', len_sinsny_labels)
     print('len_oto2lab_labels:', len_sinsny_labels)
-    if len_sinsny_labels != len_oto2lab_labels:
-        raise ValueError('sinsyのラベルファイル数とoto2labのラベルファイル数が一致しません。')
+    assert len_sinsny_labels == len_oto2lab_labels, 'sinsyのラベルファイル数とoto2labのラベルファイル数が一致しません。'
     # 書き換えを始める。
     for path_lab_sinsy in sinsy_labels:
         print('--------------------------------------------------')
