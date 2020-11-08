@@ -26,8 +26,8 @@ def check_label_diff_for_debug(labobj_oto2lab, labobj_sinsy):
     1つ違うとき・・・前奏または後奏のsilが一致しない
     2つ違うとき・・・前奏と構想の両方、または間奏のsilが一致しない
     """
-    oto2lab_sil = [phoneme for phoneme in labobj_sinsy if phoneme.symbol == 'sil']
-    sinsy_sil = [phoneme for phoneme in labobj_oto2lab if phoneme.symbol == 'sil']
+    oto2lab_sil = [phoneme for phoneme in labobj_oto2lab if phoneme.symbol == 'sil']
+    sinsy_sil = [phoneme for phoneme in labobj_sinsy if phoneme.symbol == 'sil']
     oto2lab_br = [phoneme for phoneme in labobj_oto2lab if phoneme.symbol == 'br']
     sinsy_br = [phoneme for phoneme in labobj_sinsy if phoneme.symbol == 'br']
     oto2lab_cl = [phoneme for phoneme in labobj_oto2lab if phoneme.symbol == 'cl']
