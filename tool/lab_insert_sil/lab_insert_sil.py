@@ -34,6 +34,8 @@ def check_label_diff_for_debug(labobj_oto2lab, labobj_sinsy):
     sinsy_br = [phoneme for phoneme in labobj_sinsy if phoneme.symbol == 'br']
     oto2lab_cl = [phoneme for phoneme in labobj_oto2lab if phoneme.symbol == 'cl']
     sinsy_cl = [phoneme for phoneme in labobj_sinsy if phoneme.symbol == 'cl']
+    oto2lab_w = [phoneme for phoneme in labobj_oto2lab if phoneme.symbol == 'w']
+    sinsy_w = [phoneme for phoneme in labobj_sinsy if phoneme.symbol == 'w']
     print('  oto2labのラベルの音素数   :', len(labobj_oto2lab))
     print('  Sinsy  のラベルの音素数   :', len(labobj_sinsy))
     print('  oto2labのラベル中のpauの数:', len(oto2lab_pau))
@@ -44,7 +46,10 @@ def check_label_diff_for_debug(labobj_oto2lab, labobj_sinsy):
     print('  Sinsy  のラベル中のbrの数 :', len(sinsy_br))
     print('  oto2labのラベル中のclの数 :', len(oto2lab_cl))
     print('  Sinsy  のラベル中のclの数 :', len(sinsy_cl))
+    print('  oto2labのラベル中のwの数 :', len(oto2lab_w))
+    print('  Sinsy  のラベル中のwの数 :', len(sinsy_w))
     assert len(oto2lab_br) == len(sinsy_br), 'br の個数が一致しません。'
+    assert len(oto2lab_w) == len(sinsy_w), 'w の個数が一致しません。'
     assert len(labobj_oto2lab) - len(oto2lab_pau) - len(oto2lab_sil) == len(labobj_sinsy) - len(sinsy_pau) - len(sinsy_sil), 'pau, sil 以外の音素で登録ミスが存在するようです。'
 
 
