@@ -1,0 +1,25 @@
+### General settings.
+## The name of singer
+spk: "oniku_kurumi"
+## exp tag(for managing experiments)
+tag: "jp_qst001_nnsvs_simple_4-3_ecodeco"
+
+## Directory of NNSVS
+nnsvs_root: "$HOME/nnsvs"
+
+### Pyinsy related settings.
+## Sinsy dictionary directory
+# ONIKU_KURUMI_UTAGOE_DB contains the unvoiced vowels "I" and "U".
+# To enable the unvoiced vowels, modified version of sinsy dictionary files
+# are needed.
+sinsy_dic: "./dic/sinsy"
+
+## HTS-style question used for extracting musical/linguistic context from musicxml files
+question_path: "./conf/jp_qst001_nnsvs_simple_4-3.hed"
+
+in_lab_dir: "./01_lab"
+utt_list: "./02_uttlist/utt_list.txt"
+out_wav_dir: "./03_wav"
+
+## sample_rate
+sample_rate: "96000"

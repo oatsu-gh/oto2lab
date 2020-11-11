@@ -50,7 +50,19 @@ def check_label_diff_for_debug(labobj_oto2lab, labobj_sinsy):
     print('  Sinsy  のラベル中のwの数 :', len(sinsy_w))
     assert len(oto2lab_br) == len(sinsy_br), 'br の個数が一致しません。'
     assert len(oto2lab_w) == len(sinsy_w), 'w の個数が一致しません。'
-    assert len(labobj_oto2lab) - len(oto2lab_pau) - len(oto2lab_sil) == len(labobj_sinsy) - len(sinsy_pau) - len(sinsy_sil), 'pau, sil 以外の音素で登録ミスが存在するようです。'
+    assert len(labobj_oto2lab) - len(oto2lab_pau) - len(oto2lab_sil) == len(labobj_sinsy) - \
+        len(sinsy_pau) - len(sinsy_sil), 'pau, sil 以外の音素で登録ミスが存在するようです。'
+
+def compare_all_phonemes(labobj_oto2lab, labobj_sinsy):
+    """
+    すべての音素が一致するかチェックする。
+    """
+    len_labobj_oto2lab = len(labobj_oto2lab)
+    len_labobj_sinsy = len(labobj_sinsy)
+    assert len_labobj_oto2lab == len_labobj_sinsy , f'音素数が一致しません。出力するLABの音素数: {len_labobj_oto2lab}, Sinsyの音素数 {len_labobj_sinsy}'
+    oto2lab_all_phonemes = [phoneme.symbol for phoneme in labobj_oto2lab]
+    sinsy_all_phonemes = [phoneme.symbol for phoneme in labobj_sinsy]
+    assert oto2lab_all_phonemes == sinsy_all_phonemes, '音素記号が一致しない部分があります。'
 
 
 def delete_pau_and_sil(labobj):
@@ -86,35 +98,6 @@ def restore_pau_time(labobj_oto2lab):
             if next_phoneme.symbol not in rest_symbols:
                 current_phoneme.end = next_phoneme.start
 
-# def insert_sil(labobj_oto2lab, labobj_sinsy):
-#     """
-#     間奏部分のsilを挿入する
-#     1. Sinsyのラベル中のsilな音素を検出
-#     2. silを挿入する前に、manualのラベルへの挿入部分の前後のpauを複製する
-#     3. silを挿入する
-#     """
-#     # 一番最初のpauを処理する
-#     if labobj_oto2lab[0].symbol == 'pau' and labobj_sinsy[0].symbol == 'sil':
-#         # silを挿入する
-#         labobj_oto2lab.insert(0, deepcopy(labobj_sinsy[0]))
-#         # silの直後のpauの時刻を調整する
-#         labobj_oto2lab[1].start = labobj_oto2lab[1].end
-#     # 前奏の最初以外と間奏のsilを挿入する
-#     for i, phoneme_sinsy in enumerate(labobj_sinsy[1:-1], 1):
-#         if phoneme_sinsy.symbol == 'sil':
-#             if labobj_oto2lab[i - 1] != 'pau':
-#                 if labobj_oto2lab[i - 1].symbol != 'sil':
-#                     # pauを複製する
-#                     labobj_oto2lab.insert(i, deepcopy(labobj_oto2lab[i - 1]))
-#                 # silを挿入する
-#                 labobj_oto2lab.insert(i, deepcopy(phoneme_sinsy))
-#                 # silの直前のpauの時刻を調整する
-#                 labobj_oto2lab[i - 1].end = labobj_oto2lab[i].start
-#                 # silの直後のpauの時刻を調整する
-#                 labobj_oto2lab[i + 1].start = labobj_oto2lab[i].end
-#             else:
-#                 raise ValueError('sil を挿入したい場所にある音素が pau 以外です。:', str(labobj_oto2lab[i]))
-
 
 def main_wrap(path_lab_oto2lab, path_lab_sinsy, path_lab_out):
     """
@@ -139,7 +122,7 @@ def main_wrap(path_lab_oto2lab, path_lab_sinsy, path_lab_out):
     labobj_oto2lab.check_invalid_time()
     # ファイル出力
     labobj_oto2lab.write(path_lab_out)
-    assert len(labobj_sinsy) == len(labobj_oto2lab), 'Sinsyのラベルと出力するラベルの音素数が一致しません'
+    compare_all_phonemes(labobj_oto2lab, labobj_sinsy)
 
 
 def main():

@@ -21,7 +21,19 @@ lab_set_start_sil の強化版。Sinsyで生成したLABを参照して、oto2la
 
 ## 使い方
 
+好きなほうを選んでください。
+
+### 使い方①
+
 1. Sinsyが生成したLABを **lab_input_sinsy** に入れる。ファイル名は **{songname}\_sinsy.lab** または **{musicname}.lab** としておく。
 1. oto2labが生成したLABを **lab_input_oto2lab** に入れる。ファイル名は **{songname}.lab** としておく。
 1. **lab_insert_sil** を起動して実行。
 1. **lab_output** に出力される。
+
+## 使い方②
+
+1. WSLにNNSVSの環境を作っておく。
+2. MusicXMLを **musicxml** に入れる。ファイル名は **{songname}.musicxml**としておく。
+3. oto2labが生成したLABを **lab_input_oto2lab** に入れる。ファイル名は **{songname}.lab** としておく。
+4. PowerShell から **xml2lab_and_insert_sil.bat** を実行。
+5. lab_output に出力される。途中でエラーが出ると止まるのでPowerShellの画面をチェックしてください。
