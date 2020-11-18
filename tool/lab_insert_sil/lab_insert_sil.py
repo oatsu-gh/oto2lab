@@ -6,8 +6,8 @@ lab_set_start_sil の強化版。Sinsyで生成したLABを参照して、oto2la
 
 # 使い方
 1. sinsyが生成したLABを lab_input_sinsy に入れる。ファイル名は {songname}_sinsy.lab または {musicname}.lab としておく。
-1. oto2labが生成したLABを lab_input_oto2lab に入れる。ファイル名は {songname}.lab としておく。
-1. lab_insert_sil を起動して実行。
+2. oto2labが生成したLABを lab_input_oto2lab に入れる。ファイル名は {songname}.lab としておく。
+3. lab_insert_sil を起動して実行。
 """
 from copy import deepcopy
 from glob import glob
@@ -50,8 +50,10 @@ def check_label_diff_for_debug(labobj_oto2lab, labobj_sinsy):
     print('  Sinsy  のラベル中のwの数 :', len(sinsy_w))
     assert len(oto2lab_br) == len(sinsy_br), 'br の個数が一致しません。'
     assert len(oto2lab_w) == len(sinsy_w), 'w の個数が一致しません。'
-    assert len(labobj_oto2lab) - len(oto2lab_pau) - len(oto2lab_sil) == len(labobj_sinsy) - \
-        len(sinsy_pau) - len(sinsy_sil), 'pau, sil 以外の音素で登録ミスが存在するようです。'
+    assert len(labobj_oto2lab) - len(oto2lab_pau) - len(oto2lab_sil) \
+        == len(labobj_sinsy) - len(sinsy_pau) - len(sinsy_sil), \
+        'pau, sil 以外の音素で登録ミスが存在するようです。'
+
 
 def compare_all_phonemes(labobj_oto2lab, labobj_sinsy):
     """
@@ -59,10 +61,20 @@ def compare_all_phonemes(labobj_oto2lab, labobj_sinsy):
     """
     len_labobj_oto2lab = len(labobj_oto2lab)
     len_labobj_sinsy = len(labobj_sinsy)
-    assert len_labobj_oto2lab == len_labobj_sinsy , f'音素数が一致しません。出力するLABの音素数: {len_labobj_oto2lab}, Sinsyの音素数 {len_labobj_sinsy}'
+    assert len_labobj_oto2lab == len_labobj_sinsy, \
+        f'音素数が一致しません。出力するLABの音素数: {len_labobj_oto2lab}, Sinsyの音素数 {len_labobj_sinsy}'
     oto2lab_all_phonemes = [phoneme.symbol for phoneme in labobj_oto2lab]
     sinsy_all_phonemes = [phoneme.symbol for phoneme in labobj_sinsy]
-    assert oto2lab_all_phonemes == sinsy_all_phonemes, '音素記号が一致しない部分があります。'
+    for i, (ph_oto2lab, ph_sinsy) in enumerate(zip(oto2lab_all_phonemes, sinsy_all_phonemes)):
+        assert ph_oto2lab == ph_sinsy, \
+            f'{i+1} 行目付近の音素が一致しません。oto2labの音素: {ph_oto2lab}, Sinsyの音素: {ph_sinsy}'
+
+def check_start_end_match(labobj):
+    end = 0
+    for phoneme in labobj:
+        start = phoneme.start
+        assert end == start
+        end = phoneme.end
 
 
 def delete_pau_and_sil(labobj):
@@ -119,10 +131,11 @@ def main_wrap(path_lab_oto2lab, path_lab_sinsy, path_lab_out):
     restore_pau_time(labobj_oto2lab)
     print('  処理後-------------------------')
     check_label_diff_for_debug(labobj_oto2lab, labobj_sinsy)
-    labobj_oto2lab.check_invalid_time()
+    labobj_oto2lab.check_invalid_time(threshold=5)
     # ファイル出力
     labobj_oto2lab.write(path_lab_out)
     compare_all_phonemes(labobj_oto2lab, labobj_sinsy)
+    check_start_end_match(labobj_oto2lab)
 
 
 def main():

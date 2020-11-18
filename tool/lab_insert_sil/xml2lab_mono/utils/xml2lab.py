@@ -98,7 +98,8 @@ def main(path_xmldir, path_temp_dir, path_labdir, path_tabledir, path_uttlist):
 
     print('xml2lab.py: copy_and_rename_xml: copying XML files')
     list_songname = copy_and_rename_xml(path_xmldir, path_temp_dir)
-    pprint(list_songname)
+    for i, songname in enumerate(list_songname):
+        print(f'{str(i).rjust(3, " ")}: {songname}')
 
     print('xml2lab.py: xml2lab            : converting XML files to LAB files')
     xml2lab(path_temp_dir, path_tabledir)
