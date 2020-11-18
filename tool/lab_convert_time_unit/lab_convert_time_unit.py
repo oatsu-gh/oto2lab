@@ -86,7 +86,7 @@ def main():
     print('--------------------------------------')
     mode = input('>>> ')
     print('\ninput target filepath or dirpath')
-    path = input('>>> ')
+    path = input('>>> ').strip('"')
     if os.path.isdir(path):
         # 破損対策でコピー
         backup_files(path, 'lab')
