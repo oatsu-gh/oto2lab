@@ -2,6 +2,12 @@
 
 録音リストからREAPERのリージョン生成するやつ
 
+---
+
+**移動しました → https://github.com/oatsu-gh/utau-tools/reclist2region**
+
+---
+
 ## 連絡先
 
 + 通常 https://twitter.com/crazy_toho
@@ -20,3 +26,4 @@
 ### v0.0.2（2020年7月14日）
 
 + ファイル選択のときの引用符を自動削除するようにした
+

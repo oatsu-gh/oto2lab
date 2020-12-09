@@ -42,20 +42,29 @@ def split_cl_note_of_ust(ust):
     「かっ」→「か」「っ」
     促音のみのノートはそのままにすることに注意。
     """
-    for i, note in enumerate(ust.notes):
+    new_notes = []
+    for note in ust.notes:
         lyric = note.lyric
         if ('っ' in lyric) and (lyric != 'っ'):
-            # 元のノートを処理
-            note.lyric = lyric[:-1]            # 'っ' を削る
-            half_length = note.length // 2  # ノート長の半分の値を取得する
-            note.length = half_length      # ノート長を半分にする
-            # 新規ノートを追加
-            note_cl = ust.insert_note(i + 1)
+            # もとのノートを半分にして、促音を削ってリストに追加
+            half_length = note.length // 2
+            note.lyric = lyric.strip('っ')
+            note.length = half_length
+            new_notes.append(note)
+            # もう半分の長さの促音のノートをリストに追加
+            note_cl = up.ust.Note()
             note_cl.lyric = 'っ'
             note_cl.length = half_length
+            # 分割した2つのノートをリストに追加
+            new_notes.append(note_cl)
+        else:
+            new_notes.append(note)
+    # ノートを上書き
+    ust.notes = new_notes
+    ust.reload_tempo()
 
 
-def ustfile_to_inifile(path, path_tablefile, mode='romaji_cv'):
+def ustfile_to_inifile(path:str, path_tablefile:str, mode='romaji_cv'):
     """
     USTファイルをINIファイルに変換
     """
@@ -233,6 +242,7 @@ def svpfile_to_inifile(path, path_tablefile, mode='romaji_cv'):
         # 出力ファイルをバックアップ
         backup_io(path_inifile, 'out')
         print('converted  SVP to INI :', path_inifile)
+
 
 def labfile_to_inifile_revise(path):
     """
