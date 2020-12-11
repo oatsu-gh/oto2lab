@@ -1,4 +1,4 @@
-rem oto2labã‚’exeã«ã—ã¦é…å¸ƒç”¨ãƒ•ã‚©ãƒ«ãƒ€ã‚’ä½œã‚‹ãƒãƒƒãƒ
+rem oto2lab‚ðexe‚É‚µ‚Ä”z•z—pƒtƒHƒ‹ƒ_‚ðì‚éƒoƒbƒ`
 
 rmdir /s /q exe\oto2lab--exe
 
