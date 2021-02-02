@@ -8,37 +8,36 @@ txt (Audacityのラベル) -> lab (歌唱DBモノフォンラベル) の変換
 import os
 from glob import glob
 from pprint import pprint
-from sys import exit
 
 import utaupy as up
 
 
-def audacitylabelfile2labfile(inpath, outpath):
+def audacitylabelfile2labfile(path_audacitylabel_in:str, path_lab_out:str):
     """
     txt (Audacityのラベル) -> lab (歌唱DBモノフォンラベル)
     単一ファイルを変換
     """
-    l = up.label.load_as_plainlist(inpath, kiritan=True)
-    lines = ['{}\t{}\t{}'.format(*v) for v in l]
+    label = up.label.load(path_audacitylabel_in, time_unit='s')
     # ファイル出力
-    with open(path, mode=mode, encoding=encoding, newline=newline) as f:
-        f.write('\n'.join(lines))
+    label.write(path_lab_out, time_unit='100ns')
 
 
 def main():
-    p = input('Input Audacity label txt path (file or dir)\n>>> ')
-    if os.path.isdir(p):
-        txtfiles = glob('{}/*.{}'.format(p, 'txt'))
+    """
+    フォルダを指定して処理
+    """
+    path_in = input('Input Audacity label txt path (file or dir)\n>>> ').strip('"')
+    if os.path.isdir(path_in):
+        txt_files = glob('{}/*.{}'.format(path_in, 'txt'))
     else:
-        if not p.endswith('.txt'):
-            print('[ERROR] txt ではないファイルが入力されました。終了します。')
-            input('Press Enter to exit')
-            exit()
-        txtfiles = [p]
+        if not path_in.endswith('.txt'):
+            raise ValueError('txt ではないファイルが入力されました。終了します。')
+        txt_files = [path_in]
+
     print('\n処理対象ファイル')
-    pprint(txtfiles)
+    pprint(txt_files)
     print('\n始めます')
-    for path_txt in txtfiles:
+    for path_txt in txt_files:
         print('  processing:', path_txt)
         path_lab = path_txt.replace('.txt', '.lab')
         audacitylabelfile2labfile(path_txt, path_lab)
@@ -46,6 +45,6 @@ def main():
 
 
 if __name__ == '__main__':
-    print('---Audacity用ラベルを歌唱DB用ラベルにするツール(20200711)---')
+    print('---Audacity用ラベルを歌唱DB用ラベルにするツール(20210202)---')
     main()
     print('Press Enter to exit')
