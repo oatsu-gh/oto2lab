@@ -6,8 +6,7 @@ Modified BSD License
 
 ### Target files
 
-- sinsy/\*
-- sinsy_disabled_cl/\*
+- All files in this directory, except for **kana2phonemes_utf8_for_oto2lab.table** .
 
 ### License text
 

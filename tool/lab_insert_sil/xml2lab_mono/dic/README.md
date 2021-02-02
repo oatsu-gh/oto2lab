@@ -1,18 +1,15 @@
-# dic
+# Sinsy dictionaries for natsume_singing, ofuton_p_utagoe_db, oniku_kurumi_utagoe_db
 
-「かな → 音素」変換辞書
+natsume_singing, ofuton_p_utagoe_db, oniku_kurumi_utagoe_db contain the labels for unvoiced vowels as follows;
 
-## フォルダ説明
+- Unvoiced "I"
+  - チ ch I
+  - シ sh I
+- Unvoiced "U"
+  - ク k U
+  - ス s U
+  - ツ ts U
+  - ブ b U
+  - プ p U
 
-### sinsy
-
-- Sinsy に使用されるデフォルトの辞書を微改変
-  - 「を」が必ず「o」に変換されるように修正
-
-### sinsy_cl_disabled
-
-- 現時点では使いません（2020/09/26）
-- sinsy フォルダのものを、促音の扱いを変更
-  - japanese.*.conf を改変
-    - `PHONEME_CL="cl"` → `PHONEME_CL="cl_is_treated_as_normal_phoneme"`
-  - musicxmlにおいて、「っ」を独立した音符として扱えることを期待
+You can use them by writing lyrics with katakana.

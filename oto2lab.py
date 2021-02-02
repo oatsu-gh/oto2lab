@@ -22,7 +22,7 @@ from shutil import copy2
 import utaupy as up
 
 DEBUG_MODE = False
-PATH_TABLE = './table/kana2romaji_sjis_for_oto2lab.table'
+PATH_TABLE = './dic/kana2phonemes_utf8_for_oto2lab.table'
 
 
 def backup_io(path_file, outdirname):
@@ -341,9 +341,10 @@ def main_gui(path, mode):
 
 
 if __name__ == '__main__':
-    print('_____ξ・ヮ・) < oto2lab v2.2.4 ________')
-    print('Copyright (c) 2001-2020 Python Software Foundation')
-    print('Copyright (c) 2020 oatsu, Haruqa\n')
+    print('_____ξ・ヮ・) < oto2lab v2.2.5 ________')
+    print('Copyright (c) 2020 oatsu')
+    print('Copyright (c) 2020 Haruqa')
+    print('Copyright (c) 2001-2020 Python Software Foundation\n')
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--input', help='入力ファイルかフォルダ input path\t(file or dir)')

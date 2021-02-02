@@ -12,7 +12,7 @@ nnsvs_root: "$HOME/nnsvs"
 # ONIKU_KURUMI_UTAGOE_DB contains the unvoiced vowels "I" and "U".
 # To enable the unvoiced vowels, modified version of sinsy dictionary files
 # are needed.
-sinsy_dic: "./dic/sinsy"
+sinsy_dic: "./dic"
 
 ## HTS-style question used for extracting musical/linguistic context from musicxml files
 question_path: "./conf/jp_qst001_nnsvs_simple_4-3.hed"
