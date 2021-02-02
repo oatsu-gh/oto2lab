@@ -17,10 +17,10 @@ def get_voiced_part_length(label):
     """
     utaupy.label.Label オブジェクトの発声区間の和を求める。
     """
+    non_voice = ('br', 'cl', 'pau', 'sil')
     t = 0  # 発声時間を蓄える変数
-    phonemes = label.values
-    for phoneme in phonemes:
-        if phoneme.symbol not in ('br', 'cl', 'pau', 'sil'):
+    for phoneme in label:
+        if phoneme.symbol not in non_voice:
             t += phoneme.end - phoneme.start  # 発声時間を加算
     return t
 
