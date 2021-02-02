@@ -23,20 +23,20 @@ def ustfiles2shiroindexfile(ust_dir, d):
     pprint(ustfiles)
 
     l = []  # indexの元にするリスト
-    for ustfile in ustfiles:
-        print(f'    processing: {ustfile}')
-        ust = up.ust.load(ustfile)  # Ustオブジェクトを生成
-        kana_lyrics = [note.lyric for note in ust.values[2:-1]]
+    for path_ust in ustfiles:
+        print(f'    processing: {path_ust}')
+        ust = up.ust.load(path_ust)  # Ustオブジェクトを生成
+        kana_lyrics = [note.lyric for note in ust.notes]
         romaji_lyrics = [' '.join(d[v]) for v in kana_lyrics]
-        songname = os.path.splitext(os.path.basename(ustfile))[0]
+        songname = os.path.splitext(os.path.basename(path_ust))[0]
         l.append([songname] + romaji_lyrics)
     # pprint(l)
     index = up.shiro.Index()
     index.values = l  # Indexに値を代入
     now = datetime.now().strftime('%Y%m%d_%H%M%S')  # 出力ファイルにつける時刻文字列
-    csv_path = f'{ust_dir}/shiro_index__{now}.csv'  # 出力パス
-    index.write(csv_path, encoding='shift-jis')     # 出力
-    print(f'IndexFile was successfully exported as \"{csv_path}\"')
+    path_csv_out = f'{ust_dir}/shiro_index__{now}.csv'  # 出力パス
+    index.write(path_csv_out, encoding='shift-jis')     # 出力
+    print(f'IndexFile was successfully exported as "{path_csv_out}"')
 
 
 def main():
