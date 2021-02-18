@@ -47,7 +47,7 @@ def split_cl_note_of_ust(ust):
         lyric = note.lyric
         if ('っ' in lyric) and (lyric != 'っ'):
             # もとのノートを半分にして、促音を削ってリストに追加
-            half_length = note.length // 2
+            half_length = round(note.length / 2)
             note.lyric = lyric.strip('っ')
             note.length = half_length
             new_notes.append(note)
