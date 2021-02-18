@@ -16,7 +16,7 @@ path_dir_xml="./musicxml"
 path_dir_lab="./lab_input_sinsy"
 path_dir_uttlist="./xml2lab_mono/02_uttlist"
 path_uttlist="./xml2lab_mono/02_uttlist/utt_list.txt"
-path_dir_table="./xml2lab_mono/dic/sinsy"
+path_dir_table="./xml2lab_mono/dic"
 
 # 出力フォルダを作成する
 mkdir -p $path_dir_lab
