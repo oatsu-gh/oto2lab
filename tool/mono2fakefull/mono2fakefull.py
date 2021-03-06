@@ -115,6 +115,9 @@ def monolabel_to_song(mono_label: up.label.Label, hts_conf) -> Song:
     song._fill_syllable_contexts()
     # 休符からの距離(フレーズ内で何番目か)
     song._fill_e18_e19()
+    # e6 を埋める。
+    for note in song:
+        note.number_of_syllables = len(note)
     # フレーズ数
     song._fill_j3()
     return song
