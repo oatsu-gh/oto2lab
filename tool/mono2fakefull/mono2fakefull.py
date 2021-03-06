@@ -5,13 +5,16 @@
 NNSVSで話し声を学習してみたい。
 """
 
-import utaupy as up
-from utaupy.hts import Syllable, Note, Song
-from tqdm import tqdm
+from glob import glob
+from os.path import basename, isdir, join
 from typing import List
 
+import utaupy as up
+from tqdm import tqdm
+from utaupy.hts import Note, Song, Syllable
 
-def monolabel_to_full_phonemes(mono_label:up.label.Label, hts_conf: dict) -> List[up.hts.Phoneme]:
+
+def monolabel_to_full_phonemes(mono_label: up.label.Label, hts_conf: dict) -> List[up.hts.Phoneme]:
     """音素をCVで区切って音節のリストにする
 
     mono_label: モノラベル
@@ -47,6 +50,7 @@ def monolabel_to_full_phonemes(mono_label:up.label.Label, hts_conf: dict) -> Lis
             phoneme.language_independent_identity = 'c'
     return full_phonemes
 
+
 def full_phonemes_to_syllables(full_phonemes: List[up.hts.Phoneme]) -> List[up.hts.Syllable]:
     """フルラベル用のPhonemeを音節ごとに区切る。
 
@@ -67,7 +71,7 @@ def full_phonemes_to_syllables(full_phonemes: List[up.hts.Phoneme]) -> List[up.h
         # 母音
         elif phoneme.is_vowel():
             # 母音の次が息継ぎか促音のときは、同じ音節にする。
-            if full_phonemes[i-1].is_break():
+            if full_phonemes[i - 1].is_break():
                 syllable.append(phoneme)
             # 母音の次が息継ぎか促音でないときは、音節を切り替える。
             else:
@@ -84,6 +88,7 @@ def full_phonemes_to_syllables(full_phonemes: List[up.hts.Phoneme]) -> List[up.h
     l_syllables.reverse()
     return l_syllables
 
+
 def syllables_to_notes(syllables: List[Syllable]) -> List[Note]:
     """
     音節のリストをノートのリストにする。
@@ -96,12 +101,14 @@ def syllables_to_notes(syllables: List[Syllable]) -> List[Note]:
         l_notes.append(note)
     return l_notes
 
-def notes_to_song(notes:List[Note]) -> Song:
+
+def notes_to_song(notes: List[Note]) -> Song:
     """ノート(Note)のリストをSongオブジェクトにする。
     """
     song = Song()
     song.data = notes
     return song
+
 
 def monolabel_to_song(mono_label: up.label.Label, hts_conf) -> Song:
     """
@@ -122,23 +129,33 @@ def monolabel_to_song(mono_label: up.label.Label, hts_conf) -> Song:
     song._fill_j3()
     return song
 
+
 def monolabel_file_to_fulllabel_file(path_mono_lab_in, path_full_lab_out, path_hts_conf):
-    # TODO: ここtableじゃないようにする
+    # TODO: ここのconfはtableじゃないようにする
     hts_conf = up.table.load(path_hts_conf)
     mono_label = up.label.load(path_mono_lab_in)
     song = monolabel_to_song(mono_label, hts_conf)
     song.write(path_full_lab_out)
+
 
 def main():
     """
     ファイルを指定して変換
     """
     path_mono = input('path_mono: ')
-    assert path_mono.strip('"').endswith('.lab')
-    path_full = path_mono.replace('.lab', '_fakefull.lab')
     path_conf = input('path_conf: ')
-    monolabel_file_to_fulllabel_file(path_mono, path_full, path_conf)
-    up.utils.hts2json(path_full, path_full.replace('.lab', '.json'))
+    path_out_dir = 'out'
+    if isdir(path_mono):
+        mono_label_files = glob(f'{path_mono}/*.lab')
+    else:
+        mono_label_files = [path_mono]
+        assert path_mono.strip('"').endswith('.lab')
+
+    for path_mono in mono_label_files:
+        path_full = join(path_out_dir, basename(path_mono))
+        monolabel_file_to_fulllabel_file(path_mono, path_full, path_conf)
+        up.utils.hts2json(path_full, path_full.replace('.lab', '.json'))
+
 
 if __name__ == '__main__':
     main()
