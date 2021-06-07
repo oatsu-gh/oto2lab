@@ -51,6 +51,8 @@ def main():
         sys.exit()
     tablepath = input('Input path of tablefile\n>>> ')
     d = up.table.load(tablepath)  # かなローマ辞書
+    d_cl = {f'{kana}っ':phonemes + ['cl'] for kana, phonemes in d.items()}
+    d.update(d_cl)
     d.update({'R': ['pau'], 'br': ['br'], '息': ['br'], 'pau': ['pau'], 'sil': ['sil']})
     ustfiles2shiroindexfile(ust_dir, d)
 
