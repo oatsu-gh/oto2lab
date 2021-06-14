@@ -1,6 +1,5 @@
 #! /usr/bin/env python3
-# coding: utf-8
-# Copyright 2020 oatsu
+# Copyright 2021 oatsu
 """
 setParam での音声ラベリング支援ツールです。
 ファイル形式を変換できます。
@@ -345,9 +344,9 @@ def main_gui(path, mode):
 
 if __name__ == '__main__':
     print('_____ξ・ヮ・) < oto2lab v2.2.7 ________')
-    print('Copyright (c) 2020 oatsu')
-    print('Copyright (c) 2020 Haruqa')
-    print('Copyright (c) 2001-2020 Python Software Foundation\n')
+    print('Copyright (c) 2021 oatsu')
+    print('Copyright (c) 2021 Haruqa')
+    print('Copyright (c) 2001-2021 Python Software Foundation\n')
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--input', help='入力ファイルかフォルダ input path\t(file or dir)')

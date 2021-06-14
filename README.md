@@ -53,5 +53,5 @@ UTAUにおける既存インフラとノウハウの流用で、歌唱DBの充�
 
 ---
 
-© 2020 oatsu, Haruqa
-© 2001-2020 Python Software Foundation
+© 2021 oatsu, Haruqa
+© 2001-2021 Python Software Foundation
