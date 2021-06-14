@@ -343,7 +343,7 @@ def main_gui(path, mode):
 
 
 if __name__ == '__main__':
-    print('_____ξ・ヮ・) < oto2lab v2.2.7 ________')
+    print('_____ξ・ヮ・) < oto2lab v2.3.0 ________')
     print('Copyright (c) 2021 oatsu')
     print('Copyright (c) 2021 Haruqa')
     print('Copyright (c) 2001-2021 Python Software Foundation\n')
