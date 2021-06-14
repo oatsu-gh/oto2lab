@@ -97,6 +97,9 @@ def ustfile_to_inifile(path:str, path_tablefile:str, mode='romaji_cv'):
         path_inifile = '{}/{}'.format(outdir, basename.replace('.ust', '.ini'))
         # UST を読み取り
         ust = up.ust.load(path_ustfile)
+        # 休符で終わってない場合はエラー終了
+        if ust.notes[-1].lyric not in ('R', 'pau', 'sil'):
+            raise ValueError(f'USTファイルの最後は必ず休符にしてください。対象ファイル: {path_ustfile}')
         # 促音を含むノートを分割
         split_cl_note_of_ust(ust)
         # 変換
@@ -341,7 +344,7 @@ def main_gui(path, mode):
 
 
 if __name__ == '__main__':
-    print('_____ξ・ヮ・) < oto2lab v2.2.5 ________')
+    print('_____ξ・ヮ・) < oto2lab v2.2.7 ________')
     print('Copyright (c) 2020 oatsu')
     print('Copyright (c) 2020 Haruqa')
     print('Copyright (c) 2001-2020 Python Software Foundation\n')
