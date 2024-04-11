@@ -4,28 +4,22 @@
 
 ## ファイルの説明
 
-### kana2romaji_sjis_sinsy.table
+### kana2phonemes_001_oto2lab
 
--   Sinsy 準拠の かな→ローマ字変換表
+- kana2phonemes_utf8_for_oto2lab に項目を追加（2021-07-15）
+  - `ふゃ` → `fy a`
+  - `ふゅ` → `fy u`
+  - `ふぃぇ` → `fy e`
+  - `ふょ` → `fy o`
 
-### kana2romaji_sjis.table
+### kana2phonemes_002_oto2lab
 
--   kana2romaji_sjis_sinsy を拡張して、母音無声化に対応したもの。
--   無声化したものはカタカナを用い、ローマ字では大文字にする。
--   カ: k A, シ: s I などを追加している。
+- kana2mono_001_oto2lab に項目を追加（2021-08-09）
+  - `・あ` → `GlottalStop a` など
+  - `’あ` → `Edge a` など
+  - `あ’` → `Edge a` など
+  - `ぢ` → `j i` など
+  - `ヴゅ` → `vy u` など
+  - `てぇ`  →`ty e` など
+  - `うぅ` → `w u` など
 
-### kana2romaji_sjis_for_oto2lab.table
-
--   oto2lab 用の かな→ローマ字変換表
--   kana2romaji_sjis を oto2lab 用に拡張したもの。
--   R: pau, pau: pau, 息: br, br: br, sil: sil を追加している。
-
-### romaji2kana_sjis_sinsy.table
-
--   Sinsy 準拠の ローマ字→かな変換表
-
-### romaji2kana_sjis.table
-
--   romaji2kana_sjis_sinsy を拡張して、母音無声化に対応したもの。
--   無声化したものはカタカナを用い、ローマ字では大文字にする。
--   kA: カ, sI: シ などを追加している。
