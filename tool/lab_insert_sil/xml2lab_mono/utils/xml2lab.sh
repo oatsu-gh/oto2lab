@@ -5,7 +5,7 @@
 # wsl run.sh で実行するとPATHが皆無なので登録する
 PATH="$HOME/.local/:$PATH"
 # pysinsyがSinsyにアクセスできるようにする
-LD_LIBRARY_PATH=/usr/local/lib/
+export LD_LIBRARY_PATH=/usr/local/lib/
 # pathに日本語が含まれるとSinsyがエラーを出すので、一時フォルダを使って回避する。
 path_temp_dir=$HOME/temp_nnsvs
 # このファイルがあるディレクトリ

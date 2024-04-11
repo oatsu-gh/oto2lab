@@ -17,11 +17,11 @@ def get_voiced_part_length(label):
     """
     utaupy.label.Label オブジェクトの発声区間の和を求める。
     """
-    non_voice = ('br', 'cl', 'pau', 'sil')
+    non_voice = ('br', 'pau', 'sil')
     t = 0  # 発声時間を蓄える変数
     for phoneme in label:
         if phoneme.symbol not in non_voice:
-            t += phoneme.end - phoneme.start  # 発声時間を加算
+            t += phoneme.duration  # 発声時間を加算
     return t
 
 
@@ -40,12 +40,12 @@ def main():
     for path_lab in path_labfiles:
         label = up.label.load(path_lab)
         name = os.path.basename(path_lab)
-        length = int(get_voiced_part_length(label) / 10**7)
+        length = get_voiced_part_length(label)
         t_total += length
-        result.append([name, length])
+        result.append([name, round(length/10000000)])
 
     print(f'total: {t_total} seconds')
-    result = [['TOTAL_VOICED_PART_LENGTH[seconds]', t_total]] + result
+    result = [['TOTAL_VOICED_PART_LENGTH[seconds]', round(t_total/10000000)]] + result
 
     basename_labdir = os.path.basename(path_labdir)
     with open(f'./result__{basename_labdir}.csv', mode='w', newline='\n') as f:

@@ -1,345 +1,382 @@
-クァ k w a
-クィ k w i
-クゥ k w u
-クェ k w e
-クォ k w o
-クヮ k w a
-グァ g w a
-グィ g w i
-グゥ g w u
-グェ g w e
-グォ g w o
-グヮ g w a
-くぁ k w a
-くぃ k w i
-くぅ k w u
-くぇ k w e
-くぉ k w o
-くゎ k w a
-ぐぁ g w a
-ぐぃ g w i
-ぐぅ g w u
-ぐぇ g w e
-ぐぉ g w o
-ぐゎ g w a
-ん N
-を o
-ゑ e
-ゐ i
-わ w a
-ゎ w a
-ろ r o
-れ r e
-る r u
-りょ ry o
-りゅ ry u
-りゃ ry a
-りぇ ry e
-り r i
-ら r a
-よ y o
-ょ y o
-ゆ y u
-ゅ y u
-や y a
-ゃ y a
-も m o
-め m e
-む m u
-みょ my o
-みゅ my u
-みゃ my a
-みぇ my e
-み m i
-ま m a
-ぽ p o
-ぼ b o
-ほ h o
-ぺ p e
-べ b e
-へ h e
-ぷ p u
-ぶ b u
-ふぉ f o
-ふぇ f e
-ふぃ f i
-ふぁ f a
-ふ f u
-ぴょ py o
-ぴゅ py u
-ぴゃ py a
-ぴぇ py e
-ぴ p i
-びょ by o
-びゅ by u
-びゃ by a
-びぇ by e
-び b i
-ひょ hy o
-ひゅ hy u
-ひゃ hy a
-ひぇ hy e
-ひ h i
-ぱ p a
-ば b a
-は h a
-の n o
-ね n e
-ぬ n u
-にょ ny o
-にゅ ny u
-にゃ ny a
-にぇ ny e
-に n i
-な n a
-どぅ d u
-ど d o
-とぅ t u
-と t o
-でょ dy o
-でゅ dy u
-でゃ dy a
-でぇ dy e
-でぃ d i
-で d e
-てょ ty o
-てゅ ty u
-てゃ ty a
-てぃ t i
-て t e
-づ z u
-つぉ ts o
-つぇ ts e
-つぃ ts i
-つぁ ts a
-つ ts u
-っ cl
-ぢ j i
-ちょ ch o
-ちゅ ch u
-ちゃ ch a
-ちぇ ch e
-ち ch i
-だ d a
-た t a
-ぞ z o
-そ s o
-ぜ z e
-せ s e
-ずぃ z i
-ず z u
-すぃ s i
-す s u
-じょ j o
-じゅ j u
-じゃ j a
-じぇ j e
-じ j i
-しょ sh o
-しゅ sh u
-しゃ sh a
-しぇ sh e
-しぃ s i
-し sh i
-ざ z a
-さ s a
-ご g o
-こ k o
-げ g e
-け k e
-ぐ g u
-く k u
-ぎょ gy o
-ぎゅ gy u
-ぎゃ gy a
-ぎぇ gy e
-ぎ g i
-きょ ky o
-きゅ ky u
-きゃ ky a
-きぇ ky e
-き k i
-が g a
-か k a
-お o
-ぉ o
-え e
-ぇ e
-うぉ w o
-うぇ w e
-うぃ w i
-う u
-ぅ u
-いぇ y e
-い i
-ぃ i
-あ a
-ぁ a
-ヴょ by o
-ヴゅ by u
-ヴゃ by a
-ヴぉ v o
-ヴぇ v e
-ヴぃ v i
-ヴぁ v a
-ヴョ by o
-ヴュ by u
-ヴャ by a
-ヴォ v o
-ヴェ v e
-ヴィ v i
-ヴァ v a
-ヴ v u
-ン N
-ヲ O
-ヱ E
-ヰ I
-ワ w A
-ヮ w A
-ロ r O
-レ r E
-ル r U
-リョ ry O
-リュ ry U
-リャ ry A
-リェ ry E
-リ r I
-ラ r A
-ヨ y O
-ョ y O
-ユ y U
-ュ y U
-ヤ y A
-ャ y A
-モ m O
-メ m E
-ム m U
-ミョ my O
-ミュ my U
-ミャ my A
-ミェ my E
-ミ m I
-マ m A
-ポ p O
-ボ b O
-ホ h O
-ペ p E
-ベ b E
-ヘ h E
-プ p U
-ブ b U
-フォ f O
-フェ f E
-フィ f I
-ファ f A
-フ f U
-ピョ py O
-ピュ py U
-ピャ py A
-ピェ py E
-ピ p I
-ビョ by O
-ビュ by U
-ビャ by A
-ビェ by E
-ビ b I
-ヒョ hy O
-ヒュ hy U
-ヒャ hy A
-ヒェ hy E
-ヒ h I
-パ p A
-バ b A
-ハ h A
-ノ n O
-ネ n E
-ヌ n U
-ニョ ny O
-ニュ ny U
-ニャ ny A
-ニェ ny E
-ニ n I
-ナ n A
-ドゥ d U
-ド d O
-トゥ t U
-ト t O
-デョ dy O
-デュ dy U
-デャ dy A
-デェ dy E
-ディ d I
-デ d E
-テョ ty O
-テュ ty U
-テャ ty A
-ティ t I
-テ t E
-ヅ z U
-ツォ ts O
-ツェ ts E
-ツィ ts I
-ツァ ts A
-ツ ts U
-ッ cl
-ヂ j I
-チョ ch O
-チュ ch U
-チャ ch A
-チェ ch E
-チ ch I
-ダ d A
-タ t A
-ゾ z O
-ソ s O
-ゼ z E
-セ s E
-ズィ z I
-ズ z U
-スィ s I
-ス s U
-ジョ j O
-ジュ j U
-ジャ j A
-ジェ j E
-ジ j I
-ショ sh O
-シュ sh U
-シャ sh A
-シェ sh E
-シィ s I
-シ sh I
-ザ z A
-サ s A
-ゴ g O
-コ k O
-ゲ g E
-ケ k E
-グ g U
-ク k U
-ギョ gy O
-ギュ gy U
-ギャ gy A
-ギェ gy E
-ギ g I
-キョ ky O
-キュ ky U
-キャ ky A
-キェ ky E
-キ k I
-ガ g A
-カ k A
-オ O
-ォ O
-エ E
-ェ E
-ウォ w O
-ウェ w E
-ウィ w I
-ウ U
-ゥ U
-イェ y E
-イ I
-ィ I
+息 br
+br br
+pau pau
+R pau
+sil sil
 ア A
-ァ A
+あ a
+イ I
+い i
+いぇ y e
+ウ U
+う u
+ヴ v u
+ヴァ v A
+ヴぁ v a
+ウィ w I
+うぃ w i
+ヴぃ v i
+ヴゥ v U
+ヴぅ v u
+ウェ w E
+うぇ w e
+ヴェ v E
+ヴぇ v e
+ウォ w O
+うぉ w o
+ヴォ v O
+ヴぉ v o
+エ E
+え e
+オ O
+お o
+カ k A
+か k a
+ガ g A
+が g a
+キ k I
+き k i
+ギ g I
+ぎ g i
+キェ ky E
+きぇ ky e
+ギェ gy E
+ぎぇ gy e
+キャ ky A
+きゃ ky a
+ギャ gy A
+ぎゃ gy a
+キュ ky U
+きゅ ky u
+ギュ gy U
+ぎゅ gy u
+キョ ky O
+きょ ky o
+ギョ gy O
+ぎょ gy o
+ク k U
+く k u
+グ g U
+ぐ g u
+クァ k w A
+くぁ k w a
+グァ g w A
+ぐぁ g w a
+クィ k w I
+くぃ k w i
+グィ g w I
+ぐぃ g w i
+クゥ k w U
+くぅ k w u
+グゥ g w U
+ぐぅ g w u
+クェ k w E
+くぇ k w e
+グェ g w E
+ぐぇ g w e
+クォ k w O
+くぉ k w o
+グォ g w O
+ぐぉ g w o
+グヮ g w A
+ぐゎ g w a
+ケ k E
+け k e
+ゲ g E
+げ g e
+コ k O
+こ k o
+ゴ g O
+ご g o
+サ s A
+さ s a
+ザ z A
+ざ z a
+シ sh I
+し sh i
+ジ j I
+じ j i
+シィ s I
+しぃ s i
+シェ sh E
+しぇ sh e
+ジェ j E
+じぇ j e
+シャ sh A
+しゃ sh a
+ジャ j A
+じゃ j a
+シュ sh U
+しゅ sh u
+ジュ j U
+じゅ j u
+ショ sh O
+しょ sh o
+ジョ j O
+じょ j o
+ス s U
+す s u
+ズ z U
+ず z u
+スィ s I
+すぃ s i
+ズィ z I
+ずぃ z i
+セ s E
+せ s e
+ゼ z E
+ぜ z e
+ソ s O
+そ s o
+ゾ z O
+ぞ z o
+タ t A
+た t a
+ダ d A
+だ d a
+チ ch I
+ち ch i
+チェ ch E
+ちぇ ch e
+チャ ch A
+ちゃ ch a
+ヂャ j A
+ぢゃ j a
+チュ ch U
+ちゅ ch u
+チョ ch O
+ちょ ch o
+ッ cl
+っ cl
+ツ ts U
+つ ts u
+ヅ z U
+づ z u
+ツァ ts A
+つぁ ts a
+ヅァ z A
+ツィ ts I
+つぃ ts i
+ヅィ z I
+づぃ z i
+ツェ ts E
+つぇ ts e
+ヅェ z E
+づぇ z e
+ツォ ts O
+つぉ ts o
+ヅォ z O
+づぉ z o
+テ t E
+て t e
+デ d E
+で d e
+ティ t I
+てぃ t i
+ディ d I
+でぃ d i
+でぇ dy e
+テャ ty A
+てゃ ty a
+デャ dy A
+でゃ dy a
+テュ ty U
+てゅ ty u
+デュ dy U
+でゅ dy u
+テョ ty O
+てょ ty o
+デョ dy O
+でょ dy o
+ト t O
+と t o
+ド d O
+ど d o
+トゥ t U
+とぅ t u
+ドゥ d U
+どぅ d u
+ナ n A
+な n a
+ニ n I
+に n i
+ニェ ny E
+にぇ ny e
+ニャ ny A
+にゃ ny a
+ニュ ny U
+にゅ ny u
+ニョ ny O
+にょ ny o
+ヌ n U
+ぬ n u
+ネ n E
+ね n e
+ノ n O
+の n o
+ハ h A
+は h a
+バ b A
+ば b a
+パ p A
+ぱ p a
+ヒ h I
+ひ h i
+ビ B I
+び b i
+ピ p I
+ぴ p i
+ヒェ hy E
+ひぇ hy e
+ビェ by E
+びぇ by e
+ピェ py E
+ぴぇ py e
+ヒャ hy A
+ひゃ hy a
+ビャ by A
+びゃ by a
+ピャ py A
+ぴゃ py a
+ヒュ hy U
+ひゅ hy u
+ビュ by U
+びゅ by u
+ピュ py U
+ぴゅ py u
+ヒョ hy O
+ひょ hy o
+ビョ by O
+びょ by o
+ピョ py O
+ぴょ py o
+フ f U
+ふ f u
+ブ b U
+ぶ b u
+プ p U
+ぷ p u
+ファ f A
+ふぁ f a
+フィ f I
+ふぃ f i
+フェ f E
+ふぇ f e
+フォ f O
+ふぉ f o
+ヘ h E
+へ h e
+べ b e
+ペ p E
+ぺ p e
+ホ h O
+ほ h o
+ボ B O
+ぼ b o
+ポ p O
+ぽ p o
+マ m A
+ま m a
+ミ m I
+み m i
+ミェ my E
+みぇ my e
+ミャ my A
+みゃ my a
+ミュ my U
+みゅ my u
+ミョ my O
+みょ my o
+ム m U
+む m u
+メ m E
+め m e
+モ m O
+も m o
+ヤ y A
+や y a
+ユ y U
+ゆ y u
+ヨ y O
+よ y o
+ラ r A
+ら r a
+リ r I
+り r i
+りぇ ry e
+りゃ ry a
+りゅ ry u
+りょ ry o
+ル r U
+る r u
+レ r E
+れ r e
+ロ r O
+ろ r o
+ワ w A
+わ w a
+ヰ I
+ゐ i
+ヱ E
+ゑ e
+ヲ O
+を o
+ン N
+ん N
+フャ fy A
+ふゃ fy A
+フュ fy U
+ふゅ fy u
+フィェ fy E
+ふぃぇ fy e
+フョ fy O
+ふょ fy o
+ヴゅ vy u
+ヴュ vy U
+うぅ w u
+ウゥ w U
+てぇ ty e
+テェ ty E
+てぃぇ ty e
+ティェ ty E
+ぢ j i
+ヂ j I
+ぢゅ j u
+ヂュ j U
+ぢぇ j e
+ヂェ j E
+ぢょ j o
+ヂョ j O
+・あ GlottalStop a
+・ア GlottalStop A
+・い GlottalStop i
+・イ GlottalStop I
+・う GlottalStop u
+・ウ GlottalStop U
+・え GlottalStop e
+・エ GlottalStop E
+・お GlottalStop o
+・オ GlottalStop O
+・ん GlottalStop N
+’あ Edge a
+’ア Edge A
+’い Edge i
+’イ Edge I
+’う Edge u
+’ウ Edge U
+’え Edge e
+’エ Edge E
+’お Edge o
+’オ Edge O
+’ん Edge N
+あ’ Edge a
+ア’ Edge A
+い’ Edge i
+イ’ Edge I
+う’ Edge u
+ウ’ Edge U
+え’ Edge e
+エ’ Edge E
+お’ Edge o
+オ’ Edge O
+ん’ Edge N

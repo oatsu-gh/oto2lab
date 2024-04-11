@@ -19,9 +19,8 @@ def label2regioncsv(label):
     """
     ラベルオブジェクト（？）をリージョンCSV用のオブジェクトに変換する。
     """
-    l = label.values
     regioncsv = up.reaper.RegionCsv()
-    for phoneme in l:
+    for phoneme in label:
         region = up.reaper.Region()
         region.name = phoneme.symbol
         region.start = datetime.timedelta(seconds = phoneme.start * (10**(-7)))

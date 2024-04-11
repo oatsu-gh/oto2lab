@@ -18,25 +18,23 @@ def get_param(path_ust):
     ustのパスを受け取って、BPM情報と最高音、最低音を返す
     """
     ust = up.ust.load(path_ust)
-    bpm = ust.tempo
-    notes = ust.values[2:-1]
 
     # 最初のノートをとりあえず基準にする
     highest_note = None
     lowest_note = None
     # 残りのノートをチェック
-    for note in notes[1:]:
+    for note in ust.notes:
         if note.lyric in ['pau', 'br', 'R', '息', '吸', 'sil']:
             continue
-        if highest_note == None:
+        if highest_note is None:
             highest_note = note
         elif highest_note.notenum < note.notenum:
             highest_note = note
-        if lowest_note == None:
+        if lowest_note is None:
             lowest_note = note
         elif lowest_note.notenum > note.notenum:
             lowest_note = note
-    l = [os.path.basename(path_ust), bpm,
+    l = [os.path.basename(path_ust), ust.tempo,
          up.ust.notenum_as_abc(highest_note.notenum), highest_note.lyric,
          up.ust.notenum_as_abc(lowest_note.notenum), lowest_note.lyric]
     return l
@@ -50,7 +48,7 @@ def main():
         l.append(get_param(p))
     pprint(l)
 
-    path_csv = f'result(ust_bpm_and_range).csv'
+    path_csv = 'result(ust_bpm_and_range).csv'
     with open(path_csv, mode='w', newline='\n', encoding='shift-jis') as f:
         writer = csv.writer(f)
         writer.writerows(l)
