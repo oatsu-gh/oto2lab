@@ -19,3 +19,5 @@ del /q oto2lab.spec, oto2lab.py
 cd ..
 
 explorer.exe .
+
+PAUSE

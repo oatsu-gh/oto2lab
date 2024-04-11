@@ -14,6 +14,7 @@ import os
 # import sys
 from datetime import datetime
 from glob import glob
+from os.path import join
 # from pathlib import Path
 from pprint import pprint
 from shutil import copy2
@@ -21,7 +22,7 @@ from shutil import copy2
 import utaupy as up
 
 DEBUG_MODE = False
-PATH_TABLE = './dic/kana2phonemes_utf8_for_oto2lab.table'
+PATH_TABLE = './dic/kana2phonemes_003_oto2lab.table'
 
 
 def backup_io(path_file, outdirname):
@@ -80,7 +81,7 @@ def ustfile_to_inifile(path:str, path_tablefile:str, mode='romaji_cv'):
         outdir = os.path.dirname(path)
     # フォルダを指定した場合
     else:
-        l = glob('{}/*.{}'.format(path, 'ust'))
+        l = glob(f'{path}/*.ust')
         outdir = path
 
     print('\n処理対象ファイル---------')
@@ -90,15 +91,19 @@ def ustfile_to_inifile(path:str, path_tablefile:str, mode='romaji_cv'):
     for path_ustfile in l:
         print('converting UST to INI :', path_ustfile)  # 'outdir/name.ini'
         backup_io(path_ustfile, 'in')
-        basename = os.path.basename(path_ustfile)  # 'name.ust'
-        name_wav = basename.replace('.ust', '.wav')  # 'name.wav'
+        name_ust = os.path.basename(path_ustfile)    # 'name.ust'
+        name_wav = name_ust.replace('.ust', '.wav')  # 'name.wav'
+        name_ini = name_ust.replace('.ust', '.ini')
         # 出力するINIファイルのパス
-        path_inifile = '{}/{}'.format(outdir, basename.replace('.ust', '.ini'))
+        path_inifile = join(outdir, name_ini)
         # UST を読み取り
         ust = up.ust.load(path_ustfile)
         # 休符で終わってない場合はエラー終了
         if ust.notes[-1].lyric not in ('R', 'pau', 'sil'):
             raise ValueError(f'USTファイルの最後は必ず休符にしてください。対象ファイル: {path_ustfile}')
+        # 歌詞の両端のピリオドとスペースを削除する
+        for u_note in ust.notes:
+            u_note.lyric = u_note.lyric.strip('. 　')
         # 促音を含むノートを分割
         split_cl_note_of_ust(ust)
         # 変換
@@ -236,6 +241,9 @@ def svpfile_to_inifile(path, path_tablefile, mode='romaji_cv'):
         # SvpをUstに変換
         svp = up.svp.load(path_svpfile)
         ust = up.convert.svp2ust(svp, debug=DEBUG_MODE)
+        # 歌詞両端のピリオドと空白を削る
+        for u_note in ust.notes:
+            u_note.lyric = u_note.lyric.strip('. 　')
         # 促音を含むノートを分割
         split_cl_note_of_ust(ust)
         # UstをOtoIniに変換してファイル出力
